@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MitraRouteImport } from './routes/mitra'
 import { Route as KatalogRouteImport } from './routes/katalog'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KosIdRouteImport } from './routes/kos.$id'
 
 const MitraRoute = MitraRouteImport.update({
   id: '/mitra',
@@ -28,35 +29,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KosIdRoute = KosIdRouteImport.update({
+  id: '/kos/$id',
+  path: '/kos/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
+  '/kos/$id': typeof KosIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
+  '/kos/$id': typeof KosIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
+  '/kos/$id': typeof KosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/katalog' | '/mitra'
+  fullPaths: '/' | '/katalog' | '/mitra' | '/kos/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/katalog' | '/mitra'
-  id: '__root__' | '/' | '/katalog' | '/mitra'
+  to: '/' | '/katalog' | '/mitra' | '/kos/$id'
+  id: '__root__' | '/' | '/katalog' | '/mitra' | '/kos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   KatalogRoute: typeof KatalogRoute
   MitraRoute: typeof MitraRoute
+  KosIdRoute: typeof KosIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kos/$id': {
+      id: '/kos/$id'
+      path: '/kos/$id'
+      fullPath: '/kos/$id'
+      preLoaderRoute: typeof KosIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,7 +106,18 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   KatalogRoute: KatalogRoute,
   MitraRoute: MitraRoute,
+  KosIdRoute: KosIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
