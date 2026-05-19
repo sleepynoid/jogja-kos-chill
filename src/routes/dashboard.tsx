@@ -287,17 +287,17 @@ function Dashboard({ kosList, mitraNama }: { kosList: Kos[]; mitraNama: string }
               <AreaChart data={trend} margin={{ top: 6, right: 6, left: -16, bottom: 0 }}>
                 <defs>
                   <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--primary) / 0.5)" />
-                    <stop offset="100%" stopColor="hsl(var(--primary) / 0)" />
+                    <stop offset="0%" stopColor="color-mix(in oklab, var(--primary) 50%, transparent)" />
+                    <stop offset="100%" stopColor="color-mix(in oklab, var(--primary) 0%, transparent)" />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="tanggal" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="tanggal" tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
+                <YAxis tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
                 <Tooltip
                   contentStyle={{
-                    background: "hsl(var(--popover))",
-                    border: "1px solid hsl(var(--border))",
+                    background: "var(--popover)",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
                     fontSize: 12,
                   }}
@@ -305,7 +305,7 @@ function Dashboard({ kosList, mitraNama }: { kosList: Kos[]; mitraNama: string }
                 <Area
                   type="monotone"
                   dataKey="pengunjung"
-                  stroke="hsl(var(--primary))"
+                  stroke="var(--primary)"
                   strokeWidth={2}
                   fill="url(#g1)"
                 />
@@ -320,18 +320,18 @@ function Dashboard({ kosList, mitraNama }: { kosList: Kos[]; mitraNama: string }
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={perKos} margin={{ top: 6, right: 6, left: -16, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="nama" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" interval={0} angle={-20} textAnchor="end" height={50} />
-                <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="nama" tick={{ fontSize: 10 }} stroke="var(--muted-foreground)" interval={0} angle={-20} textAnchor="end" height={50} />
+                <YAxis tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
                 <Tooltip
                   contentStyle={{
-                    background: "hsl(var(--popover))",
-                    border: "1px solid hsl(var(--border))",
+                    background: "var(--popover)",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
                     fontSize: 12,
                   }}
                 />
-                <Bar dataKey="pengunjung" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="pengunjung" fill="var(--primary)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
