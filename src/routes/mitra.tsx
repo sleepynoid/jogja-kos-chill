@@ -198,6 +198,70 @@ function MitraPage() {
                 })}
               </div>
             </div>
+
+            <div className="md:col-span-2">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Foto Kos <span className="text-destructive">*</span>{" "}
+                  <span className="text-muted-foreground/70">
+                    (maks {MAX_FILES} foto, 5MB / foto)
+                  </span>
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {gambar.length}/{MAX_FILES}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {gambar.map((g, i) => (
+                  <div
+                    key={g.url}
+                    className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted"
+                  >
+                    <img
+                      src={g.url}
+                      alt={`Foto kos ${i + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeGambar(i)}
+                      className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-all hover:bg-destructive hover:text-destructive-foreground"
+                      aria-label="Hapus foto"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+
+                {gambar.length < MAX_FILES && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-background text-muted-foreground transition-colors hover:border-primary hover:bg-secondary hover:text-foreground"
+                  >
+                    <ImagePlus className="h-6 w-6" />
+                    <span className="text-xs font-medium">Tambah foto</span>
+                  </button>
+                )}
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  handleFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+
+              {imgError && (
+                <p className="mt-2 text-xs text-destructive">{imgError}</p>
+              )}
+            </div>
           </div>
 
           <button
