@@ -141,12 +141,6 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
           >
             <Plus className="h-4 w-4" /> Tambah Kos
           </button>
-          <button
-            onClick={() => setMitraSession(null)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
-          >
-            <LogOut className="h-4 w-4" /> Keluar
-          </button>
         </div>
       </div>
 
