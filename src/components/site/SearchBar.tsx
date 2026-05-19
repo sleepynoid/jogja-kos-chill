@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
+import { AppSelect } from "@/components/site/AppSelect";
 
 export function SearchBar({ variant = "hero" }: { variant?: "hero" | "compact" }) {
   const navigate = useNavigate();
@@ -28,40 +29,31 @@ export function SearchBar({ variant = "hero" }: { variant?: "hero" | "compact" }
       }`}
     >
       <Field label="Kampus terdekat">
-        <select
+        <AppSelect
           value={kampus}
-          onChange={(e) => setKampus(e.target.value)}
-          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-        >
-          <option value="">Semua kampus</option>
-          {KAMPUS_LIST.map((k) => (
-            <option key={k.value} value={k.value}>{k.label}</option>
-          ))}
-        </select>
+          onChange={setKampus}
+          options={KAMPUS_LIST}
+          allLabel="Semua kampus"
+          placeholder="Semua kampus"
+        />
       </Field>
       <Field label="Daerah">
-        <select
+        <AppSelect
           value={daerah}
-          onChange={(e) => setDaerah(e.target.value)}
-          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-        >
-          <option value="">Semua daerah</option>
-          {DAERAH_LIST.map((d) => (
-            <option key={d.value} value={d.value}>{d.label}</option>
-          ))}
-        </select>
+          onChange={setDaerah}
+          options={DAERAH_LIST}
+          allLabel="Semua daerah"
+          placeholder="Semua daerah"
+        />
       </Field>
       <Field label="Jenis kos">
-        <select
+        <AppSelect
           value={jenis}
-          onChange={(e) => setJenis(e.target.value)}
-          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-        >
-          <option value="">Semua jenis</option>
-          {JENIS_KOS.map((j) => (
-            <option key={j.value} value={j.value}>{j.label}</option>
-          ))}
-        </select>
+          onChange={setJenis}
+          options={JENIS_KOS}
+          allLabel="Semua jenis"
+          placeholder="Semua jenis"
+        />
       </Field>
       <div className="flex items-end">
         <button
