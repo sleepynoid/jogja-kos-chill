@@ -2,6 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
 import { CheckCircle2, Building2, Users, TrendingUp } from "lucide-react";
+import {
+  Select as UiSelect,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/mitra")({
   head: () => ({
@@ -109,11 +116,11 @@ function MitraPage() {
             <Input label="No. Telepon / WA" required value={form.telepon} onChange={(v) => setForm({ ...form, telepon: v })} />
 
             <Select label="Jenis Kos" required value={form.jenis} onChange={(v) => setForm({ ...form, jenis: v })}
-              options={[{ value: "", label: "Pilih jenis kos" }, ...JENIS_KOS]} />
+              placeholder="Pilih jenis kos" options={JENIS_KOS} />
             <Select label="Kampus Terdekat" value={form.kampus} onChange={(v) => setForm({ ...form, kampus: v })}
-              options={[{ value: "", label: "Pilih kampus" }, ...KAMPUS_LIST]} />
+              placeholder="Pilih kampus" options={KAMPUS_LIST} />
             <Select label="Daerah" value={form.daerah} onChange={(v) => setForm({ ...form, daerah: v })}
-              options={[{ value: "", label: "Pilih daerah" }, ...DAERAH_LIST]} />
+              placeholder="Pilih daerah" options={DAERAH_LIST} />
             <Input label="Harga / Bulan (Rp)" type="number" required value={form.harga} onChange={(v) => setForm({ ...form, harga: v })} />
 
             <div className="md:col-span-2">
@@ -188,23 +195,27 @@ function Input({
 }
 
 function Select({
-  label, value, onChange, options, required,
-}: { label: string; value: string; onChange: (v: string) => void; options: readonly { value: string; label: string }[]; required?: boolean }) {
+  label, value, onChange, options, required, placeholder,
+}: { label: string; value: string; onChange: (v: string) => void; options: readonly { value: string; label: string }[]; required?: boolean; placeholder?: string }) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-xs font-medium text-muted-foreground">
         {label}{required && <span className="text-destructive"> *</span>}
       </span>
-      <select
+      <UiSelect
+        value={value || undefined}
+        onValueChange={onChange}
         required={required}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
       >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
-        ))}
-      </select>
+        <SelectTrigger className="h-10">
+          <SelectValue placeholder={placeholder ?? "Pilih…"} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </UiSelect>
     </label>
   );
 }
