@@ -19,6 +19,7 @@ export function Header() {
             { to: "/", label: "Beranda" },
             { to: "/katalog", label: "Katalog" },
             { to: "/mitra", label: "Mitra" },
+            { to: "/dashboard", label: "Dashboard" },
           ].map((l) => (
             <Link
               key={l.to}

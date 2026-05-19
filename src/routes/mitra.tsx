@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
 import { CheckCircle2, Building2, Users, TrendingUp, ImagePlus, X } from "lucide-react";
+import { setMitraSession } from "@/lib/kos-store";
 import {
   Select as UiSelect,
   SelectContent,
@@ -90,6 +91,9 @@ function MitraPage() {
       setImgError("Unggah minimal 1 foto kos.");
       return;
     }
+    if (form.namaPemilik && form.email) {
+      setMitraSession({ nama: form.namaPemilik, email: form.email });
+    }
     setSubmitted(true);
   };
 
@@ -110,6 +114,14 @@ function MitraPage() {
         >
           Daftarkan kos lain
         </button>
+        <div className="mt-3">
+          <Link
+            to="/dashboard"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Buka Dashboard Mitra →
+          </Link>
+        </div>
       </div>
     );
   }
