@@ -128,7 +128,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
             Dashboard Mitra
           </p>
           <h1 className="font-serif text-3xl font-bold">
-            Halo, {mitraNama} 👋
+            Dashboard Mitra 👋
           </h1>
           <p className="text-sm text-muted-foreground">
             Pantau performa dan kelola kos Anda di sini.
