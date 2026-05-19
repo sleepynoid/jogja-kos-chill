@@ -1,5 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { KOS_LIST, KAMPUS_LIST, JENIS_KOS, formatRupiah, type Kos } from "@/lib/kos-data";
+import { useKosStore, addInquiry } from "@/lib/kos-store";
+import { InteractiveMap } from "@/components/site/InteractiveMap";
+import { toast } from "sonner";
 import {
   MapPin,
   Star,
@@ -85,7 +88,9 @@ export const Route = createFileRoute("/kos/$id")({
 });
 
 function KosDetailPage() {
-  const { kos } = Route.useLoaderData() as { kos: Kos };
+  const { kos: initialKos } = Route.useLoaderData() as { kos: Kos };
+  const kosList = useKosStore();
+  const kos = kosList.find((k) => k.id === initialKos.id) ?? initialKos;
   const jenisLabel = JENIS_KOS.find((j) => j.value === kos.jenis)?.label;
   const kampusLabels = kos.kampusTerdekat
     .map((k) => KAMPUS_LIST.find((c) => c.value === k)?.label)
@@ -110,7 +115,9 @@ function KosDetailPage() {
   ).slice(0, 3);
 
   const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
-    `Halo, saya tertarik dengan kos "${kos.nama}" di ${kos.alamat}. Apakah masih tersedia?`,
+    (kos.tersedia ?? true)
+      ? `Halo, saya tertarik dengan kos "${kos.nama}" di ${kos.alamat}. Apakah masih tersedia?`
+      : `Halo, saya ingin bergabung dengan waiting list untuk kos "${kos.nama}" di ${kos.alamat}.`
   )}`;
 
   const reviews = [
@@ -172,8 +179,15 @@ function KosDetailPage() {
                         alt={`${kos.nama} foto ${i + 1}`}
                         className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                       />
-                      <span className="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                        {jenisLabel}
+                      <span className="absolute left-4 top-4 flex gap-1.5">
+                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                          {jenisLabel}
+                        </span>
+                        {!(kos.tersedia ?? true) && (
+                          <span className="rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-destructive-foreground">
+                            Penuh
+                          </span>
+                        )}
                       </span>
                       <span className="absolute right-4 top-4 rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur">
                         {i + 1} / {galeri.length}
@@ -231,17 +245,45 @@ function KosDetailPage() {
 
           <div className="rounded-2xl border border-border bg-card p-5">
             <div className="text-xs text-muted-foreground">Harga sewa</div>
-            <div className="mt-1 font-serif text-3xl font-bold text-primary">
-              {formatRupiah(kos.hargaPerBulan)}
-              <span className="ml-1 text-sm font-normal text-muted-foreground">/ bulan</span>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="font-serif text-3xl font-bold text-primary">
+                {formatRupiah(kos.hargaPerBulan)}
+              </span>
+              <span className="text-sm font-normal text-muted-foreground">/ bulan</span>
+              {!(kos.tersedia ?? true) && (
+                <span className="ml-auto rounded bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
+                  Penuh
+                </span>
+              )}
             </div>
             <a
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#1ebe5d] active:scale-95"
+              onClick={() => {
+                addInquiry({
+                  kosId: kos.id,
+                  namaKos: kos.nama,
+                  namaCalon: "Pengunjung Baru",
+                  telepon: "628" + Math.floor(100000000 + Math.random() * 900000000),
+                  pesan: (kos.tersedia ?? true)
+                    ? "Halo, saya tertarik dengan kos ini. Apakah masih tersedia?"
+                    : "Halo, saya ingin bergabung dengan waiting list.",
+                });
+                toast.success(
+                  (kos.tersedia ?? true)
+                    ? "Lead chat terkirim ke Mitra!"
+                    : "Pendaftaran waiting list terkirim ke Mitra!"
+                );
+              }}
+              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all active:scale-95 ${
+                (kos.tersedia ?? true)
+                  ? "bg-[#25D366] hover:bg-[#1ebe5d]"
+                  : "bg-amber-600 hover:bg-amber-700"
+              }`}
             >
-              <WhatsappIcon className="h-5 w-5" /> Hubungi Pemilik
+              <WhatsappIcon className="h-5 w-5" />
+              {(kos.tersedia ?? true) ? "Hubungi Pemilik" : "Hubungi Waiting List"}
             </a>
           </div>
 
@@ -282,6 +324,16 @@ function KosDetailPage() {
             })}
           </ul>
         </section>
+      </div>
+
+      {/* Interactive Map */}
+      <div className="mt-8 animate-fade-up" style={{ animationDelay: "150ms" }}>
+        <InteractiveMap 
+          kosName={kos.nama} 
+          lat={-7.77 - (kos.id.charCodeAt(1) % 5) * 0.008} 
+          lng={110.37 + (kos.id.charCodeAt(1) % 5) * 0.008} 
+          kampusList={kos.kampusTerdekat} 
+        />
       </div>
 
       {/* Lainnya */}

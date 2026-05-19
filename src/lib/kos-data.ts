@@ -40,6 +40,7 @@ export type Kos = {
   gambar: string;
   galeri?: string[];
   deskripsi: string;
+  tersedia?: boolean;
 };
 
 const img = (seed: string) =>

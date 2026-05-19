@@ -1,4 +1,4 @@
-import { MapPin, Star, Wifi, Snowflake, Bath, Shirt, Car, Tv } from "lucide-react";
+import { MapPin, Star, Wifi, Snowflake, Bath, Shirt, Car, Tv, GitCompare } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Kos } from "@/lib/kos-data";
 import { formatRupiah, JENIS_KOS, KAMPUS_LIST } from "@/lib/kos-data";
@@ -14,7 +14,17 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "Smart TV": Tv,
 };
 
-export function KosCard({ kos }: { kos: Kos }) {
+export function KosCard({
+  kos,
+  isCompared = false,
+  onCompareToggle,
+  showCompare = false,
+}: {
+  kos: Kos;
+  isCompared?: boolean;
+  onCompareToggle?: () => void;
+  showCompare?: boolean;
+}) {
   const jenisLabel = JENIS_KOS.find((j) => j.value === kos.jenis)?.label;
   const kampusLabels = kos.kampusTerdekat
     .map((k) => KAMPUS_LIST.find((c) => c.value === k)?.label.replace(/\s*\(.*\)/, ""))
@@ -29,13 +39,37 @@ export function KosCard({ kos }: { kos: Kos }) {
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute left-3 top-3">
+        <div className="absolute left-3 top-3 flex gap-1">
           <Badge className="bg-primary text-primary-foreground">{jenisLabel}</Badge>
+          {!(kos.tersedia ?? true) && (
+            <Badge variant="destructive" className="bg-destructive text-destructive-foreground">
+              Penuh
+            </Badge>
+          )}
         </div>
-        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-background/95 px-2 py-1 text-xs font-semibold">
+        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-background/95 px-2 py-1 text-xs font-semibold text-foreground">
           <Star className="h-3 w-3 fill-accent text-accent" />
           {kos.rating}
         </div>
+
+        {showCompare && onCompareToggle && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onCompareToggle();
+            }}
+            className={`absolute left-3 bottom-3 flex h-8 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-md backdrop-blur-md transition-all cursor-pointer active:scale-95 ${
+              isCompared
+                ? "bg-primary border-primary text-primary-foreground scale-105"
+                : "bg-background/95 border-border text-foreground hover:bg-background"
+            }`}
+          >
+            <GitCompare className="h-3.5 w-3.5" />
+            {isCompared ? "Dibanding" : "Bandingkan"}
+          </button>
+        )}
       </div>
       <div className="p-4">
         <h3 className="font-serif text-lg font-semibold text-foreground">{kos.nama}</h3>

@@ -58,7 +58,11 @@ import {
   removeKos,
   updateKos,
   useKosStore,
+  toggleKetersediaanKos,
+  useInquiriesStore,
+  updateInquiryStatus,
 } from "@/lib/kos-store";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -86,6 +90,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
   const [editing, setEditing] = useState<Kos | null>(null);
   const [creating, setCreating] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Kos | null>(null);
+  const inquiries = useInquiriesStore();
 
   const selected =
     kosList.find((k) => k.id === selectedId) ?? kosList[0] ?? null;
@@ -274,6 +279,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
                 <TableHead className="text-right">Harga / bln</TableHead>
                 <TableHead className="text-right">Rating</TableHead>
                 <TableHead className="text-right">Pengunjung</TableHead>
+                <TableHead className="text-right">Ketersediaan</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
@@ -315,6 +321,21 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
                       {s.minggu}
                     </TableCell>
                     <TableCell className="text-right">
+                      <button
+                        onClick={() => {
+                          toggleKetersediaanKos(k.id);
+                          toast.success(`Status ${k.nama} berhasil diubah!`);
+                        }}
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer ${
+                          k.tersedia ?? true
+                            ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25"
+                            : "bg-destructive/15 text-destructive hover:bg-destructive/25"
+                        }`}
+                      >
+                        {k.tersedia ?? true ? "Tersedia" : "Penuh"}
+                      </button>
+                    </TableCell>
+                    <TableCell className="text-right">
                       <div className="inline-flex items-center gap-1">
                         <button
                           onClick={() => setEditing(k)}
@@ -337,7 +358,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
               })}
               {kosList.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-10 text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={8} className="py-10 text-center text-sm text-muted-foreground">
                     Belum ada kos. Klik “Tambah Kos” untuk mulai.
                   </TableCell>
                 </TableRow>
@@ -389,6 +410,79 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Inbox Inquiries Section */}
+      <div className="mt-8 rounded-2xl border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border p-5">
+          <div>
+            <h2 className="font-serif text-lg font-bold flex items-center gap-2 text-foreground">
+              <MessageSquare className="h-5 w-5 text-primary" /> Pertanyaan Masuk ({inquiries.filter((i) => i.status === "pending").length})
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Simulasi pesan dari calon penghuni melalui WhatsApp / WA Waiting List
+            </p>
+          </div>
+        </div>
+
+        <div className="divide-y divide-border/60">
+          {inquiries.map((inq) => (
+            <div key={inq.id} className="p-5 flex flex-col sm:flex-row sm:items-start justify-between gap-4 transition-colors hover:bg-secondary/20">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap text-foreground">
+                  <span className="font-semibold text-sm">{inq.namaCalon}</span>
+                  <span className="text-[10px] text-muted-foreground">• {inq.tanggal}</span>
+                  <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                    {inq.namaKos}
+                  </span>
+                  {inq.status === "pending" ? (
+                    <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600">
+                      Menunggu
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-600">
+                      Sudah Dihubungi
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-muted-foreground leading-normal max-w-2xl bg-secondary/30 rounded-xl p-3 border border-border/40">
+                  "{inq.pesan}"
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  No. Telepon: <span className="font-medium text-foreground">+{inq.telepon}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {inq.status === "pending" && (
+                  <button
+                    onClick={() => {
+                      updateInquiryStatus(inq.id, "dihubungi");
+                      toast.success("Status lead diperbarui!");
+                    }}
+                    className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold hover:bg-secondary transition-all cursor-pointer text-foreground"
+                  >
+                    Tandai Dihubungi
+                  </button>
+                )}
+                <a
+                  href={`https://wa.me/${inq.telepon}?text=${encodeURIComponent("Halo " + inq.namaCalon + ", terima kasih telah menghubungi kami mengenai kos " + inq.namaKos + ".")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg bg-[#25D366] text-white px-3 py-1.5 text-xs font-semibold hover:bg-[#1ebe5d] transition-all flex items-center gap-1 active:scale-95"
+                >
+                  <MessageSquare className="h-3.5 w-3.5" /> Balas WA
+                </a>
+              </div>
+            </div>
+          ))}
+
+          {inquiries.length === 0 && (
+            <div className="py-10 text-center text-sm text-muted-foreground">
+              Belum ada pertanyaan masuk dari calon penghuni.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

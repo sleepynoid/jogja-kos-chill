@@ -9,14 +9,17 @@ const listeners = new Set<Listener>();
 let kosState: Kos[] = loadInitial();
 
 function loadInitial(): Kos[] {
-  if (typeof window === "undefined") return [...KOS_LIST];
+  if (typeof window === "undefined") return [...KOS_LIST].map(k => ({ ...k, tersedia: k.tersedia ?? true }));
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as Kos[];
+    if (raw) {
+      const parsed = JSON.parse(raw) as Kos[];
+      return parsed.map(k => ({ ...k, tersedia: k.tersedia ?? true }));
+    }
   } catch {
     /* ignore */
   }
-  return [...KOS_LIST];
+  return [...KOS_LIST].map(k => ({ ...k, tersedia: k.tersedia ?? true }));
 }
 
 function persist() {
@@ -45,13 +48,14 @@ export function useKosStore(): Kos[] {
   );
 }
 
-export function addKos(input: Omit<Kos, "id" | "rating" | "galeri">) {
+export function addKos(input: Omit<Kos, "id" | "rating" | "galeri" | "tersedia">) {
   const id = `k-${Date.now().toString(36)}`;
   const kos: Kos = {
     ...input,
     id,
     rating: 4.5,
     galeri: [input.gambar],
+    tersedia: true,
   };
   kosState = [kos, ...kosState];
   persist();
@@ -71,9 +75,112 @@ export function removeKos(id: string) {
   emit();
 }
 
-export function resetKosStore() {
-  kosState = [...KOS_LIST];
+export function toggleKetersediaanKos(id: string) {
+  kosState = kosState.map((k) => (k.id === id ? { ...k, tersedia: !(k.tersedia ?? true) } : k));
   persist();
+  emit();
+}
+
+export function resetKosStore() {
+  kosState = [...KOS_LIST].map(k => ({ ...k, tersedia: true }));
+  persist();
+  emit();
+}
+
+// ---------- Simulated leads inquiries store ----------
+
+export type KosInquiry = {
+  id: string;
+  kosId: string;
+  namaKos: string;
+  namaCalon: string;
+  telepon: string;
+  pesan: string;
+  tanggal: string;
+  status: "pending" | "dihubungi";
+};
+
+const INQUIRIES_KEY = "knsleep:inquiries-store:v1";
+let inquiriesState: KosInquiry[] = loadInitialInquiries();
+
+function loadInitialInquiries(): KosInquiry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(INQUIRIES_KEY);
+    if (raw) return JSON.parse(raw) as KosInquiry[];
+  } catch {
+    /* ignore */
+  }
+
+  return [
+    {
+      id: "inq-1",
+      kosId: "k1",
+      namaKos: "Griya Sogan Bulaksumur",
+      namaCalon: "Budi Santoso",
+      telepon: "6281234567890",
+      pesan: "Halo, kamar tipe AC apakah masih ada yang kosong untuk bulan depan? Saya mahasiswa baru UGM.",
+      tanggal: "19 Mei 2026",
+      status: "pending",
+    },
+    {
+      id: "inq-2",
+      kosId: "k3",
+      namaKos: "Omah Malioboro Heritage",
+      namaCalon: "Siti Rahma",
+      telepon: "6289876543210",
+      pesan: "Siang, saya mau tanya apakah parkir mobilnya gratis dan ada cleaning service setiap hari?",
+      tanggal: "18 Mei 2026",
+      status: "dihubungi",
+    },
+    {
+      id: "inq-3",
+      kosId: "k1",
+      namaKos: "Griya Sogan Bulaksumur",
+      namaCalon: "Ahmad Fauzi",
+      telepon: "628111222333",
+      pesan: "Apakah bisa survei lokasi besok jam 2 siang kak? Terima kasih.",
+      tanggal: "17 Mei 2026",
+      status: "pending",
+    }
+  ];
+}
+
+function persistInquiries() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(INQUIRIES_KEY, JSON.stringify(inquiriesState));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function useInquiriesStore(): KosInquiry[] {
+  return useSyncExternalStore(
+    subscribe,
+    () => inquiriesState,
+    () => inquiriesState,
+  );
+}
+
+export function addInquiry(inquiry: Omit<KosInquiry, "id" | "tanggal" | "status">) {
+  const newInq: KosInquiry = {
+    ...inquiry,
+    id: `inq-${Date.now().toString(36)}`,
+    tanggal: new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }),
+    status: "pending",
+  };
+  inquiriesState = [newInq, ...inquiriesState];
+  persistInquiries();
+  emit();
+  return newInq;
+}
+
+export function updateInquiryStatus(id: string, status: "pending" | "dihubungi") {
+  inquiriesState = inquiriesState.map((inq) =>
+    inq.id === id ? { ...inq, status } : inq
+  );
+  persistInquiries();
   emit();
 }
 
