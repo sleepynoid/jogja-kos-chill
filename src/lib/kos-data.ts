@@ -180,3 +180,16 @@ export const KOS_LIST: Kos[] = [
 
 export const formatRupiah = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+
+// Inject a galeri (max 5 foto) untuk tiap kos dummy.
+KOS_LIST.forEach((k, i) => {
+  const picks = [
+    EXTRA_INTERIORS[i % EXTRA_INTERIORS.length],
+    EXTRA_INTERIORS[(i + 2) % EXTRA_INTERIORS.length],
+    EXTRA_INTERIORS[(i + 4) % EXTRA_INTERIORS.length],
+    EXTRA_INTERIORS[(i + 6) % EXTRA_INTERIORS.length],
+  ].map(img);
+  // Foto utama selalu jadi yang pertama, sisanya unik dan dibatasi 5.
+  const unik = Array.from(new Set([k.gambar, ...picks])).slice(0, 5);
+  k.galeri = unik;
+});
