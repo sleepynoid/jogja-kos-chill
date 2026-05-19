@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MitraRouteImport } from './routes/mitra'
 import { Route as KatalogRouteImport } from './routes/katalog'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KosIdRouteImport } from './routes/kos.$id'
 
@@ -22,6 +23,11 @@ const MitraRoute = MitraRouteImport.update({
 const KatalogRoute = KatalogRouteImport.update({
   id: '/katalog',
   path: '/katalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const KosIdRoute = KosIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
   '/kos/$id': typeof KosIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
   '/kos/$id': typeof KosIdRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
   '/kos/$id': typeof KosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/katalog' | '/mitra' | '/kos/$id'
+  fullPaths: '/' | '/dashboard' | '/katalog' | '/mitra' | '/kos/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/katalog' | '/mitra' | '/kos/$id'
-  id: '__root__' | '/' | '/katalog' | '/mitra' | '/kos/$id'
+  to: '/' | '/dashboard' | '/katalog' | '/mitra' | '/kos/$id'
+  id: '__root__' | '/' | '/dashboard' | '/katalog' | '/mitra' | '/kos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   KatalogRoute: typeof KatalogRoute
   MitraRoute: typeof MitraRoute
   KosIdRoute: typeof KosIdRoute
@@ -85,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   KatalogRoute: KatalogRoute,
   MitraRoute: MitraRoute,
   KosIdRoute: KosIdRoute,
