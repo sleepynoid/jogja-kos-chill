@@ -11,8 +11,6 @@ import {
   Car,
   Tv,
   CheckCircle2,
-  Phone,
-  MessageCircle,
 } from "lucide-react";
 import { KosCard } from "@/components/site/KosCard";
 
@@ -25,6 +23,16 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "Parkir Motor": Car,
   "Smart TV": Tv,
 };
+
+function WhatsappIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={className} fill="currentColor" aria-hidden>
+      <path d="M19.11 17.27c-.27-.14-1.61-.79-1.86-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.14-.42-2.17-1.34-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.55.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.48-.84-2.02-.22-.53-.45-.46-.61-.47l-.52-.01c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.27 0 1.34.97 2.64 1.11 2.82.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.55.58.65.21 1.24.18 1.71.11.52-.08 1.61-.66 1.84-1.29.23-.64.23-1.18.16-1.29-.07-.11-.25-.18-.52-.32zM16 3.2C8.93 3.2 3.2 8.93 3.2 16c0 2.27.6 4.39 1.65 6.23L3.2 28.8l6.74-1.62A12.74 12.74 0 0 0 16 28.8c7.07 0 12.8-5.73 12.8-12.8S23.07 3.2 16 3.2zm0 23.36a10.5 10.5 0 0 1-5.36-1.46l-.38-.23-3.99.96 1.07-3.89-.25-.4A10.55 10.55 0 1 1 16 26.56z"/>
+    </svg>
+  );
+}
+
+const WA_NUMBER = "6281234567890";
 
 export const Route = createFileRoute("/kos/$id")({
   loader: ({ params }) => {
@@ -78,6 +86,42 @@ function KosDetailPage() {
     (k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis),
   ).slice(0, 3);
 
+  const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+    `Halo, saya tertarik dengan kos "${kos.nama}" di ${kos.alamat}. Apakah masih tersedia?`,
+  )}`;
+
+  const reviews = [
+    {
+      nama: "Rani P.",
+      kampus: "Mahasiswa UGM",
+      rating: 5,
+      komentar:
+        "Kamarnya bersih, pemiliknya ramah, dan lokasinya sangat strategis. Wi-Fi kencang banget buat kuliah online.",
+    },
+    {
+      nama: "Adit S.",
+      kampus: "Mahasiswa UNY",
+      rating: 4,
+      komentar:
+        "Fasilitas lengkap dan suasananya tenang. Cocok untuk yang butuh fokus belajar. Recommended!",
+    },
+    {
+      nama: "Dewi K.",
+      kampus: "Pekerja muda",
+      rating: 5,
+      komentar:
+        "Sudah 6 bulan di sini, nyaman dan aman. Lingkungan sekitar juga banyak warung makan.",
+    },
+  ];
+  const totalUlasan = 128;
+  const ratingBars = [
+    { star: 5, pct: 78 },
+    { star: 4, pct: 16 },
+    { star: 3, pct: 4 },
+    { star: 2, pct: 1 },
+    { star: 1, pct: 1 },
+  ];
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <Link
@@ -125,14 +169,14 @@ function KosDetailPage() {
               {formatRupiah(kos.hargaPerBulan)}
               <span className="ml-1 text-sm font-normal text-muted-foreground">/ bulan</span>
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-95">
-                <MessageCircle className="h-4 w-4" /> Chat Pemilik
-              </button>
-              <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold transition-all hover:bg-secondary active:scale-95">
-                <Phone className="h-4 w-4" /> Hubungi
-              </button>
-            </div>
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#1ebe5d] active:scale-95"
+            >
+              <WhatsappIcon className="h-5 w-5" /> Hubungi Pemilik
+            </a>
           </div>
 
           {kampusLabels.length > 0 && (
@@ -175,6 +219,97 @@ function KosDetailPage() {
       </div>
 
       {/* Lainnya */}
+      {/* Rating & Ulasan */}
+      <section className="animate-fade-up mt-12 rounded-2xl border border-border bg-card p-6 md:p-8">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="font-serif text-2xl font-bold">Rating & Ulasan</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Berdasarkan {totalUlasan} ulasan dari penghuni.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-8 md:grid-cols-[260px_1fr]">
+          {/* Summary */}
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-secondary/40 p-6 text-center">
+            <div className="font-serif text-5xl font-bold text-primary">
+              {kos.rating.toFixed(1)}
+            </div>
+            <div className="mt-1 flex items-center gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={`h-4 w-4 ${
+                    i < Math.round(kos.rating)
+                      ? "fill-accent text-accent"
+                      : "text-muted-foreground/40"
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              dari {totalUlasan} ulasan
+            </div>
+
+            <div className="mt-5 w-full space-y-1.5">
+              {ratingBars.map((b) => (
+                <div key={b.star} className="flex items-center gap-2 text-xs">
+                  <span className="w-3 text-muted-foreground">{b.star}</span>
+                  <Star className="h-3 w-3 fill-accent text-accent" />
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-accent transition-all"
+                      style={{ width: `${b.pct}%` }}
+                    />
+                  </div>
+                  <span className="w-8 text-right text-muted-foreground">
+                    {b.pct}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Reviews */}
+          <ul className="space-y-4">
+            {reviews.map((r, i) => (
+              <li
+                key={i}
+                className="rounded-xl border border-border bg-background/60 p-4 transition-colors hover:bg-background"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-serif font-bold text-primary">
+                      {r.nama.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold">{r.nama}</div>
+                      <div className="text-xs text-muted-foreground">{r.kampus}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <Star
+                        key={j}
+                        className={`h-3.5 w-3.5 ${
+                          j < r.rating
+                            ? "fill-accent text-accent"
+                            : "text-muted-foreground/40"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {r.komentar}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {lainnya.length > 0 && (
         <section className="mt-12">
           <h2 className="mb-5 font-serif text-2xl font-bold">Kos Serupa</h2>

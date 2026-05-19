@@ -3,6 +3,14 @@ import { useMemo } from "react";
 import { KOS_LIST, KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
 import { KosCard } from "@/components/site/KosCard";
 import { Search as SearchIcon, SlidersHorizontal } from "lucide-react";
+import { AppSelect } from "@/components/site/AppSelect";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Search = {
   kampus?: string;
@@ -81,16 +89,20 @@ function KatalogPage() {
         </div>
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-          <select
-            value={search.sort ?? ""}
-            onChange={(e) => update("sort", e.target.value)}
-            className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+          <Select
+            value={search.sort ?? "default"}
+            onValueChange={(v) => update("sort", v === "default" ? "" : v)}
           >
-            <option value="">Urutkan: Default</option>
-            <option value="rating">Rating tertinggi</option>
-            <option value="termurah">Harga termurah</option>
-            <option value="termahal">Harga termahal</option>
-          </select>
+            <SelectTrigger className="h-10 w-[200px] rounded-xl">
+              <SelectValue placeholder="Urutkan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Urutkan: Default</SelectItem>
+              <SelectItem value="rating">Rating tertinggi</SelectItem>
+              <SelectItem value="termurah">Harga termurah</SelectItem>
+              <SelectItem value="termahal">Harga termahal</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -101,19 +113,22 @@ function KatalogPage() {
           <FilterGroup
             label="Kampus Terdekat"
             value={search.kampus ?? ""}
-            options={[{ value: "", label: "Semua kampus" }, ...KAMPUS_LIST]}
+            options={KAMPUS_LIST}
+            allLabel="Semua kampus"
             onChange={(v) => update("kampus", v)}
           />
           <FilterGroup
             label="Daerah"
             value={search.daerah ?? ""}
-            options={[{ value: "", label: "Semua daerah" }, ...DAERAH_LIST]}
+            options={DAERAH_LIST}
+            allLabel="Semua daerah"
             onChange={(v) => update("daerah", v)}
           />
           <FilterGroup
             label="Jenis Kos"
             value={search.jenis ?? ""}
-            options={[{ value: "", label: "Semua jenis" }, ...JENIS_KOS]}
+            options={JENIS_KOS}
+            allLabel="Semua jenis"
             onChange={(v) => update("jenis", v)}
           />
           <button
@@ -149,24 +164,24 @@ function FilterGroup({
   value,
   options,
   onChange,
+  allLabel,
 }: {
   label: string;
   value: string;
   options: readonly { value: string; label: string }[];
   onChange: (v: string) => void;
+  allLabel?: string;
 }) {
   return (
     <div className="mb-4">
       <div className="mb-1.5 text-xs font-medium text-muted-foreground">{label}</div>
-      <select
+      <AppSelect
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
-        ))}
-      </select>
+        onChange={onChange}
+        options={options}
+        allLabel={allLabel}
+        placeholder={allLabel}
+      />
     </div>
   );
 }
