@@ -1,18 +1,8 @@
-import { MapPin, Star, Wifi, Snowflake, Bath, Shirt, Car, Tv, GitCompare } from "lucide-react";
+import { MapPin, Star, ArrowRight, GitCompare } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Kos } from "@/lib/kos-data";
-import { formatRupiah, JENIS_KOS, KAMPUS_LIST } from "@/lib/kos-data";
-import { Badge } from "@/components/ui/badge";
-
-const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  WiFi: Wifi,
-  AC: Snowflake,
-  "Kamar Mandi Dalam": Bath,
-  Laundry: Shirt,
-  "Parkir Mobil": Car,
-  "Parkir Motor": Car,
-  "Smart TV": Tv,
-};
+import { formatRupiah, JENIS_KOS } from "@/lib/kos-data";
+import { motion } from "framer-motion";
 
 export function KosCard({
   kos,
@@ -25,95 +15,130 @@ export function KosCard({
   onCompareToggle?: () => void;
   showCompare?: boolean;
 }) {
-  const jenisLabel = JENIS_KOS.find((j) => j.value === kos.jenis)?.label;
-  const kampusLabels = kos.kampusTerdekat
-    .map((k) => KAMPUS_LIST.find((c) => c.value === k)?.label.replace(/\s*\(.*\)/, ""))
-    .filter(Boolean);
+  const jenisLabel = JENIS_KOS.find((j) => j.value === kos.jenis)?.label || "Kos";
+  const formattedPrice = formatRupiah(kos.hargaPerBulan);
+  
+  // Format price into "Rp X.XXX" and ".XXX" accent parts
+  const priceParts = formattedPrice.replace("/bulan", "").trim().split(",");
+  const priceMain = priceParts[0];
 
   return (
-    <article className="group animate-fade-up overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:border-accent/40 hover:shadow-2xl hover:shadow-primary/10">
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-        <img
-          src={kos.gambar}
-          alt={kos.nama}
+    <motion.div 
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -10 }}
+      className="group bg-white dark:bg-zinc-850 rounded-[3.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-brand-accent/5 transition-all flex flex-col border border-border/50"
+    >
+      {/* Media Area */}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <img 
+          src={kos.gambar} 
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+          alt={kos.nama} 
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute left-3 top-3 flex gap-1">
-          <Badge className="bg-primary text-primary-foreground">{jenisLabel}</Badge>
+        
+        {/* Gender & Rating Badges */}
+        <div className="absolute top-6 left-6 flex gap-2">
+          <span className="bg-brand-primary/90 dark:bg-zinc-900/90 backdrop-blur-md text-white px-5 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-white/10">
+            {jenisLabel.replace("Kos ", "")}
+          </span>
+          <span className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md text-brand-primary dark:text-white px-3 py-2 rounded-2xl text-[10px] font-bold flex items-center gap-1 border border-border/10">
+            <Star size={10} className="fill-brand-accent text-brand-accent" /> {kos.rating}
+          </span>
           {!(kos.tersedia ?? true) && (
-            <Badge variant="destructive" className="bg-destructive text-destructive-foreground">
+            <span className="bg-red-500 text-white px-5 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-white/10">
               Penuh
-            </Badge>
+            </span>
           )}
         </div>
-        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-background/95 px-2 py-1 text-xs font-semibold text-foreground">
-          <Star className="h-3 w-3 fill-accent text-accent" />
-          {kos.rating}
-        </div>
 
+        {/* Comparison Button */}
         {showCompare && onCompareToggle && (
-          <button
+          <motion.button 
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               onCompareToggle();
             }}
-            className={`absolute left-3 bottom-3 flex h-8 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-md backdrop-blur-md transition-all cursor-pointer active:scale-95 ${
-              isCompared
-                ? "bg-primary border-primary text-primary-foreground scale-105"
-                : "bg-background/95 border-border text-foreground hover:bg-background"
+            className={`absolute top-6 right-6 w-12 h-12 rounded-full flex items-center justify-center border transition-all z-10 cursor-pointer shadow-md ${
+              isCompared 
+                ? 'bg-brand-accent border-brand-accent text-white' 
+                : 'bg-white/20 dark:bg-zinc-800/20 backdrop-blur-md text-white border-white/20 hover:bg-white hover:text-brand-primary'
             }`}
+            title="Bandingkan Kos"
           >
-            <GitCompare className="h-3.5 w-3.5" />
-            {isCompared ? "Dibanding" : "Bandingkan"}
-          </button>
+            <GitCompare size={20} />
+          </motion.button>
         )}
+
+        {/* Location & Rating Overlay */}
+        <div className="absolute bottom-6 left-6 right-6 p-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex justify-between items-center text-white">
+          <div className="flex items-center gap-2">
+            <MapPin size={14} className="text-brand-accent" />
+            <span className="text-sm font-medium tracking-tight truncate max-w-[150px]">{kos.daerah.charAt(0).toUpperCase() + kos.daerah.slice(1)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Star size={14} className="fill-brand-accent text-brand-accent" />
+            <span className="text-sm font-bold">{kos.rating}</span>
+          </div>
+        </div>
       </div>
-      <div className="p-4">
-        <h3 className="font-serif text-lg font-semibold text-foreground">{kos.nama}</h3>
-        <div className="mt-1 flex items-start gap-1 text-xs text-muted-foreground">
-          <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
-          <span className="line-clamp-1">{kos.alamat}</span>
-        </div>
-        {kampusLabels.length > 0 && (
-          <div className="mt-2 text-xs text-muted-foreground">
-            Dekat: <span className="text-foreground">{kampusLabels.join(", ")}</span>
-          </div>
-        )}
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {kos.fasilitas.slice(0, 4).map((f) => {
-            const Icon = ICONS[f] ?? Wifi;
-            return (
-              <span
-                key={f}
-                className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground"
-              >
-                <Icon className="h-3 w-3" /> {f}
-              </span>
-            );
-          })}
-          {kos.fasilitas.length > 4 && (
-            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-              +{kos.fasilitas.length - 4} lainnya
-            </span>
-          )}
-        </div>
-        <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
-          <div>
-            <div className="text-lg font-bold text-primary">{formatRupiah(kos.hargaPerBulan)}</div>
-            <div className="text-[10px] text-muted-foreground">per bulan</div>
-          </div>
-          <Link
+
+      {/* Content Area */}
+      <div className="p-8 space-y-8 flex-1 flex flex-col justify-between">
+        <div className="space-y-4">
+          <Link 
             to="/kos/$id"
             params={{ id: kos.id }}
-            className="rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground transition-all hover:bg-accent/90 hover:shadow-md active:scale-95"
+            className="block"
           >
-            Lihat Detail
+            <h4 className="font-display font-bold text-2xl text-brand-primary dark:text-white leading-tight group-hover:text-brand-accent transition-colors">
+              {kos.nama}
+            </h4>
           </Link>
+          <div className="flex flex-wrap gap-2">
+            {kos.fasilitas.slice(0, 3).map(tag => (
+              <span 
+                key={tag} 
+                className="text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground bg-secondary/50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-border/50"
+              >
+                {tag}
+              </span>
+            ))}
+            {kos.fasilitas.length > 3 && (
+              <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground bg-secondary/30 dark:bg-zinc-800/50 px-2 py-1.5 rounded-lg border border-border/30">
+                +{kos.fasilitas.length - 3}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        {/* Pricing & Link */}
+        <div className="pt-6 border-t border-border flex justify-between items-center">
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Mulai Harga</p>
+            <p className="text-2xl font-display font-bold text-brand-primary dark:text-white leading-none">
+              {priceMain}
+              <span className="text-xs font-normal text-muted-foreground ml-1 italic">/ bln</span>
+            </p>
+          </div>
+          <motion.div whileHover={{ scale: 1.1, rotate: -5 }} whileTap={{ scale: 0.9 }}>
+            <Link 
+              to="/kos/$id" 
+              params={{ id: kos.id }}
+              className="w-14 h-14 bg-secondary/60 dark:bg-zinc-800 rounded-[1.75rem] flex items-center justify-center text-brand-primary dark:text-white hover:bg-brand-accent hover:text-white transition-all shadow-sm cursor-pointer"
+            >
+              <ArrowRight size={24} />
+            </Link>
+          </motion.div>
         </div>
       </div>
-    </article>
+    </motion.div>
   );
 }

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
 
@@ -8,16 +8,6 @@
 
 /*
  * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
  */
 
 @theme inline {
@@ -48,93 +38,57 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Brand specific colors mapped to CSS properties */
+  --color-brand-primary: var(--primary);
+  --color-brand-accent: var(--accent);
+  --color-brand-bg: var(--background);
 }
 
 :root {
-  --radius: 0.625rem;
-  /* Jogja-inspired palette: sogan (batik brown), terakota, krem gading */
-  --background: oklch(0.985 0.012 80);
-  --foreground: oklch(0.25 0.04 40);
-  --card: oklch(0.995 0.008 80);
-  --card-foreground: oklch(0.25 0.04 40);
-  --popover: oklch(0.995 0.008 80);
-  --popover-foreground: oklch(0.25 0.04 40);
-  --primary: oklch(0.45 0.12 45);
-  --primary-foreground: oklch(0.98 0.01 80);
-  --secondary: oklch(0.93 0.04 75);
-  --secondary-foreground: oklch(0.3 0.06 45);
-  --muted: oklch(0.94 0.025 80);
-  --muted-foreground: oklch(0.5 0.04 50);
-  --accent: oklch(0.7 0.16 55);
-  --accent-foreground: oklch(0.99 0.01 80);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.88 0.03 75);
-  --input: oklch(0.92 0.025 75);
-  --ring: oklch(0.7 0.16 55);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.98 0.015 80);
-  --sidebar-foreground: oklch(0.25 0.04 40);
-  --sidebar-primary: oklch(0.45 0.12 45);
-  --sidebar-primary-foreground: oklch(0.98 0.01 80);
-  --sidebar-accent: oklch(0.93 0.04 75);
-  --sidebar-accent-foreground: oklch(0.3 0.06 45);
-  --sidebar-border: oklch(0.88 0.03 75);
-  --sidebar-ring: oklch(0.7 0.16 55);
-  --gradient-hero: linear-gradient(135deg, oklch(0.45 0.12 45) 0%, oklch(0.55 0.15 50) 50%, oklch(0.7 0.16 55) 100%);
-  --batik-pattern: repeating-linear-gradient(45deg, oklch(0.45 0.12 45 / 0.05) 0 2px, transparent 2px 14px), repeating-linear-gradient(-45deg, oklch(0.7 0.16 55 / 0.05) 0 2px, transparent 2px 14px);
+  --radius: 0.75rem;
+  
+  /* Hex colors from keep-sleep-project mapped as Light mode variables */
+  --background: #FAF6F3;
+  --foreground: #2F2F2F;
+  --card: #FFFFFF;
+  --card-foreground: #2F2F2F;
+  --popover: #FFFFFF;
+  --popover-foreground: #2F2F2F;
+  --primary: #2F2F2F;
+  --primary-foreground: #FAF6F3;
+  --secondary: #F3ECE7;
+  --secondary-foreground: #2F2F2F;
+  --muted: #F3ECE7;
+  --muted-foreground: #6F6F6F;
+  --accent: #E76F51;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E8E2DE;
+  --input: #E8E2DE;
+  --ring: #E76F51;
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Dynamic invert for dark mode */
+  --background: #191817;
+  --foreground: #FAF6F3;
+  --card: #252423;
+  --card-foreground: #FAF6F3;
+  --popover: #252423;
+  --popover-foreground: #FAF6F3;
+  --primary: #FAF6F3;
+  --primary-foreground: #2F2F2F;
+  --secondary: #333130;
+  --secondary-foreground: #FAF6F3;
+  --muted: #333130;
+  --muted-foreground: #A8A29E;
+  --accent: #E76F51;
+  --accent-foreground: #FAF6F3;
+  --border: #3D3937;
+  --input: #3D3937;
+  --ring: #E76F51;
 }
 
 @layer base {
@@ -145,16 +99,35 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: "Montserrat", ui-sans-serif, system-ui, sans-serif;
-  }
-  .font-serif {
-    font-family: "Playfair Display", ui-serif, Georgia, serif;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   }
 }
 
 @theme inline {
-  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
+  --font-accent: "Space Grotesk", sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+}
+
+.glass-morphism {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+}
+
+.dark .glass-morphism {
+  background-color: rgba(37, 36, 35, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--color-foreground), var(--color-accent));
 }
 
 @keyframes float-slow {

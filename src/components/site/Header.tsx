@@ -1,8 +1,14 @@
-import { Link } from "@tanstack/react-router";
-import { Home, Sun, Moon } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Home, Sun, Moon, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Header() {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("theme");
@@ -11,6 +17,14 @@ export function Header() {
     }
     return "light";
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -24,46 +38,106 @@ export function Header() {
 
   const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
+  const transparent = isHome && !isScrolled;
+
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur transition-colors">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Home className="h-5 w-5" />
-          </div>
-          <div className="leading-tight">
-            <div className="font-serif text-lg font-bold text-foreground">Keep n Sleep</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Kos Jogja</div>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${transparent ? 'bg-transparent shadow-none border-b border-transparent' : 'bg-background/80 backdrop-blur-md border-b border-border shadow-sm'}`}>
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 group">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-12 h-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center shadow-xl shadow-brand-primary/5 border border-border overflow-hidden"
+          >
+            <Home className="h-6 w-6 text-brand-primary dark:text-white" />
+          </motion.div>
+          <div className="flex flex-col">
+            <span className={`font-display font-bold text-xl tracking-tighter leading-none ${transparent ? 'text-white' : 'text-brand-primary dark:text-white'}`}>
+              Keep<span className="text-brand-accent italic font-light">Kost</span>
+            </span>
+            <span className={`font-display font-medium text-[10px] tracking-[0.2em] uppercase leading-none mt-1 ${transparent ? 'text-white/60' : 'text-brand-primary/40 dark:text-white/40'}`}>
+              & Next Sleep
+            </span>
           </div>
         </Link>
-        <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-1 text-sm">
+
+        {/* Desktop Menu */}
+        <div className={`hidden md:flex items-center gap-8 ${transparent ? 'text-white/90' : 'text-brand-primary/85 dark:text-white/90'}`}>
+          {[
+            { to: "/", label: "Beranda" },
+            { to: "/katalog", label: "Cari Kost" },
+            { to: "/mitra", label: "Mitra" },
+            { to: "/dashboard", label: "Dashboard" },
+          ].map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              activeOptions={{ exact: l.to === "/" }}
+              activeProps={{ className: "text-brand-accent font-semibold border-b-2 border-brand-accent" }}
+              className="hover:text-brand-accent transition-all font-medium text-sm border-b-2 border-transparent pb-1"
+            >
+              {l.label}
+            </Link>
+          ))}
+          <div className="h-6 w-px bg-current/20 mx-2" />
+          
+          <button
+            onClick={toggleTheme}
+            className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-90 ${transparent ? 'border-white/20 bg-white/10 hover:bg-white/25 text-white' : 'border-border bg-background hover:bg-secondary text-foreground dark:text-white dark:hover:bg-zinc-800'}`}
+            aria-label="Toggle Theme"
+          >
+            {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
+          </button>
+        </div>
+
+        {/* Mobile Toggle */}
+        <div className="flex items-center gap-3 md:hidden">
+          <button
+            onClick={toggleTheme}
+            className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-90 ${transparent ? 'border-white/20 bg-white/10 text-white' : 'border-border bg-background text-foreground dark:text-white dark:hover:bg-zinc-800'}`}
+            aria-label="Toggle Theme"
+          >
+            {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
+          </button>
+          <motion.button 
+            whileTap={{ scale: 0.9 }}
+            className="p-2" 
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className={transparent ? 'text-white' : 'text-brand-primary dark:text-white'} /> : <Menu className={transparent ? 'text-white' : 'text-brand-primary dark:text-white'} />}
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden bg-background border-b border-border p-6 flex flex-col gap-4 shadow-xl"
+          >
             {[
               { to: "/", label: "Beranda" },
-              { to: "/katalog", label: "Katalog" },
+              { to: "/katalog", label: "Cari Kost" },
               { to: "/mitra", label: "Mitra" },
               { to: "/dashboard", label: "Dashboard" },
             ].map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
+                onClick={() => setIsOpen(false)}
                 activeOptions={{ exact: l.to === "/" }}
-                activeProps={{ className: "bg-secondary text-secondary-foreground font-semibold" }}
-                className="rounded-md px-3 py-2 font-medium text-foreground/80 transition-colors hover:bg-secondary"
+                activeProps={{ className: "text-brand-accent font-bold" }}
+                className="font-medium text-lg hover:text-brand-accent transition-colors"
               >
                 {l.label}
               </Link>
             ))}
-          </nav>
-          <button
-            onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background hover:bg-secondary text-foreground transition-all active:scale-90"
-            aria-label="Toggle Theme"
-          >
-            {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
-          </button>
-        </div>
-      </div>
-    </header>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
   );
 }
