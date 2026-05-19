@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { KOS_LIST, KAMPUS_LIST, JENIS_KOS, formatRupiah } from "@/lib/kos-data";
+import { KOS_LIST, KAMPUS_LIST, JENIS_KOS, formatRupiah, type Kos } from "@/lib/kos-data";
 import {
   MapPin,
   Star,
@@ -68,7 +68,7 @@ export const Route = createFileRoute("/kos/$id")({
 });
 
 function KosDetailPage() {
-  const { kos } = Route.useLoaderData();
+  const { kos } = Route.useLoaderData() as { kos: Kos };
   const jenisLabel = JENIS_KOS.find((j) => j.value === kos.jenis)?.label;
   const kampusLabels = kos.kampusTerdekat
     .map((k) => KAMPUS_LIST.find((c) => c.value === k)?.label)
