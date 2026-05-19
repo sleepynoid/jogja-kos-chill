@@ -1,10 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  Building2,
   Eye,
   Heart,
-  LogOut,
   MessageSquare,
   Pencil,
   Plus,
@@ -58,10 +56,8 @@ import {
   getKosVisitorStats,
   getVisitorTrend,
   removeKos,
-  setMitraSession,
   updateKos,
   useKosStore,
-  useMitraSession,
 } from "@/lib/kos-store";
 
 export const Route = createFileRoute("/dashboard")({
@@ -79,87 +75,13 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-  const session = useMitraSession();
   const kosList = useKosStore();
-
-  if (!session) return <MitraLoginGate />;
-
-  return <Dashboard kosList={kosList} mitraNama={session.nama} />;
-}
-
-/* ---------------- Login gate ---------------- */
-
-function MitraLoginGate() {
-  const [nama, setNama] = useState("");
-  const [email, setEmail] = useState("");
-  return (
-    <div className="mx-auto max-w-md px-4 py-20">
-      <div className="rounded-2xl border border-border bg-card p-8 shadow-sm">
-        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Building2 className="h-6 w-6" />
-        </div>
-        <h1 className="font-serif text-2xl font-bold">Masuk sebagai Mitra</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Dashboard ini khusus untuk mitra Keep n Sleep. Masuk untuk melihat
-          statistik dan mengelola kos Anda.
-        </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!nama.trim() || !email.trim()) return;
-            setMitraSession({ nama: nama.trim(), email: email.trim() });
-          }}
-          className="mt-6 space-y-4"
-        >
-          <Field label="Nama Mitra">
-            <input
-              required
-              value={nama}
-              onChange={(e) => setNama(e.target.value)}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Contoh: Pak Budi"
-            />
-          </Field>
-          <Field label="Email">
-            <input
-              required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-              placeholder="mitra@email.com"
-            />
-          </Field>
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Masuk Dashboard
-          </button>
-        </form>
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          Belum jadi mitra?{" "}
-          <Link to="/mitra" className="font-medium text-primary hover:underline">
-            Daftar di sini
-          </Link>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      {children}
-    </label>
-  );
+  return <Dashboard kosList={kosList} />;
 }
 
 /* ---------------- Dashboard ---------------- */
 
-function Dashboard({ kosList, mitraNama }: { kosList: Kos[]; mitraNama: string }) {
+function Dashboard({ kosList }: { kosList: Kos[] }) {
   const [selectedId, setSelectedId] = useState<string>(kosList[0]?.id ?? "");
   const [editing, setEditing] = useState<Kos | null>(null);
   const [creating, setCreating] = useState(false);
@@ -206,7 +128,7 @@ function Dashboard({ kosList, mitraNama }: { kosList: Kos[]; mitraNama: string }
             Dashboard Mitra
           </p>
           <h1 className="font-serif text-3xl font-bold">
-            Halo, {mitraNama} 👋
+            Dashboard Mitra 👋
           </h1>
           <p className="text-sm text-muted-foreground">
             Pantau performa dan kelola kos Anda di sini.
@@ -218,12 +140,6 @@ function Dashboard({ kosList, mitraNama }: { kosList: Kos[]; mitraNama: string }
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" /> Tambah Kos
-          </button>
-          <button
-            onClick={() => setMitraSession(null)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
-          >
-            <LogOut className="h-4 w-4" /> Keluar
           </button>
         </div>
       </div>
