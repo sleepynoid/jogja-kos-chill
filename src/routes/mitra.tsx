@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
-import { CheckCircle2, Building2, Users, TrendingUp } from "lucide-react";
+import { CheckCircle2, Building2, Users, TrendingUp, ImagePlus, X } from "lucide-react";
 import {
   Select as UiSelect,
   SelectContent,
@@ -28,6 +28,39 @@ const FASILITAS_OPTIONS = [
 
 function MitraPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [gambar, setGambar] = useState<{ file: File; url: string }[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imgError, setImgError] = useState<string | null>(null);
+
+  const MAX_FILES = 5;
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    setImgError(null);
+    const next: { file: File; url: string }[] = [];
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) {
+        setImgError("Hanya file gambar yang diperbolehkan.");
+        continue;
+      }
+      if (file.size > MAX_SIZE) {
+        setImgError("Ukuran maksimum tiap gambar 5MB.");
+        continue;
+      }
+      next.push({ file, url: URL.createObjectURL(file) });
+    }
+    setGambar((prev) => [...prev, ...next].slice(0, MAX_FILES));
+  };
+
+  const removeGambar = (idx: number) => {
+    setGambar((prev) => {
+      const target = prev[idx];
+      if (target) URL.revokeObjectURL(target.url);
+      return prev.filter((_, i) => i !== idx);
+    });
+  };
+
   const [form, setForm] = useState({
     namaKos: "",
     namaPemilik: "",
@@ -53,6 +86,10 @@ function MitraPage() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (gambar.length === 0) {
+      setImgError("Unggah minimal 1 foto kos.");
+      return;
+    }
     setSubmitted(true);
   };
 
