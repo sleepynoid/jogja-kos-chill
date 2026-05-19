@@ -63,6 +63,7 @@ function KatalogPage() {
   const update = (key: keyof Search, value: string) => {
     navigate({
       search: (prev: Search) => ({ ...prev, [key]: value || undefined }),
+      resetScroll: false,
     });
   };
 
@@ -132,7 +133,7 @@ function KatalogPage() {
             onChange={(v) => update("jenis", v)}
           />
           <button
-            onClick={() => navigate({ search: {} })}
+            onClick={() => navigate({ search: {}, resetScroll: false })}
             className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium hover:bg-secondary"
           >
             Reset filter
