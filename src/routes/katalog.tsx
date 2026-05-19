@@ -63,6 +63,7 @@ function KatalogPage() {
   const update = (key: keyof Search, value: string) => {
     navigate({
       search: (prev: Search) => ({ ...prev, [key]: value || undefined }),
+      resetScroll: false,
     });
   };
 
