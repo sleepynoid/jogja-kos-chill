@@ -38,11 +38,25 @@ export type Kos = {
   rating: number;
   fasilitas: string[];
   gambar: string;
+  galeri?: string[];
   deskripsi: string;
 };
 
 const img = (seed: string) =>
   `https://images.unsplash.com/photo-${seed}?auto=format&fit=crop&w=900&q=70`;
+
+// Reusable extra interior shots for galeri kos.
+const EXTRA_INTERIORS = [
+  "1522708323590-d24dbb6b0267",
+  "1505691938895-1758d7feb511",
+  "1560448204-e02f11c3d0e2",
+  "1493809842364-78817add7ffb",
+  "1556909114-f6e7ad7d3136",
+  "1554995207-c18c203602cb",
+  "1540518614846-7eded433c457",
+  "1522444195799-478538b28823",
+  "1502672260266-1c1ef2d93688",
+];
 
 export const KOS_LIST: Kos[] = [
   {
