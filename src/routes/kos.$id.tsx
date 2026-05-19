@@ -13,6 +13,15 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { KosCard } from "@/components/site/KosCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   WiFi: Wifi,
@@ -82,6 +91,20 @@ function KosDetailPage() {
     .map((k) => KAMPUS_LIST.find((c) => c.value === k)?.label)
     .filter(Boolean) as string[];
 
+  const galeri = (kos.galeri && kos.galeri.length > 0 ? kos.galeri : [kos.gambar]).slice(0, 5);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+    setCurrent(api.selectedScrollSnap());
+    const onSelect = () => setCurrent(api.selectedScrollSnap());
+    api.on("select", onSelect);
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
   const lainnya = KOS_LIST.filter(
     (k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis),
   ).slice(0, 3);
@@ -132,18 +155,61 @@ function KosDetailPage() {
       </Link>
 
       <div className="grid gap-8 md:grid-cols-[1.4fr_1fr]">
-        {/* Image */}
-        <div className="animate-fade-up overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
-          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-            <img
-              src={kos.gambar}
-              alt={kos.nama}
-              className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-            />
-            <span className="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-              {jenisLabel}
-            </span>
+        {/* Galeri Foto */}
+        <div className="animate-fade-up space-y-3">
+          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+            <Carousel
+              setApi={setApi}
+              opts={{ loop: galeri.length > 1 }}
+              className="relative"
+            >
+              <CarouselContent>
+                {galeri.map((src, i) => (
+                  <CarouselItem key={src + i}>
+                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                      <img
+                        src={src}
+                        alt={`${kos.nama} foto ${i + 1}`}
+                        className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                      />
+                      <span className="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                        {jenisLabel}
+                      </span>
+                      <span className="absolute right-4 top-4 rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur">
+                        {i + 1} / {galeri.length}
+                      </span>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {galeri.length > 1 && (
+                <>
+                  <CarouselPrevious className="left-3 h-9 w-9 border-border bg-background/90 text-foreground shadow-md hover:bg-background" />
+                  <CarouselNext className="right-3 h-9 w-9 border-border bg-background/90 text-foreground shadow-md hover:bg-background" />
+                </>
+              )}
+            </Carousel>
           </div>
+
+          {galeri.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {galeri.map((src, i) => (
+                <button
+                  key={src + i}
+                  type="button"
+                  onClick={() => api?.scrollTo(i)}
+                  className={`relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                    current === i
+                      ? "border-primary shadow-sm"
+                      : "border-transparent opacity-70 hover:opacity-100"
+                  }`}
+                  aria-label={`Lihat foto ${i + 1}`}
+                >
+                  <img src={src} alt="" className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}
