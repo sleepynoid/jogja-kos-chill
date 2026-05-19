@@ -81,7 +81,7 @@ function DashboardPage() {
 
 /* ---------------- Dashboard ---------------- */
 
-function Dashboard({ kosList, mitraNama }: { kosList: Kos[]; mitraNama: string }) {
+function Dashboard({ kosList }: { kosList: Kos[] }) {
   const [selectedId, setSelectedId] = useState<string>(kosList[0]?.id ?? "");
   const [editing, setEditing] = useState<Kos | null>(null);
   const [creating, setCreating] = useState(false);
