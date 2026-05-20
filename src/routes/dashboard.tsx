@@ -412,7 +412,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
       </Dialog>
 
       {/* Inbox Inquiries Section */}
-      <div className="mt-8 rounded-2xl border border-border bg-card">
+      {/* <div className="mt-8 rounded-2xl border border-border bg-card">
         <div className="flex items-center justify-between border-b border-border p-5">
           <div>
             <h2 className="font-serif text-lg font-bold flex items-center gap-2 text-foreground">
@@ -482,7 +482,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
             </div>
           )}
         </div>
-      </div>
+      </div>*/}
     </div>
   );
 }
