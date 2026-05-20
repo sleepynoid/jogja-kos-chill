@@ -31,8 +31,8 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-brand-primary">
+      {/* Hero Section — -mt-20 negates root pt-20, allows full-bleed behind transparent navbar */}
+      <section className="relative h-screen -mt-20 flex items-center justify-center overflow-hidden bg-brand-primary">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2000" 

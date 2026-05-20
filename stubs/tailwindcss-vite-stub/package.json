@@ -1,0 +1,6 @@
+{
+  "name": "tailwindcss-vite-stub",
+  "version": "0.0.1",
+  "description": "No-op stub replacing @tailwindcss/vite",
+  "main": "index.js"
+}
