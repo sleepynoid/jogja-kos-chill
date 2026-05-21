@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
 import { CheckCircle2, Building2, Users, TrendingUp, ImagePlus, X } from "lucide-react";
 import { setMitraSession } from "@/lib/kos-store";
+import { BatikPattern, Gunungan } from "@/components/site/Ornaments";
 import {
   Select as UiSelect,
   SelectContent,
@@ -129,11 +130,17 @@ function MitraPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
-        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--batik-pattern)" }} aria-hidden />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 text-primary-foreground md:py-20">
-          <h1 className="font-serif text-4xl font-bold md:text-5xl">Jadi Mitra Keep n Sleep</h1>
-          <p className="mt-3 max-w-2xl text-primary-foreground/90">
+      <section className="relative overflow-hidden bg-[#2F2F2F] pt-28 pb-16 md:py-24 text-white">
+        <BatikPattern variant="parang" className="opacity-[0.18]" />
+        
+        {/* Decorative Gunungan in background */}
+        <div className="absolute right-10 bottom-0 opacity-10 pointer-events-none hidden lg:block">
+          <Gunungan className="w-64 h-96 text-brand-accent" />
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-6">
+          <h1 className="font-serif text-4xl font-bold md:text-5xl tracking-tight">Jadi Mitra Keep n Sleep</h1>
+          <p className="mt-3 max-w-2xl text-white/80 text-lg font-light leading-relaxed">
             Daftarkan kos Anda dan jangkau ribuan mahasiswa dari kampus-kampus terbaik di Yogyakarta.
           </p>
           <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
@@ -142,10 +149,10 @@ function MitraPage() {
               { icon: Building2, value: "500+", label: "Mitra terpercaya" },
               { icon: TrendingUp, value: "95%", label: "Tingkat hunian" },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl bg-white/15 p-4 backdrop-blur">
-                <s.icon className="h-5 w-5" />
+              <div key={s.label} className="rounded-xl bg-white/10 p-5 backdrop-blur-md border border-white/10 shadow-lg">
+                <s.icon className="h-5 w-5 text-brand-accent" />
                 <div className="mt-2 font-serif text-2xl font-bold">{s.value}</div>
-                <div className="text-xs text-primary-foreground/80">{s.label}</div>
+                <div className="text-xs text-white/60 mt-1">{s.label}</div>
               </div>
             ))}
           </div>

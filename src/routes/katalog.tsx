@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS, type Kos } from "@/lib/kos-data";
 import { useKosStore } from "@/lib/kos-store";
 import { KosCard } from "@/components/site/KosCard";
+import { BatikPattern } from "@/components/site/Ornaments";
 import { CompareBar } from "@/components/site/CompareBar";
 import { toast } from "sonner";
 import { Search as SearchIcon, SlidersHorizontal } from "lucide-react";
@@ -100,11 +101,14 @@ function KatalogPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <div className="mb-6 animate-fade-up">
-        <h1 className="font-serif text-3xl font-bold md:text-4xl">Katalog Kos di Jogja</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {filtered.length} kos tersedia sesuai pilihanmu.
-        </p>
+      <div className="mb-6 animate-fade-up relative overflow-hidden rounded-3xl bg-secondary/30 dark:bg-zinc-900/50 p-6 md:p-8 border border-border">
+        <BatikPattern variant="kawung" className="opacity-[0.18]" />
+        <div className="relative z-10">
+          <h1 className="font-serif text-3xl font-bold md:text-4xl text-gradient">Katalog Kos di Jogja</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {filtered.length} kos tersedia sesuai pilihanmu.
+          </p>
+        </div>
       </div>
 
       {/* Search + Sort bar */}

@@ -3,6 +3,7 @@ import { KOS_LIST, KAMPUS_LIST, JENIS_KOS, formatRupiah, type Kos } from "@/lib/
 import { useKosStore, addInquiry } from "@/lib/kos-store";
 import { InteractiveMap } from "@/components/site/InteractiveMap";
 import { toast } from "sonner";
+import { BatikPattern, TumpalDivider, PatraCorner } from "@/components/site/Ornaments";
 import {
   MapPin,
   Star,
@@ -243,8 +244,9 @@ function KosDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <div className="text-xs text-muted-foreground">Harga sewa</div>
+          <div className="rounded-2xl border border-border bg-card p-5 relative overflow-hidden">
+            <PatraCorner position="top-right" className="top-1 right-1 opacity-20 text-brand-accent scale-75" />
+            <div className="text-xs text-muted-foreground relative z-10">Harga sewa</div>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="font-serif text-3xl font-bold text-primary">
                 {formatRupiah(kos.hargaPerBulan)}
@@ -301,9 +303,11 @@ function KosDetailPage() {
           )}
         </div>
       </div>
+      
+      <TumpalDivider className="mt-8 opacity-45" />
 
       {/* Deskripsi & Fasilitas */}
-      <div className="mt-10 grid gap-8 md:grid-cols-2">
+      <div className="mt-8 grid gap-8 md:grid-cols-2">
         <section className="animate-fade-up rounded-2xl border border-border bg-card p-6">
           <h2 className="font-serif text-xl font-bold">Tentang Kos Ini</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{kos.deskripsi}</p>
@@ -429,12 +433,15 @@ function KosDetailPage() {
       </section>
 
       {lainnya.length > 0 && (
-        <section className="mt-12">
-          <h2 className="mb-5 font-serif text-2xl font-bold">Kos Serupa</h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {lainnya.map((k) => (
-              <KosCard key={k.id} kos={k} />
-            ))}
+        <section className="mt-12 relative overflow-hidden rounded-3xl bg-secondary/30 dark:bg-zinc-900/50 p-6 md:p-8 border border-border">
+          <BatikPattern variant="nitik" className="opacity-[0.18]" />
+          <div className="relative z-10">
+            <h2 className="mb-5 font-serif text-2xl font-bold">Kos Serupa</h2>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {lainnya.map((k) => (
+                <KosCard key={k.id} kos={k} />
+              ))}
+            </div>
           </div>
         </section>
       )}

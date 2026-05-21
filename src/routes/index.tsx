@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Search, ArrowRight, Star } from "lucide-react";
 import { KOS_LIST } from "@/lib/kos-data";
 import { KosCard } from "@/components/site/KosCard";
+import { BatikPattern, Gunungan, PatraCorner } from "@/components/site/Ornaments";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,7 +24,7 @@ function Index() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate({ to: "/katalog", search: { search: searchQuery } });
+      navigate({ to: "/katalog", search: { q: searchQuery } });
     } else {
       navigate({ to: "/katalog" });
     }
@@ -41,14 +42,50 @@ function Index() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-brand-primary/60 via-transparent to-brand-primary/80" />
         </div>
+        <BatikPattern variant="parang" className="opacity-[0.35] z-10" />
+
+        {/* Traditional Rail & Gunungan Ornament */}
+        <div className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6 md:gap-12 z-20">
+          <motion.div 
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            className="relative group cursor-pointer"
+          >
+            <Gunungan className="w-10 h-16 md:w-16 md:h-24 text-brand-accent drop-shadow-2xl opacity-40 md:opacity-100" />
+          </motion.div>
+          <span className="[writing-mode:vertical-lr] rotate-180 uppercase tracking-[12px] md:tracking-[1em] text-[8px] md:text-[10px] font-bold text-white/40">YOGYAKARTA</span>
+          <div className="w-px h-16 md:h-24 bg-white/20" />
+          <span className="[writing-mode:vertical-lr] rotate-180 uppercase tracking-[12px] md:tracking-[1em] text-[8px] md:text-[10px] font-bold text-brand-accent">EST. 2026</span>
+        </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center text-white">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-8"
+            className="space-y-10"
           >
+            {/* Prominent Center Yogyakarta Cultural Emblem */}
+            <div className="flex flex-col items-center gap-4 mb-4">
+              <div className="flex items-center justify-center gap-3 md:gap-6 text-brand-accent">
+                <Gunungan className="w-8 h-12 md:w-10 md:h-14 filter drop-shadow-[0_0_12px_rgba(231,111,81,0.6)] animate-pulse" />
+                <div className="relative overflow-hidden flex flex-col items-center bg-white/10 backdrop-blur-md px-8 md:px-12 py-5 md:py-6 rounded-3xl border border-white/20 shadow-2xl select-all">
+                  {/* Ornate corner assets */}
+                  <PatraCorner position="top-left" className="top-1 left-1 opacity-75 text-brand-accent scale-90" />
+                  <PatraCorner position="top-right" className="top-1 right-1 opacity-75 text-brand-accent scale-90" />
+                  <PatraCorner position="bottom-left" className="bottom-1 left-1 opacity-75 text-brand-accent scale-90" />
+                  <PatraCorner position="bottom-right" className="bottom-1 right-1 opacity-75 text-brand-accent scale-90" />
+                  
+                  <span className="text-2xl md:text-4xl lg:text-5xl text-brand-accent font-serif tracking-wide leading-relaxed pb-3 px-6">
+                    ꦗꦺꦴꦒ꧀ꦗꦲꦶꦱ꧀ꦠꦶꦩꦺꦮ
+                  </span>
+                  <span className="text-[9px] md:text-[11px] tracking-[0.5em] font-accent font-bold text-white/95 uppercase border-t border-white/20 pt-3 w-4/5 text-center">
+                    JOGJA ISTIMEWA
+                  </span>
+                </div>
+                <Gunungan className="w-8 h-12 md:w-10 md:h-14 filter drop-shadow-[0_0_12px_rgba(231,111,81,0.6)] animate-pulse" />
+              </div>
+            </div>
+
             <h1 className="font-display font-bold text-6xl md:text-8xl tracking-tight leading-[0.95] text-white">
               Istirahat Nyaman <br /> 
               Di <span className="text-brand-accent italic font-light">Elegansi</span> Kost.
@@ -115,8 +152,9 @@ function Index() {
       </section>
 
       {/* Featured Section */}
-      <section className="py-32">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-32 relative overflow-hidden">
+        <BatikPattern variant="kawung" className="opacity-[0.25]" />
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div className="space-y-4 max-w-2xl">
               <h2 className="font-display font-bold text-5xl tracking-tight text-foreground">Koleksi Kost Pilihan.</h2>
@@ -142,7 +180,8 @@ function Index() {
 
       {/* Mitra CTA Section */}
       <section className="py-32 bg-secondary/50 dark:bg-zinc-900/30 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+        <BatikPattern variant="nitik" className="opacity-[0.25]" />
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center relative z-10">
           <div className="space-y-10 relative z-10">
             <div className="flex items-center gap-3 text-brand-accent">
                <div className="w-10 h-10 bg-brand-accent/20 rounded-xl flex items-center justify-center font-bold">M</div>

@@ -47,16 +47,17 @@ export function Header() {
           <motion.div 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-12 h-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center shadow-xl shadow-brand-primary/5 border border-border overflow-hidden"
+            className="w-14 h-14 bg-[#FCF1E2] rounded-2xl flex items-center justify-center shadow-xl shadow-brand-primary/5 border border-brand-accent/20 overflow-hidden relative p-1"
           >
-            <Home className="h-6 w-6 text-brand-primary dark:text-white" />
+            <img src="/logo.png" alt="Keep Kost Logo" className="w-full h-full object-contain rounded-xl" />
+            <div className="absolute inset-0 bg-brand-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           </motion.div>
           <div className="flex flex-col">
             <span className={`font-display font-bold text-xl tracking-tighter leading-none ${transparent ? 'text-white' : 'text-brand-primary dark:text-white'}`}>
               Keep<span className="text-brand-accent italic font-light">Kost</span>
             </span>
-            <span className={`font-display font-medium text-[10px] tracking-[0.2em] uppercase leading-none mt-1 ${transparent ? 'text-white/60' : 'text-brand-primary/40 dark:text-white/40'}`}>
-              & Next Sleep
+            <span className={`font-display font-medium text-[9px] tracking-[0.15em] uppercase leading-none mt-1 ${transparent ? 'text-white/60' : 'text-brand-primary/40 dark:text-white/40'}`}>
+              and Next Sleep
             </span>
           </div>
         </Link>
