@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { X, Check, ArrowRight, GitCompare, Star } from "lucide-react";
 import { type Kos, formatRupiah, JENIS_KOS, KAMPUS_LIST, DAERAH_LIST } from "@/lib/kos-data";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type CompareBarProps = {
   selectedItems: Kos[];
@@ -19,9 +14,7 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
 
   if (selectedItems.length === 0) return null;
 
-  const allFasilitas = Array.from(
-    new Set(selectedItems.flatMap((item) => item.fasilitas))
-  );
+  const allFasilitas = Array.from(new Set(selectedItems.flatMap((item) => item.fasilitas)));
 
   const getJenisLabel = (value: string) => {
     return JENIS_KOS.find((j) => j.value === value)?.label ?? value;
@@ -83,7 +76,7 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
             >
               Bandingkan <ArrowRight className="h-3 w-3" />
             </button>
-            
+
             <button
               type="button"
               onClick={onClear}
@@ -108,7 +101,9 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
             <table className="w-full min-w-[700px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border/80">
-                  <th className="w-1/4 pb-4 text-left font-serif text-lg font-semibold text-muted-foreground">Kriteria</th>
+                  <th className="w-1/4 pb-4 text-left font-serif text-lg font-semibold text-muted-foreground">
+                    Kriteria
+                  </th>
                   {selectedItems.map((item) => (
                     <th key={item.id} className="w-1/4 pb-4 px-4 text-left">
                       <div className="relative overflow-hidden rounded-xl bg-secondary/40 p-2">
@@ -117,7 +112,9 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
                           alt={item.nama}
                           className="h-28 w-full rounded-lg object-cover"
                         />
-                        <div className="mt-2 font-serif text-base font-bold text-foreground leading-tight line-clamp-1">{item.nama}</div>
+                        <div className="mt-2 font-serif text-base font-bold text-foreground leading-tight line-clamp-1">
+                          {item.nama}
+                        </div>
                         <span className="mt-1 inline-block rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary capitalize">
                           {getJenisLabel(item.jenis)}
                         </span>
@@ -155,7 +152,9 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
                   <td className="py-4 font-semibold">Lokasi / Daerah</td>
                   {selectedItems.map((item) => (
                     <td key={item.id} className="py-4 px-4 leading-normal text-muted-foreground">
-                      <div className="font-semibold text-foreground">{getDaerahLabel(item.daerah)}</div>
+                      <div className="font-semibold text-foreground">
+                        {getDaerahLabel(item.daerah)}
+                      </div>
                       <div className="text-xs">{item.alamat}</div>
                     </td>
                   ))}
@@ -167,7 +166,10 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
                   {selectedItems.map((item) => (
                     <td key={item.id} className="py-4 px-4 text-xs space-y-1">
                       {item.kampusTerdekat.map((kampus) => (
-                        <div key={kampus} className="inline-block rounded bg-secondary/80 px-2 py-0.5 font-medium text-foreground mr-1">
+                        <div
+                          key={kampus}
+                          className="inline-block rounded bg-secondary/80 px-2 py-0.5 font-medium text-foreground mr-1"
+                        >
                           {getKampusLabel(kampus)}
                         </div>
                       ))}
@@ -180,11 +182,13 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
                   <td className="py-4 font-semibold">Status Ketersediaan</td>
                   {selectedItems.map((item) => (
                     <td key={item.id} className="py-4 px-4">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                        (item.tersedia ?? true)
-                          ? "bg-emerald-500/10 text-emerald-600"
-                          : "bg-destructive/10 text-destructive"
-                      }`}>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          (item.tersedia ?? true)
+                            ? "bg-emerald-500/10 text-emerald-600"
+                            : "bg-destructive/10 text-destructive"
+                        }`}
+                      >
                         {(item.tersedia ?? true) ? "Tersedia" : "Penuh (Waiting List)"}
                       </span>
                     </td>
@@ -204,7 +208,9 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
                               <Check className="h-3 w-3" />
                             </div>
                           ) : (
-                            <span className="text-muted-foreground/30 dark:text-muted-foreground/20">—</span>
+                            <span className="text-muted-foreground/30 dark:text-muted-foreground/20">
+                              —
+                            </span>
                           )}
                         </td>
                       );
@@ -216,7 +222,10 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
                 <tr>
                   <td className="py-4 font-semibold">Deskripsi</td>
                   {selectedItems.map((item) => (
-                    <td key={item.id} className="py-4 px-4 text-xs leading-relaxed text-muted-foreground">
+                    <td
+                      key={item.id}
+                      className="py-4 px-4 text-xs leading-relaxed text-muted-foreground"
+                    >
                       <p className="line-clamp-3">{item.deskripsi}</p>
                     </td>
                   ))}
@@ -231,7 +240,7 @@ export function CompareBar({ selectedItems, onRemove, onClear }: CompareBarProps
                         href={`https://wa.me/6281234567890?text=${encodeURIComponent(
                           (item.tersedia ?? true)
                             ? `Halo, saya tertarik dengan kos "${item.nama}". Apakah masih tersedia?`
-                            : `Halo, saya ingin masuk ke waiting list untuk kos "${item.nama}".`
+                            : `Halo, saya ingin masuk ke waiting list untuk kos "${item.nama}".`,
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"

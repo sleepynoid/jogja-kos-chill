@@ -16,16 +16,30 @@ export const Route = createFileRoute("/mitra")({
   head: () => ({
     meta: [
       { title: "Daftar Mitra — Keep n Sleep" },
-      { name: "description", content: "Daftarkan kosmu di Keep n Sleep dan jangkau ribuan mahasiswa Yogyakarta." },
+      {
+        name: "description",
+        content: "Daftarkan kosmu di Keep n Sleep dan jangkau ribuan mahasiswa Yogyakarta.",
+      },
     ],
   }),
   component: MitraPage,
 });
 
 const FASILITAS_OPTIONS = [
-  "WiFi", "AC", "Kipas Angin", "Kamar Mandi Dalam", "Air Panas",
-  "Laundry", "Dapur Bersama", "Parkir Motor", "Parkir Mobil",
-  "CCTV", "Cleaning Service", "Smart TV", "Kulkas", "Mushola",
+  "WiFi",
+  "AC",
+  "Kipas Angin",
+  "Kamar Mandi Dalam",
+  "Air Panas",
+  "Laundry",
+  "Dapur Bersama",
+  "Parkir Motor",
+  "Parkir Mobil",
+  "CCTV",
+  "Cleaning Service",
+  "Smart TV",
+  "Kulkas",
+  "Mushola",
 ];
 
 function MitraPage() {
@@ -80,9 +94,7 @@ function MitraPage() {
   const toggleFasilitas = (f: string) => {
     setForm((s) => ({
       ...s,
-      fasilitas: s.fasilitas.includes(f)
-        ? s.fasilitas.filter((x) => x !== f)
-        : [...s.fasilitas, f],
+      fasilitas: s.fasilitas.includes(f) ? s.fasilitas.filter((x) => x !== f) : [...s.fasilitas, f],
     }));
   };
 
@@ -106,20 +118,20 @@ function MitraPage() {
         </div>
         <h1 className="font-serif text-3xl font-bold">Pendaftaran Terkirim</h1>
         <p className="mt-2 text-muted-foreground">
-          Terima kasih, <strong>{form.namaPemilik || "Mitra"}</strong>! Tim Keep n Sleep
-          akan menghubungi Anda dalam 1×24 jam untuk proses verifikasi {form.namaKos}.
+          Terima kasih, <strong>{form.namaPemilik || "Mitra"}</strong>! Tim Keep n Sleep akan
+          menghubungi Anda dalam 1×24 jam untuk proses verifikasi {form.namaKos}.
         </p>
         <button
-          onClick={() => { setSubmitted(false); setForm({ ...form, namaKos: "" }); }}
+          onClick={() => {
+            setSubmitted(false);
+            setForm({ ...form, namaKos: "" });
+          }}
           className="mt-6 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
         >
           Daftarkan kos lain
         </button>
         <div className="mt-3">
-          <Link
-            to="/dashboard"
-            className="text-sm font-medium text-primary hover:underline"
-          >
+          <Link to="/dashboard" className="text-sm font-medium text-primary hover:underline">
             Buka Dashboard Mitra →
           </Link>
         </div>
@@ -132,16 +144,19 @@ function MitraPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-[#2F2F2F] pt-28 pb-16 md:py-24 text-white">
         <BatikPattern variant="parang" className="opacity-[0.18]" />
-        
+
         {/* Decorative Gunungan in background */}
         <div className="absolute right-10 bottom-0 opacity-10 pointer-events-none hidden lg:block">
           <Gunungan className="w-64 h-96 text-brand-accent" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-6">
-          <h1 className="font-serif text-4xl font-bold md:text-5xl tracking-tight">Jadi Mitra Keep n Sleep</h1>
+          <h1 className="font-serif text-4xl font-bold md:text-5xl tracking-tight">
+            Jadi Mitra Keep n Sleep
+          </h1>
           <p className="mt-3 max-w-2xl text-white/80 text-lg font-light leading-relaxed">
-            Daftarkan kos Anda dan jangkau ribuan mahasiswa dari kampus-kampus terbaik di Yogyakarta.
+            Daftarkan kos Anda dan jangkau ribuan mahasiswa dari kampus-kampus terbaik di
+            Yogyakarta.
           </p>
           <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
             {[
@@ -149,7 +164,10 @@ function MitraPage() {
               { icon: Building2, value: "500+", label: "Mitra terpercaya" },
               { icon: TrendingUp, value: "95%", label: "Tingkat hunian" },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl bg-white/10 p-5 backdrop-blur-md border border-white/10 shadow-lg">
+              <div
+                key={s.label}
+                className="rounded-xl bg-white/10 p-5 backdrop-blur-md border border-white/10 shadow-lg"
+              >
                 <s.icon className="h-5 w-5 text-brand-accent" />
                 <div className="mt-2 font-serif text-2xl font-bold">{s.value}</div>
                 <div className="text-xs text-white/60 mt-1">{s.label}</div>
@@ -163,24 +181,74 @@ function MitraPage() {
       <section className="mx-auto max-w-4xl px-4 py-12">
         <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-6 md:p-8">
           <h2 className="font-serif text-2xl font-bold">Daftarkan Kos Anda</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Lengkapi data di bawah ini. Tim kami akan menghubungi Anda.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Lengkapi data di bawah ini. Tim kami akan menghubungi Anda.
+          </p>
 
           <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <Input label="Nama Kos" required value={form.namaKos} onChange={(v) => setForm({ ...form, namaKos: v })} />
-            <Input label="Nama Pemilik" required value={form.namaPemilik} onChange={(v) => setForm({ ...form, namaPemilik: v })} />
-            <Input label="Email" type="email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
-            <Input label="No. Telepon / WA" required value={form.telepon} onChange={(v) => setForm({ ...form, telepon: v })} />
+            <Input
+              label="Nama Kos"
+              required
+              value={form.namaKos}
+              onChange={(v) => setForm({ ...form, namaKos: v })}
+            />
+            <Input
+              label="Nama Pemilik"
+              required
+              value={form.namaPemilik}
+              onChange={(v) => setForm({ ...form, namaPemilik: v })}
+            />
+            <Input
+              label="Email"
+              type="email"
+              required
+              value={form.email}
+              onChange={(v) => setForm({ ...form, email: v })}
+            />
+            <Input
+              label="No. Telepon / WA"
+              required
+              value={form.telepon}
+              onChange={(v) => setForm({ ...form, telepon: v })}
+            />
 
-            <Select label="Jenis Kos" required value={form.jenis} onChange={(v) => setForm({ ...form, jenis: v })}
-              placeholder="Pilih jenis kos" options={JENIS_KOS} />
-            <Select label="Kampus Terdekat" value={form.kampus} onChange={(v) => setForm({ ...form, kampus: v })}
-              placeholder="Pilih kampus" options={KAMPUS_LIST} />
-            <Select label="Daerah" value={form.daerah} onChange={(v) => setForm({ ...form, daerah: v })}
-              placeholder="Pilih daerah" options={DAERAH_LIST} />
-            <Input label="Harga / Bulan (Rp)" type="number" required value={form.harga} onChange={(v) => setForm({ ...form, harga: v })} />
+            <Select
+              label="Jenis Kos"
+              required
+              value={form.jenis}
+              onChange={(v) => setForm({ ...form, jenis: v })}
+              placeholder="Pilih jenis kos"
+              options={JENIS_KOS}
+            />
+            <Select
+              label="Kampus Terdekat"
+              value={form.kampus}
+              onChange={(v) => setForm({ ...form, kampus: v })}
+              placeholder="Pilih kampus"
+              options={KAMPUS_LIST}
+            />
+            <Select
+              label="Daerah"
+              value={form.daerah}
+              onChange={(v) => setForm({ ...form, daerah: v })}
+              placeholder="Pilih daerah"
+              options={DAERAH_LIST}
+            />
+            <Input
+              label="Harga / Bulan (Rp)"
+              type="number"
+              required
+              value={form.harga}
+              onChange={(v) => setForm({ ...form, harga: v })}
+            />
 
             <div className="md:col-span-2">
-              <Input label="Alamat Lengkap" required value={form.alamat} onChange={(v) => setForm({ ...form, alamat: v })} />
+              <Input
+                label="Alamat Lengkap"
+                required
+                value={form.alamat}
+                onChange={(v) => setForm({ ...form, alamat: v })}
+              />
             </div>
             <div className="md:col-span-2">
               <label className="flex flex-col gap-1.5">
@@ -196,7 +264,9 @@ function MitraPage() {
             </div>
 
             <div className="md:col-span-2">
-              <div className="mb-2 text-xs font-medium text-muted-foreground">Fasilitas Tersedia</div>
+              <div className="mb-2 text-xs font-medium text-muted-foreground">
+                Fasilitas Tersedia
+              </div>
               <div className="flex flex-wrap gap-2">
                 {FASILITAS_OPTIONS.map((f) => {
                   const active = form.fasilitas.includes(f);
@@ -211,7 +281,8 @@ function MitraPage() {
                           : "border-border bg-background text-foreground hover:bg-secondary"
                       }`}
                     >
-                      {active ? "✓ " : ""}{f}
+                      {active ? "✓ " : ""}
+                      {f}
                     </button>
                   );
                 })}
@@ -277,9 +348,7 @@ function MitraPage() {
                 }}
               />
 
-              {imgError && (
-                <p className="mt-2 text-xs text-destructive">{imgError}</p>
-              )}
+              {imgError && <p className="mt-2 text-xs text-destructive">{imgError}</p>}
             </div>
           </div>
 
@@ -296,12 +365,23 @@ function MitraPage() {
 }
 
 function Input({
-  label, value, onChange, type = "text", required,
-}: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean }) {
+  label,
+  value,
+  onChange,
+  type = "text",
+  required,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  required?: boolean;
+}) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-xs font-medium text-muted-foreground">
-        {label}{required && <span className="text-destructive"> *</span>}
+        {label}
+        {required && <span className="text-destructive"> *</span>}
       </span>
       <input
         type={type}
@@ -315,24 +395,35 @@ function Input({
 }
 
 function Select({
-  label, value, onChange, options, required, placeholder,
-}: { label: string; value: string; onChange: (v: string) => void; options: readonly { value: string; label: string }[]; required?: boolean; placeholder?: string }) {
+  label,
+  value,
+  onChange,
+  options,
+  required,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: readonly { value: string; label: string }[];
+  required?: boolean;
+  placeholder?: string;
+}) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-xs font-medium text-muted-foreground">
-        {label}{required && <span className="text-destructive"> *</span>}
+        {label}
+        {required && <span className="text-destructive"> *</span>}
       </span>
-      <UiSelect
-        value={value || undefined}
-        onValueChange={onChange}
-        required={required}
-      >
+      <UiSelect value={value || undefined} onValueChange={onChange} required={required}>
         <SelectTrigger className="h-10">
           <SelectValue placeholder={placeholder ?? "Pilih…"} />
         </SelectTrigger>
         <SelectContent>
           {options.map((o) => (
-            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            <SelectItem key={o.value} value={o.value}>
+              {o.label}
+            </SelectItem>
           ))}
         </SelectContent>
       </UiSelect>

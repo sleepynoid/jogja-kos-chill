@@ -75,7 +75,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Keep n Sleep — Sewa Kos Nyaman di Jogja" },
-      { name: "description", content: "Temukan kos terbaik di Yogyakarta dekat kampus favoritmu. Cepat, mudah, dan terpercaya." },
+      {
+        name: "description",
+        content:
+          "Temukan kos terbaik di Yogyakarta dekat kampus favoritmu. Cepat, mudah, dan terpercaya.",
+      },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Keep n Sleep — Sewa Kos Jogja" },
       { property: "og:description", content: "Platform sewa kos terpercaya di Yogyakarta." },

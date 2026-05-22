@@ -10,7 +10,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "KeepKost & Next Sleep — Cari Kos Jogja Premium" },
-      { name: "description", content: "Temukan hunian eksklusif dengan fasilitas premium yang dirancang khusus untuk kenyamanan produktivitas Anda di Yogyakarta." },
+      {
+        name: "description",
+        content:
+          "Temukan hunian eksklusif dengan fasilitas premium yang dirancang khusus untuk kenyamanan produktivitas Anda di Yogyakarta.",
+      },
     ],
   }),
   component: Index,
@@ -35,8 +39,8 @@ function Index() {
       {/* Hero Section — -mt-20 negates root pt-20, allows full-bleed behind transparent navbar */}
       <section className="relative h-screen -mt-20 flex items-center justify-center overflow-hidden bg-brand-primary">
         <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2000" 
+          <img
+            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2000"
             className="w-full h-full object-cover opacity-40 mix-blend-overlay"
             alt="Interior premium"
           />
@@ -46,15 +50,19 @@ function Index() {
 
         {/* Traditional Rail & Gunungan Ornament */}
         <div className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6 md:gap-12 z-20">
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.1, rotate: 5 }}
             className="relative group cursor-pointer"
           >
             <Gunungan className="w-10 h-16 md:w-16 md:h-24 text-brand-accent drop-shadow-2xl opacity-40 md:opacity-100" />
           </motion.div>
-          <span className="[writing-mode:vertical-lr] rotate-180 uppercase tracking-[12px] md:tracking-[1em] text-[8px] md:text-[10px] font-bold text-white/40">YOGYAKARTA</span>
+          <span className="[writing-mode:vertical-lr] rotate-180 uppercase tracking-[12px] md:tracking-[1em] text-[8px] md:text-[10px] font-bold text-white/40">
+            YOGYAKARTA
+          </span>
           <div className="w-px h-16 md:h-24 bg-white/20" />
-          <span className="[writing-mode:vertical-lr] rotate-180 uppercase tracking-[12px] md:tracking-[1em] text-[8px] md:text-[10px] font-bold text-brand-accent">EST. 2026</span>
+          <span className="[writing-mode:vertical-lr] rotate-180 uppercase tracking-[12px] md:tracking-[1em] text-[8px] md:text-[10px] font-bold text-brand-accent">
+            EST. 2026
+          </span>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center text-white">
@@ -70,11 +78,23 @@ function Index() {
                 <Gunungan className="w-8 h-12 md:w-10 md:h-14 filter drop-shadow-[0_0_12px_rgba(231,111,81,0.6)] animate-pulse" />
                 <div className="relative overflow-hidden flex flex-col items-center bg-white/10 backdrop-blur-md px-8 md:px-12 py-5 md:py-6 rounded-3xl border border-white/20 shadow-2xl select-all">
                   {/* Ornate corner assets */}
-                  <PatraCorner position="top-left" className="top-1 left-1 opacity-75 text-brand-accent scale-90" />
-                  <PatraCorner position="top-right" className="top-1 right-1 opacity-75 text-brand-accent scale-90" />
-                  <PatraCorner position="bottom-left" className="bottom-1 left-1 opacity-75 text-brand-accent scale-90" />
-                  <PatraCorner position="bottom-right" className="bottom-1 right-1 opacity-75 text-brand-accent scale-90" />
-                  
+                  <PatraCorner
+                    position="top-left"
+                    className="top-1 left-1 opacity-75 text-brand-accent scale-90"
+                  />
+                  <PatraCorner
+                    position="top-right"
+                    className="top-1 right-1 opacity-75 text-brand-accent scale-90"
+                  />
+                  <PatraCorner
+                    position="bottom-left"
+                    className="bottom-1 left-1 opacity-75 text-brand-accent scale-90"
+                  />
+                  <PatraCorner
+                    position="bottom-right"
+                    className="bottom-1 right-1 opacity-75 text-brand-accent scale-90"
+                  />
+
                   <span className="text-2xl md:text-4xl lg:text-5xl text-brand-accent font-serif tracking-wide leading-relaxed pb-3 px-6">
                     ꦗꦺꦴꦒ꧀ꦗꦲꦶꦱ꧀ꦠꦶꦩꦺꦮ
                   </span>
@@ -87,25 +107,29 @@ function Index() {
             </div>
 
             <h1 className="font-display font-bold text-6xl md:text-8xl tracking-tight leading-[0.95] text-white">
-              Istirahat Nyaman <br /> 
+              Istirahat Nyaman <br />
               Di <span className="text-brand-accent italic font-light">Elegansi</span> Kost.
             </h1>
             <p className="max-w-2xl mx-auto text-xl text-white/70 font-light leading-relaxed">
-              Temukan hunian eksklusif dengan fasilitas premium yang dirancang khusus untuk kenyamanan produktivitas Anda.
+              Temukan hunian eksklusif dengan fasilitas premium yang dirancang khusus untuk
+              kenyamanan produktivitas Anda.
             </p>
 
-            <form onSubmit={handleSearch} className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl p-2 rounded-2xl md:rounded-full flex flex-col md:flex-row gap-2 border border-white/20 shadow-2xl">
+            <form
+              onSubmit={handleSearch}
+              className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl p-2 rounded-2xl md:rounded-full flex flex-col md:flex-row gap-2 border border-white/20 shadow-2xl"
+            >
               <div className="flex-1 flex items-center gap-3 px-6 py-3">
                 <Search className="text-brand-accent" size={24} />
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Cari lokasi, universitas, atau area..."
                   className="bg-transparent border-none focus:outline-none focus:ring-0 text-white placeholder-white/50 w-full text-lg"
                 />
               </div>
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 type="submit"
@@ -117,7 +141,7 @@ function Index() {
           </motion.div>
         </div>
 
-        <motion.div 
+        <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/40 flex flex-col items-center gap-2"
@@ -134,9 +158,9 @@ function Index() {
             { label: "Kost Premium", value: "150+" },
             { label: "Mahasiswa Puas", value: "2k+" },
             { label: "Area Yogyakarta", value: "12" },
-            { label: "Rating Layanan", value: "4.9/5" }
+            { label: "Rating Layanan", value: "4.9/5" },
           ].map((stat, i) => (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -144,8 +168,12 @@ function Index() {
               key={i}
               className="space-y-1"
             >
-              <div className="font-display font-bold text-4xl text-brand-primary dark:text-white tracking-tight">{stat.value}</div>
-              <div className="text-muted-foreground font-medium uppercase text-[10px] tracking-wider">{stat.label}</div>
+              <div className="font-display font-bold text-4xl text-brand-primary dark:text-white tracking-tight">
+                {stat.value}
+              </div>
+              <div className="text-muted-foreground font-medium uppercase text-[10px] tracking-wider">
+                {stat.label}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -157,15 +185,23 @@ function Index() {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div className="space-y-4 max-w-2xl">
-              <h2 className="font-display font-bold text-5xl tracking-tight text-foreground">Koleksi Kost Pilihan.</h2>
-              <p className="text-muted-foreground text-lg">Kost dengan desain modern dan fasilitas terlengkap untuk gaya hidup aktif Anda.</p>
+              <h2 className="font-display font-bold text-5xl tracking-tight text-foreground">
+                Koleksi Kost Pilihan.
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Kost dengan desain modern dan fasilitas terlengkap untuk gaya hidup aktif Anda.
+              </p>
             </div>
-            <motion.div 
-              whileHover={{ x: 10 }}
-              className="flex"
-            >
-              <Link to="/katalog" className="flex items-center gap-2 font-bold text-brand-primary dark:text-white hover:text-brand-accent transition-colors group">
-                Lihat Semua Kost <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform text-brand-accent" />
+            <motion.div whileHover={{ x: 10 }} className="flex">
+              <Link
+                to="/katalog"
+                className="flex items-center gap-2 font-bold text-brand-primary dark:text-white hover:text-brand-accent transition-colors group"
+              >
+                Lihat Semua Kost{" "}
+                <ArrowRight
+                  size={20}
+                  className="group-hover:translate-x-1 transition-transform text-brand-accent"
+                />
               </Link>
             </motion.div>
           </div>
@@ -184,46 +220,52 @@ function Index() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center relative z-10">
           <div className="space-y-10 relative z-10">
             <div className="flex items-center gap-3 text-brand-accent">
-               <div className="w-10 h-10 bg-brand-accent/20 rounded-xl flex items-center justify-center font-bold">M</div>
-               <span className="font-bold text-[10px] uppercase tracking-[0.3em]">Portal Mitra</span>
+              <div className="w-10 h-10 bg-brand-accent/20 rounded-xl flex items-center justify-center font-bold">
+                M
+              </div>
+              <span className="font-bold text-[10px] uppercase tracking-[0.3em]">Portal Mitra</span>
             </div>
             <h2 className="text-6xl font-display font-bold text-brand-primary dark:text-white leading-[0.95] tracking-tighter">
-               Punya Kost di <br /> 
-               <span className="italic font-light text-brand-accent">Yogyakarta?</span>
+              Punya Kost di <br />
+              <span className="italic font-light text-brand-accent">Yogyakarta?</span>
             </h2>
             <p className="text-muted-foreground text-xl font-light max-w-lg leading-relaxed">
-              Bergabunglah sebagai mitra kami dan kelola properti Anda dengan sistem manajemen tercanggih dan laporan bisnis real-time.
+              Bergabunglah sebagai mitra kami dan kelola properti Anda dengan sistem manajemen
+              tercanggih dan laporan bisnis real-time.
             </p>
             <div className="flex gap-4">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/mitra" className="bg-brand-primary dark:bg-white dark:text-zinc-900 text-white px-10 py-5 rounded-[2.5rem] font-bold shadow-2xl shadow-brand-primary/20 transition-all text-sm uppercase tracking-widest flex items-center gap-3 border border-white/10">
+                <Link
+                  to="/mitra"
+                  className="bg-brand-primary dark:bg-white dark:text-zinc-900 text-white px-10 py-5 rounded-[2.5rem] font-bold shadow-2xl shadow-brand-primary/20 transition-all text-sm uppercase tracking-widest flex items-center gap-3 border border-white/10"
+                >
                   Daftar Jadi Mitra <ArrowRight size={20} className="text-brand-accent" />
                 </Link>
               </motion.div>
             </div>
           </div>
           <div className="relative">
-             <div className="grid grid-cols-2 gap-6 scale-110 -rotate-6">
-                {[
-                  "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=400",
-                  "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&q=80&w=400",
-                  "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=400",
-                  "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=400"
-                ].map((img, i) => (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    key={i} 
-                    className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white dark:border-zinc-800"
-                  >
-                    <img src={img} className="w-full h-full object-cover" alt="Interior" />
-                  </motion.div>
-                ))}
-             </div>
-             {/* Abstract Shapes */}
-             <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-accent/20 rounded-full blur-[100px]" />
-             <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-brand-primary/5 rounded-full blur-[100px]" />
+            <div className="grid grid-cols-2 gap-6 scale-110 -rotate-6">
+              {[
+                "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=400",
+                "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&q=80&w=400",
+                "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=400",
+                "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=400",
+              ].map((img, i) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  key={i}
+                  className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white dark:border-zinc-800"
+                >
+                  <img src={img} className="w-full h-full object-cover" alt="Interior" />
+                </motion.div>
+              ))}
+            </div>
+            {/* Abstract Shapes */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-accent/20 rounded-full blur-[100px]" />
+            <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-brand-primary/5 rounded-full blur-[100px]" />
           </div>
         </div>
       </section>

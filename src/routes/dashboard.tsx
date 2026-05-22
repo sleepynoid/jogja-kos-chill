@@ -1,15 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import {
-  Eye,
-  Heart,
-  MessageSquare,
-  Pencil,
-  Plus,
-  Star,
-  Trash2,
-  TrendingUp,
-} from "lucide-react";
+import { Eye, Heart, MessageSquare, Pencil, Plus, Star, Trash2, TrendingUp } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -44,13 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DAERAH_LIST,
-  JENIS_KOS,
-  KAMPUS_LIST,
-  formatRupiah,
-  type Kos,
-} from "@/lib/kos-data";
+import { DAERAH_LIST, JENIS_KOS, KAMPUS_LIST, formatRupiah, type Kos } from "@/lib/kos-data";
 import {
   addKos,
   getKosVisitorStats,
@@ -92,8 +77,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
   const [confirmDelete, setConfirmDelete] = useState<Kos | null>(null);
   const inquiries = useInquiriesStore();
 
-  const selected =
-    kosList.find((k) => k.id === selectedId) ?? kosList[0] ?? null;
+  const selected = kosList.find((k) => k.id === selectedId) ?? kosList[0] ?? null;
 
   const aggregate = useMemo(() => {
     let total = 0;
@@ -110,10 +94,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
     return { total, minggu, kontak, favorit };
   }, [kosList]);
 
-  const trend = useMemo(
-    () => (selected ? getVisitorTrend(selected.id) : []),
-    [selected],
-  );
+  const trend = useMemo(() => (selected ? getVisitorTrend(selected.id) : []), [selected]);
 
   const perKos = useMemo(
     () =>
@@ -129,12 +110,8 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            Dashboard Mitra
-          </p>
-          <h1 className="font-serif text-3xl font-bold">
-            Dashboard Mitra 👋
-          </h1>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">Dashboard Mitra</p>
+          <h1 className="font-serif text-3xl font-bold">Dashboard Mitra 👋</h1>
           <p className="text-sm text-muted-foreground">
             Pantau performa dan kelola kos Anda di sini.
           </p>
@@ -186,10 +163,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
               <p className="text-xs text-muted-foreground">14 hari terakhir</p>
             </div>
             <div className="w-56">
-              <UiSelect
-                value={selected?.id ?? ""}
-                onValueChange={(v) => setSelectedId(v)}
-              >
+              <UiSelect value={selected?.id ?? ""} onValueChange={(v) => setSelectedId(v)}>
                 <SelectTrigger className="h-9">
                   <SelectValue placeholder="Pilih kos" />
                 </SelectTrigger>
@@ -208,8 +182,14 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
               <AreaChart data={trend} margin={{ top: 6, right: 6, left: -16, bottom: 0 }}>
                 <defs>
                   <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="color-mix(in oklab, var(--primary) 50%, transparent)" />
-                    <stop offset="100%" stopColor="color-mix(in oklab, var(--primary) 0%, transparent)" />
+                    <stop
+                      offset="0%"
+                      stopColor="color-mix(in oklab, var(--primary) 50%, transparent)"
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor="color-mix(in oklab, var(--primary) 0%, transparent)"
+                    />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -242,7 +222,15 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={perKos} margin={{ top: 6, right: 6, left: -16, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="nama" tick={{ fontSize: 10 }} stroke="var(--muted-foreground)" interval={0} angle={-20} textAnchor="end" height={50} />
+                <XAxis
+                  dataKey="nama"
+                  tick={{ fontSize: 10 }}
+                  stroke="var(--muted-foreground)"
+                  interval={0}
+                  angle={-20}
+                  textAnchor="end"
+                  height={50}
+                />
                 <YAxis tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
                 <Tooltip
                   contentStyle={{
@@ -264,9 +252,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
         <div className="flex items-center justify-between p-5">
           <div>
             <h2 className="font-serif text-lg font-bold">Daftar Kos Anda</h2>
-            <p className="text-xs text-muted-foreground">
-              {kosList.length} kos terdaftar
-            </p>
+            <p className="text-xs text-muted-foreground">{kosList.length} kos terdaftar</p>
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -297,16 +283,13 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
                         />
                         <div className="leading-tight">
                           <div className="font-medium">{k.nama}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {k.alamat}
-                          </div>
+                          <div className="text-xs text-muted-foreground">{k.alamat}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="capitalize">{k.jenis}</TableCell>
                     <TableCell>
-                      {DAERAH_LIST.find((d) => d.value === k.daerah)?.label ??
-                        k.daerah}
+                      {DAERAH_LIST.find((d) => d.value === k.daerah)?.label ?? k.daerah}
                     </TableCell>
                     <TableCell className="text-right font-medium">
                       {formatRupiah(k.hargaPerBulan)}
@@ -317,9 +300,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
                         {k.rating.toFixed(1)}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
-                      {s.minggu}
-                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">{s.minggu}</TableCell>
                     <TableCell className="text-right">
                       <button
                         onClick={() => {
@@ -327,12 +308,12 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
                           toast.success(`Status ${k.nama} berhasil diubah!`);
                         }}
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer ${
-                          k.tersedia ?? true
+                          (k.tersedia ?? true)
                             ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25"
                             : "bg-destructive/15 text-destructive hover:bg-destructive/25"
                         }`}
                       >
-                        {k.tersedia ?? true ? "Tersedia" : "Penuh"}
+                        {(k.tersedia ?? true) ? "Tersedia" : "Penuh"}
                       </button>
                     </TableCell>
                     <TableCell className="text-right">
@@ -358,7 +339,10 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
               })}
               {kosList.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="py-10 text-center text-sm text-muted-foreground">
+                  <TableCell
+                    colSpan={8}
+                    className="py-10 text-center text-sm text-muted-foreground"
+                  >
                     Belum ada kos. Klik “Tambah Kos” untuk mulai.
                   </TableCell>
                 </TableRow>
@@ -379,16 +363,13 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
       />
 
       {/* Delete confirm */}
-      <Dialog
-        open={!!confirmDelete}
-        onOpenChange={(o) => !o && setConfirmDelete(null)}
-      >
+      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Hapus kos?</DialogTitle>
             <DialogDescription>
-              Tindakan ini akan menghapus <strong>{confirmDelete?.nama}</strong>{" "}
-              dari listing Anda dan tidak bisa dibatalkan.
+              Tindakan ini akan menghapus <strong>{confirmDelete?.nama}</strong> dari listing Anda
+              dan tidak bisa dibatalkan.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -665,9 +646,7 @@ function KosFormDialog({
             <textarea
               rows={3}
               value={form.deskripsi}
-              onChange={(e) =>
-                setForm({ ...form, deskripsi: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
               className={inputCls}
             />
           </DialogField>

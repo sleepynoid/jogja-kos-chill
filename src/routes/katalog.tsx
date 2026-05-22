@@ -34,9 +34,7 @@ export const Route = createFileRoute("/katalog")({
     jenis: typeof s.jenis === "string" ? s.jenis : undefined,
     q: typeof s.q === "string" ? s.q : undefined,
     sort:
-      s.sort === "rating" || s.sort === "termurah" || s.sort === "termahal"
-        ? s.sort
-        : undefined,
+      s.sort === "rating" || s.sort === "termurah" || s.sort === "termahal" ? s.sort : undefined,
     minHarga: s.minHarga ? Number(s.minHarga) : undefined,
     maxHarga: s.maxHarga ? Number(s.maxHarga) : undefined,
     fasilitas: typeof s.fasilitas === "string" ? s.fasilitas : undefined,
@@ -44,7 +42,11 @@ export const Route = createFileRoute("/katalog")({
   head: () => ({
     meta: [
       { title: "Katalog Kos — Keep n Sleep" },
-      { name: "description", content: "Jelajahi katalog kos di Yogyakarta. Filter berdasarkan kampus, daerah, dan jenis kos." },
+      {
+        name: "description",
+        content:
+          "Jelajahi katalog kos di Yogyakarta. Filter berdasarkan kampus, daerah, dan jenis kos.",
+      },
     ],
   }),
   component: KatalogPage,
@@ -81,8 +83,17 @@ function KatalogPage() {
       if (search.jenis && k.jenis !== search.jenis) return false;
       if (search.minHarga && k.hargaPerBulan < search.minHarga) return false;
       if (search.maxHarga && k.hargaPerBulan > search.maxHarga) return false;
-      if (activeFasilitas.length > 0 && !activeFasilitas.every((f) => k.fasilitas.includes(f))) return false;
-      if (q && !(k.nama.toLowerCase().includes(q) || k.alamat.toLowerCase().includes(q) || k.deskripsi.toLowerCase().includes(q))) return false;
+      if (activeFasilitas.length > 0 && !activeFasilitas.every((f) => k.fasilitas.includes(f)))
+        return false;
+      if (
+        q &&
+        !(
+          k.nama.toLowerCase().includes(q) ||
+          k.alamat.toLowerCase().includes(q) ||
+          k.deskripsi.toLowerCase().includes(q)
+        )
+      )
+        return false;
       return true;
     });
     const sorted = [...list];
@@ -104,7 +115,9 @@ function KatalogPage() {
       <div className="mb-6 animate-fade-up relative overflow-hidden rounded-3xl bg-secondary/30 dark:bg-zinc-900/50 p-6 md:p-8 border border-border">
         <BatikPattern variant="kawung" className="opacity-[0.18]" />
         <div className="relative z-10">
-          <h1 className="font-serif text-3xl font-bold md:text-4xl text-gradient">Katalog Kos di Jogja</h1>
+          <h1 className="font-serif text-3xl font-bold md:text-4xl text-gradient">
+            Katalog Kos di Jogja
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {filtered.length} kos tersedia sesuai pilihanmu.
           </p>
@@ -170,7 +183,9 @@ function KatalogPage() {
 
           {/* Advanced Price Slider Inputs */}
           <div className="mb-4 border-t border-border pt-4">
-            <div className="mb-2 text-xs font-semibold text-muted-foreground">Rentang Harga (Rp)</div>
+            <div className="mb-2 text-xs font-semibold text-muted-foreground">
+              Rentang Harga (Rp)
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="number"
@@ -178,7 +193,10 @@ function KatalogPage() {
                 value={search.minHarga ?? ""}
                 onChange={(e) => {
                   navigate({
-                    search: (prev: Search) => ({ ...prev, minHarga: Number(e.target.value) || undefined }),
+                    search: (prev: Search) => ({
+                      ...prev,
+                      minHarga: Number(e.target.value) || undefined,
+                    }),
                     resetScroll: false,
                   });
                 }}
@@ -190,7 +208,10 @@ function KatalogPage() {
                 value={search.maxHarga ?? ""}
                 onChange={(e) => {
                   navigate({
-                    search: (prev: Search) => ({ ...prev, maxHarga: Number(e.target.value) || undefined }),
+                    search: (prev: Search) => ({
+                      ...prev,
+                      maxHarga: Number(e.target.value) || undefined,
+                    }),
                     resetScroll: false,
                   });
                 }}
@@ -203,26 +224,33 @@ function KatalogPage() {
           <div className="mb-4 border-t border-border pt-4">
             <div className="mb-2 text-xs font-semibold text-muted-foreground">Fasilitas</div>
             <div className="space-y-2">
-              {["WiFi", "AC", "Kamar Mandi Dalam", "Laundry", "Parkir Mobil", "Smart TV"].map((f) => {
-                const activeFasilitas = search.fasilitas ? search.fasilitas.split(",").filter(Boolean) : [];
-                const checked = activeFasilitas.includes(f);
-                return (
-                  <label key={f} className="flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => {
-                        const next = checked
-                          ? activeFasilitas.filter((x) => x !== f)
-                          : [...activeFasilitas, f];
-                        update("fasilitas", next.join(","));
-                      }}
-                      className="rounded border-input text-primary focus:ring-ring h-3.5 w-3.5"
-                    />
-                    {f}
-                  </label>
-                );
-              })}
+              {["WiFi", "AC", "Kamar Mandi Dalam", "Laundry", "Parkir Mobil", "Smart TV"].map(
+                (f) => {
+                  const activeFasilitas = search.fasilitas
+                    ? search.fasilitas.split(",").filter(Boolean)
+                    : [];
+                  const checked = activeFasilitas.includes(f);
+                  return (
+                    <label
+                      key={f}
+                      className="flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          const next = checked
+                            ? activeFasilitas.filter((x) => x !== f)
+                            : [...activeFasilitas, f];
+                          update("fasilitas", next.join(","));
+                        }}
+                        className="rounded border-input text-primary focus:ring-ring h-3.5 w-3.5"
+                      />
+                      {f}
+                    </label>
+                  );
+                },
+              )}
             </div>
           </div>
 
@@ -241,7 +269,9 @@ function KatalogPage() {
         <div>
           {filtered.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
-              <div className="font-serif text-xl font-semibold text-foreground">Belum ada kos cocok</div>
+              <div className="font-serif text-xl font-semibold text-foreground">
+                Belum ada kos cocok
+              </div>
               <p className="mt-1 text-sm text-muted-foreground">Coba longgarkan filtermu.</p>
             </div>
           ) : (

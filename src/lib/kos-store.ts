@@ -9,17 +9,18 @@ const listeners = new Set<Listener>();
 let kosState: Kos[] = loadInitial();
 
 function loadInitial(): Kos[] {
-  if (typeof window === "undefined") return [...KOS_LIST].map(k => ({ ...k, tersedia: k.tersedia ?? true }));
+  if (typeof window === "undefined")
+    return [...KOS_LIST].map((k) => ({ ...k, tersedia: k.tersedia ?? true }));
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as Kos[];
-      return parsed.map(k => ({ ...k, tersedia: k.tersedia ?? true }));
+      return parsed.map((k) => ({ ...k, tersedia: k.tersedia ?? true }));
     }
   } catch {
     /* ignore */
   }
-  return [...KOS_LIST].map(k => ({ ...k, tersedia: k.tersedia ?? true }));
+  return [...KOS_LIST].map((k) => ({ ...k, tersedia: k.tersedia ?? true }));
 }
 
 function persist() {
@@ -82,7 +83,7 @@ export function toggleKetersediaanKos(id: string) {
 }
 
 export function resetKosStore() {
-  kosState = [...KOS_LIST].map(k => ({ ...k, tersedia: true }));
+  kosState = [...KOS_LIST].map((k) => ({ ...k, tersedia: true }));
   persist();
   emit();
 }
@@ -119,7 +120,8 @@ function loadInitialInquiries(): KosInquiry[] {
       namaKos: "Griya Sogan Bulaksumur",
       namaCalon: "Budi Santoso",
       telepon: "6281234567890",
-      pesan: "Halo, kamar tipe AC apakah masih ada yang kosong untuk bulan depan? Saya mahasiswa baru UGM.",
+      pesan:
+        "Halo, kamar tipe AC apakah masih ada yang kosong untuk bulan depan? Saya mahasiswa baru UGM.",
       tanggal: "19 Mei 2026",
       status: "pending",
     },
@@ -129,7 +131,8 @@ function loadInitialInquiries(): KosInquiry[] {
       namaKos: "Omah Malioboro Heritage",
       namaCalon: "Siti Rahma",
       telepon: "6289876543210",
-      pesan: "Siang, saya mau tanya apakah parkir mobilnya gratis dan ada cleaning service setiap hari?",
+      pesan:
+        "Siang, saya mau tanya apakah parkir mobilnya gratis dan ada cleaning service setiap hari?",
       tanggal: "18 Mei 2026",
       status: "dihubungi",
     },
@@ -142,7 +145,7 @@ function loadInitialInquiries(): KosInquiry[] {
       pesan: "Apakah bisa survei lokasi besok jam 2 siang kak? Terima kasih.",
       tanggal: "17 Mei 2026",
       status: "pending",
-    }
+    },
   ];
 }
 
@@ -167,7 +170,11 @@ export function addInquiry(inquiry: Omit<KosInquiry, "id" | "tanggal" | "status"
   const newInq: KosInquiry = {
     ...inquiry,
     id: `inq-${Date.now().toString(36)}`,
-    tanggal: new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }),
+    tanggal: new Date().toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
     status: "pending",
   };
   inquiriesState = [newInq, ...inquiriesState];
@@ -177,9 +184,7 @@ export function addInquiry(inquiry: Omit<KosInquiry, "id" | "tanggal" | "status"
 }
 
 export function updateInquiryStatus(id: string, status: "pending" | "dihubungi") {
-  inquiriesState = inquiriesState.map((inq) =>
-    inq.id === id ? { ...inq, status } : inq
-  );
+  inquiriesState = inquiriesState.map((inq) => (inq.id === id ? { ...inq, status } : inq));
   persistInquiries();
   emit();
 }

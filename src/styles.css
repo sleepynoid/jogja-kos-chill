@@ -6,48 +6,48 @@
 
 :root {
   --radius: 0.75rem;
-  
+
   /* Hex colors from keep-sleep-project mapped as Light mode variables */
-  --background: #FAF6F3;
-  --foreground: #2F2F2F;
-  --card: #FFFFFF;
-  --card-foreground: #2F2F2F;
-  --popover: #FFFFFF;
-  --popover-foreground: #2F2F2F;
-  --primary: #2F2F2F;
-  --primary-foreground: #FAF6F3;
-  --secondary: #F3ECE7;
-  --secondary-foreground: #2F2F2F;
-  --muted: #F3ECE7;
-  --muted-foreground: #6F6F6F;
-  --accent: #E76F51;
-  --accent-foreground: #FFFFFF;
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
-  --border: #E8E2DE;
-  --input: #E8E2DE;
-  --ring: #E76F51;
+  --background: #faf6f3;
+  --foreground: #2f2f2f;
+  --card: #ffffff;
+  --card-foreground: #2f2f2f;
+  --popover: #ffffff;
+  --popover-foreground: #2f2f2f;
+  --primary: #2f2f2f;
+  --primary-foreground: #faf6f3;
+  --secondary: #f3ece7;
+  --secondary-foreground: #2f2f2f;
+  --muted: #f3ece7;
+  --muted-foreground: #6f6f6f;
+  --accent: #e76f51;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e8e2de;
+  --input: #e8e2de;
+  --ring: #e76f51;
 }
 
 .dark {
   /* Dynamic invert for dark mode */
   --background: #191817;
-  --foreground: #FAF6F3;
+  --foreground: #faf6f3;
   --card: #252423;
-  --card-foreground: #FAF6F3;
+  --card-foreground: #faf6f3;
   --popover: #252423;
-  --popover-foreground: #FAF6F3;
-  --primary: #FAF6F3;
-  --primary-foreground: #2F2F2F;
+  --popover-foreground: #faf6f3;
+  --primary: #faf6f3;
+  --primary-foreground: #2f2f2f;
   --secondary: #333130;
-  --secondary-foreground: #FAF6F3;
+  --secondary-foreground: #faf6f3;
   --muted: #333130;
-  --muted-foreground: #A8A29E;
-  --accent: #E76F51;
-  --accent-foreground: #FAF6F3;
-  --border: #3D3937;
-  --input: #3D3937;
-  --ring: #E76F51;
+  --muted-foreground: #a8a29e;
+  --accent: #e76f51;
+  --accent-foreground: #faf6f3;
+  --border: #3d3937;
+  --input: #3d3937;
+  --ring: #e76f51;
 }
 
 @layer base {
@@ -67,7 +67,9 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.03),
+    0 8px 10px -6px rgba(0, 0, 0, 0.03);
 }
 
 .dark .glass-morphism {
@@ -99,19 +101,38 @@
 }
 
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.animate-float-slow { animation: float-slow 4s ease-in-out infinite; }
-.animate-fade-up { animation: fade-up 0.5s ease-out both; }
+.animate-float-slow {
+  animation: float-slow 4s ease-in-out infinite;
+}
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out both;
+}
 .animate-shimmer {
   background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.15), transparent);
   background-size: 200% 100%;

@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as SurveyRouteImport } from './routes/survey'
 import { Route as MitraRouteImport } from './routes/mitra'
 import { Route as KatalogRouteImport } from './routes/katalog'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KosIdRouteImport } from './routes/kos.$id'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SurveyRoute = SurveyRouteImport.update({
+  id: '/survey',
+  path: '/survey',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MitraRoute = MitraRouteImport.update({
   id: '/mitra',
   path: '/mitra',
@@ -46,6 +58,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
+  '/survey': typeof SurveyRoute
+  '/wishlist': typeof WishlistRoute
   '/kos/$id': typeof KosIdRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +67,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
+  '/survey': typeof SurveyRoute
+  '/wishlist': typeof WishlistRoute
   '/kos/$id': typeof KosIdRoute
 }
 export interface FileRoutesById {
@@ -61,14 +77,38 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/katalog': typeof KatalogRoute
   '/mitra': typeof MitraRoute
+  '/survey': typeof SurveyRoute
+  '/wishlist': typeof WishlistRoute
   '/kos/$id': typeof KosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/katalog' | '/mitra' | '/kos/$id'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/katalog'
+    | '/mitra'
+    | '/survey'
+    | '/wishlist'
+    | '/kos/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/katalog' | '/mitra' | '/kos/$id'
-  id: '__root__' | '/' | '/dashboard' | '/katalog' | '/mitra' | '/kos/$id'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/katalog'
+    | '/mitra'
+    | '/survey'
+    | '/wishlist'
+    | '/kos/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/katalog'
+    | '/mitra'
+    | '/survey'
+    | '/wishlist'
+    | '/kos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,11 +116,27 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   KatalogRoute: typeof KatalogRoute
   MitraRoute: typeof MitraRoute
+  SurveyRoute: typeof SurveyRoute
+  WishlistRoute: typeof WishlistRoute
   KosIdRoute: typeof KosIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/survey': {
+      id: '/survey'
+      path: '/survey'
+      fullPath: '/survey'
+      preLoaderRoute: typeof SurveyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mitra': {
       id: '/mitra'
       path: '/mitra'
@@ -124,6 +180,8 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   KatalogRoute: KatalogRoute,
   MitraRoute: MitraRoute,
+  SurveyRoute: SurveyRoute,
+  WishlistRoute: WishlistRoute,
   KosIdRoute: KosIdRoute,
 }
 export const routeTree = rootRouteImport

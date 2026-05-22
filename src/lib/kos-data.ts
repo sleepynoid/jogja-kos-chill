@@ -71,7 +71,8 @@ export const KOS_LIST: Kos[] = [
     rating: 4.8,
     fasilitas: ["WiFi 100Mbps", "AC", "Kamar Mandi Dalam", "Laundry", "Dapur Bersama", "CCTV"],
     gambar: img("1505691938895-1758d7feb511"),
-    deskripsi: "Kos putri nyaman 5 menit dari kampus UGM, lingkungan asri dengan sentuhan batik sogan.",
+    deskripsi:
+      "Kos putri nyaman 5 menit dari kampus UGM, lingkungan asri dengan sentuhan batik sogan.",
   },
   {
     id: "k2",
@@ -95,7 +96,15 @@ export const KOS_LIST: Kos[] = [
     alamat: "Jl. Sosrowijayan, Yogyakarta",
     hargaPerBulan: 2500000,
     rating: 4.9,
-    fasilitas: ["WiFi 200Mbps", "AC", "Kamar Mandi Dalam", "Smart TV", "Cleaning Service", "Gym", "Rooftop"],
+    fasilitas: [
+      "WiFi 200Mbps",
+      "AC",
+      "Kamar Mandi Dalam",
+      "Smart TV",
+      "Cleaning Service",
+      "Gym",
+      "Rooftop",
+    ],
     gambar: img("1560448204-e02f11c3d0e2"),
     deskripsi: "Kos eksklusif bernuansa Jawa modern, jantung kota Yogyakarta.",
   },
@@ -180,7 +189,11 @@ export const KOS_LIST: Kos[] = [
 ];
 
 export const formatRupiah = (n: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
 
 // Inject a galeri (max 5 foto) untuk tiap kos dummy.
 KOS_LIST.forEach((k, i) => {

@@ -41,32 +41,46 @@ export function Header() {
   const transparent = isHome && !isScrolled;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${transparent ? 'bg-transparent shadow-none border-b border-transparent' : 'bg-background/80 backdrop-blur-md border-b border-border shadow-sm'}`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${transparent ? "bg-transparent shadow-none border-b border-transparent" : "bg-background/80 backdrop-blur-md border-b border-border shadow-sm"}`}
+    >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="w-14 h-14 bg-[#FCF1E2] rounded-2xl flex items-center justify-center shadow-xl shadow-brand-primary/5 border border-brand-accent/20 overflow-hidden relative p-1"
           >
-            <img src="/logo.png" alt="Keep Kost Logo" className="w-full h-full object-contain rounded-xl" />
+            <img
+              src="/logo.svg"
+              alt="Keep Kost Logo"
+              className="w-full h-full object-contain rounded-xl"
+            />
             <div className="absolute inset-0 bg-brand-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           </motion.div>
           <div className="flex flex-col">
-            <span className={`font-display font-bold text-xl tracking-tighter leading-none ${transparent ? 'text-white' : 'text-brand-primary dark:text-white'}`}>
+            <span
+              className={`font-display font-bold text-xl tracking-tighter leading-none ${transparent ? "text-white" : "text-brand-primary dark:text-white"}`}
+            >
               Keep<span className="text-brand-accent italic font-light">Kost</span>
             </span>
-            <span className={`font-display font-medium text-[9px] tracking-[0.15em] uppercase leading-none mt-1 ${transparent ? 'text-white/60' : 'text-brand-primary/40 dark:text-white/40'}`}>
+            <span
+              className={`font-display font-medium text-[9px] tracking-[0.15em] uppercase leading-none mt-1 ${transparent ? "text-white/60" : "text-brand-primary/40 dark:text-white/40"}`}
+            >
               and Next Sleep
             </span>
           </div>
         </Link>
 
         {/* Desktop Menu */}
-        <div className={`hidden md:flex items-center gap-8 ${transparent ? 'text-white/90' : 'text-brand-primary/85 dark:text-white/90'}`}>
+        <div
+          className={`hidden md:flex items-center gap-8 ${transparent ? "text-white/90" : "text-brand-primary/85 dark:text-white/90"}`}
+        >
           {[
             { to: "/", label: "Beranda" },
             { to: "/katalog", label: "Cari Kost" },
+            { to: "/survey", label: "Jasa Survey" },
+            { to: "/wishlist", label: "Wishlist" },
             { to: "/mitra", label: "Mitra" },
             { to: "/dashboard", label: "Dashboard" },
           ].map((l) => (
@@ -74,17 +88,19 @@ export function Header() {
               key={l.to}
               to={l.to}
               activeOptions={{ exact: l.to === "/" }}
-              activeProps={{ className: "text-brand-accent font-semibold border-b-2 border-brand-accent" }}
+              activeProps={{
+                className: "text-brand-accent font-semibold border-b-2 border-brand-accent",
+              }}
               className="hover:text-brand-accent transition-all font-medium text-sm border-b-2 border-transparent pb-1"
             >
               {l.label}
             </Link>
           ))}
           <div className="h-6 w-px bg-current/20 mx-2" />
-          
+
           <button
             onClick={toggleTheme}
-            className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-90 ${transparent ? 'border-white/20 bg-white/10 hover:bg-white/25 text-white' : 'border-border bg-background hover:bg-secondary text-foreground dark:text-white dark:hover:bg-zinc-800'}`}
+            className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-90 ${transparent ? "border-white/20 bg-white/10 hover:bg-white/25 text-white" : "border-border bg-background hover:bg-secondary text-foreground dark:text-white dark:hover:bg-zinc-800"}`}
             aria-label="Toggle Theme"
           >
             {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
@@ -95,17 +111,21 @@ export function Header() {
         <div className="flex items-center gap-3 md:hidden">
           <button
             onClick={toggleTheme}
-            className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-90 ${transparent ? 'border-white/20 bg-white/10 text-white' : 'border-border bg-background text-foreground dark:text-white dark:hover:bg-zinc-800'}`}
+            className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-90 ${transparent ? "border-white/20 bg-white/10 text-white" : "border-border bg-background text-foreground dark:text-white dark:hover:bg-zinc-800"}`}
             aria-label="Toggle Theme"
           >
             {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
           </button>
-          <motion.button 
+          <motion.button
             whileTap={{ scale: 0.9 }}
-            className="p-2" 
+            className="p-2"
             onClick={() => setIsOpen(!isOpen)}
           >
-            {isOpen ? <X className={transparent ? 'text-white' : 'text-brand-primary dark:text-white'} /> : <Menu className={transparent ? 'text-white' : 'text-brand-primary dark:text-white'} />}
+            {isOpen ? (
+              <X className={transparent ? "text-white" : "text-brand-primary dark:text-white"} />
+            ) : (
+              <Menu className={transparent ? "text-white" : "text-brand-primary dark:text-white"} />
+            )}
           </motion.button>
         </div>
       </div>
@@ -122,6 +142,8 @@ export function Header() {
             {[
               { to: "/", label: "Beranda" },
               { to: "/katalog", label: "Cari Kost" },
+              { to: "/survey", label: "Jasa Survey" },
+              { to: "/wishlist", label: "Wishlist" },
               { to: "/mitra", label: "Mitra" },
               { to: "/dashboard", label: "Dashboard" },
             ].map((l) => (

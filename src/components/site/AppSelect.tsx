@@ -42,9 +42,7 @@ export function AppSelect({
         <SelectValue placeholder={placeholder ?? "Pilih…"} />
       </SelectTrigger>
       <SelectContent>
-        {allowAll && (
-          <SelectItem value={ALL}>{allLabel ?? "Semua"}</SelectItem>
-        )}
+        {allowAll && <SelectItem value={ALL}>{allLabel ?? "Semua"}</SelectItem>}
         {options.map((o) => (
           <SelectItem key={o.value} value={o.value}>
             {o.label}

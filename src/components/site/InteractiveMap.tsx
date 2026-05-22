@@ -17,6 +17,13 @@ type InteractiveMapProps = {
   kampusList?: string[];
 };
 
+const MAP_TABS = [
+  { id: "all", label: "Semua", icon: MapPin },
+  { id: "kampus", label: "Kampus", icon: GraduationCap },
+  { id: "kuliner", label: "Kuliner", icon: Utensils },
+  { id: "transport", label: "Transportasi", icon: Bus },
+] as const;
+
 export function InteractiveMap({ kosName, lat, lng, kampusList = [] }: InteractiveMapProps) {
   const [activeTab, setActiveTab] = useState<"all" | "kampus" | "kuliner" | "transport">("all");
 
@@ -124,22 +131,17 @@ export function InteractiveMap({ kosName, lat, lng, kampusList = [] }: Interacti
             Didesain Google-Maps-Ready (API Koordinat: {lat ?? -7.78}, {lng ?? 110.37})
           </p>
         </div>
-        
+
         {/* Navigation Tabs */}
         <div className="flex flex-wrap gap-1 rounded-lg bg-secondary/50 p-1 text-xs">
-          {[
-            { id: "all", label: "Semua", icon: MapPin },
-            { id: "kampus", label: "Kampus", icon: GraduationCap },
-            { id: "kuliner", label: "Kuliner", icon: Utensils },
-            { id: "transport", label: "Transportasi", icon: Bus },
-          ].map((tab) => {
+          {MAP_TABS.map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
             return (
               <button
                 type="button"
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-medium transition-all ${
                   active
                     ? "bg-background text-foreground shadow-sm font-semibold"
@@ -156,14 +158,13 @@ export function InteractiveMap({ kosName, lat, lng, kampusList = [] }: Interacti
 
       {/* Styled Vektor Map */}
       <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border bg-secondary/30">
-        
         {/* Mock Grid Lines & Batik Decorative Pattern Background */}
-        <div 
+        <div
           className="absolute inset-0 opacity-10 dark:opacity-20"
           style={{ backgroundImage: "var(--batik-pattern)" }}
           aria-hidden
         />
-        
+
         {/* Mock stylized streets */}
         <svg className="absolute inset-0 h-full w-full opacity-30 dark:opacity-50" aria-hidden>
           <path d="M 0,100 L 900,100" stroke="var(--border)" strokeWidth="8" fill="none" />
@@ -171,11 +172,17 @@ export function InteractiveMap({ kosName, lat, lng, kampusList = [] }: Interacti
           <path d="M 150,0 L 150,500" stroke="var(--border)" strokeWidth="10" fill="none" />
           <path d="M 450,0 L 450,500" stroke="var(--border)" strokeWidth="16" fill="none" />
           <path d="M 750,0 L 750,500" stroke="var(--border)" strokeWidth="8" fill="none" />
-          <path d="M 0,400 C 300,400 600,450 900,400" stroke="var(--border)" strokeWidth="6" strokeDasharray="5,5" fill="none" />
+          <path
+            d="M 0,400 C 300,400 600,450 900,400"
+            stroke="var(--border)"
+            strokeWidth="6"
+            strokeDasharray="5,5"
+            fill="none"
+          />
         </svg>
 
         {/* Pulsing glow under main Kos Location */}
-        <div 
+        <div
           className="absolute h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 animate-ping"
           style={{ left: "50%", top: "50%", animationDuration: "3s" }}
         />
@@ -188,9 +195,11 @@ export function InteractiveMap({ kosName, lat, lng, kampusList = [] }: Interacti
             style={{ left: `${m.x}%`, top: `${m.y}%` }}
           >
             {/* The marker pin circle */}
-            <div className={`flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all ${
-              m.type === "kos" ? "border-primary scale-110" : "border-border"
-            }`}>
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all ${
+                m.type === "kos" ? "border-primary scale-110" : "border-border"
+              }`}
+            >
               {getMarkerIcon(m.type)}
             </div>
 
@@ -199,7 +208,9 @@ export function InteractiveMap({ kosName, lat, lng, kampusList = [] }: Interacti
               <div className="rounded-xl border border-border bg-popover p-2.5 shadow-lg text-xs leading-normal">
                 <div className="font-semibold text-foreground">{m.name}</div>
                 <div className="mt-1 text-[10px] text-muted-foreground flex items-center justify-between">
-                  <span className="capitalize">{m.type === "transport" ? "Transportasi" : m.type}</span>
+                  <span className="capitalize">
+                    {m.type === "transport" ? "Transportasi" : m.type}
+                  </span>
                   <span className="font-medium text-primary">{m.distance}</span>
                 </div>
               </div>
@@ -212,17 +223,24 @@ export function InteractiveMap({ kosName, lat, lng, kampusList = [] }: Interacti
 
       {/* Markers Sidebar / List in visual layout */}
       <div className="mt-4 grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-        {filteredMarkers.filter(m => m.type !== "kos").map((m) => (
-          <div key={m.id} className="flex items-center gap-2.5 rounded-xl border border-border bg-background/50 p-2.5 text-xs hover:bg-secondary/60 transition-colors">
-            <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${getMarkerColor(m.type)}`}>
-              {getMarkerIcon(m.type)}
+        {filteredMarkers
+          .filter((m) => m.type !== "kos")
+          .map((m) => (
+            <div
+              key={m.id}
+              className="flex items-center gap-2.5 rounded-xl border border-border bg-background/50 p-2.5 text-xs hover:bg-secondary/60 transition-colors"
+            >
+              <div
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${getMarkerColor(m.type)}`}
+              >
+                {getMarkerIcon(m.type)}
+              </div>
+              <div className="min-w-0">
+                <div className="font-semibold truncate text-foreground">{m.name}</div>
+                <div className="text-[10px] text-muted-foreground">{m.distance}</div>
+              </div>
             </div>
-            <div className="min-w-0">
-              <div className="font-semibold truncate text-foreground">{m.name}</div>
-              <div className="text-[10px] text-muted-foreground">{m.distance}</div>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );

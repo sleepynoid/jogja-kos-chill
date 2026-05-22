@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="110 110 292 312" width="100%" height="100%">
+  <!-- Subtle Shadow under the house: soft horizontal pill at the bottom -->
+  <ellipse cx="256" cy="408" rx="130" ry="8" fill="#E76F51" opacity="0.16" />
+
+  <!-- House Silhouette/Outline in Terracotta (#E76F51) with rounded corners and curved base -->
+  <path d="M 130,380
+           L 130,225
+           L 256,125
+           L 382,225
+           L 382,380
+           Q 256,370 130,380"
+        fill="none"
+        stroke="#E76F51"
+        stroke-width="18"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+
+  <!-- Typography: Centered and layered elegant letters -->
+  <!-- Text: Keep -->
+  <text x="256" y="215" 
+        font-family="'Plus Jakarta Sans', 'Quicksand', 'Nunito', 'Inter', system-ui, sans-serif" 
+        font-size="64" 
+        font-weight="800" 
+        fill="#E76F51" 
+        text-anchor="middle" 
+        letter-spacing="-1px">Keep</text>
+
+  <!-- Text: Kost -->
+  <text x="256" y="278" 
+        font-family="'Plus Jakarta Sans', 'Quicksand', 'Nunito', 'Inter', system-ui, sans-serif" 
+        font-size="64" 
+        font-weight="800" 
+        fill="#E76F51" 
+        text-anchor="middle" 
+        letter-spacing="-1px">Kost</text>
+
+  <!-- Text: and Next Sleep -->
+  <text x="256" y="334" 
+        font-family="'Plus Jakarta Sans', 'Quicksand', 'Nunito', 'Inter', system-ui, sans-serif" 
+        font-size="25" 
+        font-weight="700" 
+        fill="#E76F51" 
+        text-anchor="middle">and Next Sleep</text>
+
+  <!-- Subtle thin curved smile-like line under "and Next Sleep" -->
+  <path d="M 165,352 Q 256,359 347,352" 
+        fill="none" 
+        stroke="#E76F51" 
+        stroke-width="4.5" 
+        stroke-linecap="round" />
+</svg>

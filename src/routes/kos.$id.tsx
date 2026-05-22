@@ -40,7 +40,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 function WhatsappIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" className={className} fill="currentColor" aria-hidden>
-      <path d="M19.11 17.27c-.27-.14-1.61-.79-1.86-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.14-.42-2.17-1.34-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.55.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.48-.84-2.02-.22-.53-.45-.46-.61-.47l-.52-.01c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.27 0 1.34.97 2.64 1.11 2.82.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.55.58.65.21 1.24.18 1.71.11.52-.08 1.61-.66 1.84-1.29.23-.64.23-1.18.16-1.29-.07-.11-.25-.18-.52-.32zM16 3.2C8.93 3.2 3.2 8.93 3.2 16c0 2.27.6 4.39 1.65 6.23L3.2 28.8l6.74-1.62A12.74 12.74 0 0 0 16 28.8c7.07 0 12.8-5.73 12.8-12.8S23.07 3.2 16 3.2zm0 23.36a10.5 10.5 0 0 1-5.36-1.46l-.38-.23-3.99.96 1.07-3.89-.25-.4A10.55 10.55 0 1 1 16 26.56z"/>
+      <path d="M19.11 17.27c-.27-.14-1.61-.79-1.86-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.14-.42-2.17-1.34-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.55.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.48-.84-2.02-.22-.53-.45-.46-.61-.47l-.52-.01c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.27 0 1.34.97 2.64 1.11 2.82.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.55.58.65.21 1.24.18 1.71.11.52-.08 1.61-.66 1.84-1.29.23-.64.23-1.18.16-1.29-.07-.11-.25-.18-.52-.32zM16 3.2C8.93 3.2 3.2 8.93 3.2 16c0 2.27.6 4.39 1.65 6.23L3.2 28.8l6.74-1.62A12.74 12.74 0 0 0 16 28.8c7.07 0 12.8-5.73 12.8-12.8S23.07 3.2 16 3.2zm0 23.36a10.5 10.5 0 0 1-5.36-1.46l-.38-.23-3.99.96 1.07-3.89-.25-.4A10.55 10.55 0 1 1 16 26.56z" />
     </svg>
   );
 }
@@ -118,7 +118,7 @@ function KosDetailPage() {
   const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
     (kos.tersedia ?? true)
       ? `Halo, saya tertarik dengan kos "${kos.nama}" di ${kos.alamat}. Apakah masih tersedia?`
-      : `Halo, saya ingin bergabung dengan waiting list untuk kos "${kos.nama}" di ${kos.alamat}.`
+      : `Halo, saya ingin bergabung dengan waiting list untuk kos "${kos.nama}" di ${kos.alamat}.`,
   )}`;
 
   const reviews = [
@@ -166,11 +166,7 @@ function KosDetailPage() {
         {/* Galeri Foto */}
         <div className="animate-fade-up space-y-3">
           <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
-            <Carousel
-              setApi={setApi}
-              opts={{ loop: galeri.length > 1 }}
-              className="relative"
-            >
+            <Carousel setApi={setApi} opts={{ loop: galeri.length > 1 }} className="relative">
               <CarouselContent>
                 {galeri.map((src, i) => (
                   <CarouselItem key={src + i}>
@@ -245,7 +241,10 @@ function KosDetailPage() {
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-5 relative overflow-hidden">
-            <PatraCorner position="top-right" className="top-1 right-1 opacity-20 text-brand-accent scale-75" />
+            <PatraCorner
+              position="top-right"
+              className="top-1 right-1 opacity-20 text-brand-accent scale-75"
+            />
             <div className="text-xs text-muted-foreground relative z-10">Harga sewa</div>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="font-serif text-3xl font-bold text-primary">
@@ -268,14 +267,15 @@ function KosDetailPage() {
                   namaKos: kos.nama,
                   namaCalon: "Pengunjung Baru",
                   telepon: "628" + Math.floor(100000000 + Math.random() * 900000000),
-                  pesan: (kos.tersedia ?? true)
-                    ? "Halo, saya tertarik dengan kos ini. Apakah masih tersedia?"
-                    : "Halo, saya ingin bergabung dengan waiting list.",
+                  pesan:
+                    (kos.tersedia ?? true)
+                      ? "Halo, saya tertarik dengan kos ini. Apakah masih tersedia?"
+                      : "Halo, saya ingin bergabung dengan waiting list.",
                 });
                 toast.success(
                   (kos.tersedia ?? true)
                     ? "Lead chat terkirim ke Mitra!"
-                    : "Pendaftaran waiting list terkirim ke Mitra!"
+                    : "Pendaftaran waiting list terkirim ke Mitra!",
                 );
               }}
               className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all active:scale-95 ${
@@ -303,7 +303,7 @@ function KosDetailPage() {
           )}
         </div>
       </div>
-      
+
       <TumpalDivider className="mt-8 opacity-45" />
 
       {/* Deskripsi & Fasilitas */}
@@ -312,7 +312,10 @@ function KosDetailPage() {
           <h2 className="font-serif text-xl font-bold">Tentang Kos Ini</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{kos.deskripsi}</p>
         </section>
-        <section className="animate-fade-up rounded-2xl border border-border bg-card p-6" style={{ animationDelay: "80ms" }}>
+        <section
+          className="animate-fade-up rounded-2xl border border-border bg-card p-6"
+          style={{ animationDelay: "80ms" }}
+        >
           <h2 className="font-serif text-xl font-bold">Fasilitas Lengkap</h2>
           <ul className="mt-3 grid grid-cols-2 gap-2">
             {kos.fasilitas.map((f) => {
@@ -332,11 +335,11 @@ function KosDetailPage() {
 
       {/* Interactive Map */}
       <div className="mt-8 animate-fade-up" style={{ animationDelay: "150ms" }}>
-        <InteractiveMap 
-          kosName={kos.nama} 
-          lat={-7.77 - (kos.id.charCodeAt(1) % 5) * 0.008} 
-          lng={110.37 + (kos.id.charCodeAt(1) % 5) * 0.008} 
-          kampusList={kos.kampusTerdekat} 
+        <InteractiveMap
+          kosName={kos.nama}
+          lat={-7.77 - (kos.id.charCodeAt(1) % 5) * 0.008}
+          lng={110.37 + (kos.id.charCodeAt(1) % 5) * 0.008}
+          kampusList={kos.kampusTerdekat}
         />
       </div>
 
@@ -370,9 +373,7 @@ function KosDetailPage() {
                 />
               ))}
             </div>
-            <div className="mt-2 text-xs text-muted-foreground">
-              dari {totalUlasan} ulasan
-            </div>
+            <div className="mt-2 text-xs text-muted-foreground">dari {totalUlasan} ulasan</div>
 
             <div className="mt-5 w-full space-y-1.5">
               {ratingBars.map((b) => (
@@ -385,9 +386,7 @@ function KosDetailPage() {
                       style={{ width: `${b.pct}%` }}
                     />
                   </div>
-                  <span className="w-8 text-right text-muted-foreground">
-                    {b.pct}%
-                  </span>
+                  <span className="w-8 text-right text-muted-foreground">{b.pct}%</span>
                 </div>
               ))}
             </div>
@@ -415,17 +414,13 @@ function KosDetailPage() {
                       <Star
                         key={j}
                         className={`h-3.5 w-3.5 ${
-                          j < r.rating
-                            ? "fill-accent text-accent"
-                            : "text-muted-foreground/40"
+                          j < r.rating ? "fill-accent text-accent" : "text-muted-foreground/40"
                         }`}
                       />
                     ))}
                   </div>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {r.komentar}
-                </p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.komentar}</p>
               </li>
             ))}
           </ul>
