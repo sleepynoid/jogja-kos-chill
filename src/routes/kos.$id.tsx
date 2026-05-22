@@ -101,6 +101,13 @@ function KosDetailPage() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
+  const [duration, setDuration] = useState<number>(1);
+  const [checkIn, setCheckIn] = useState<string>("");
+
+  const discountFactor = duration === 3 ? 0.95 : duration === 6 ? 0.9 : duration === 12 ? 0.85 : 1;
+  const monthlyPrice = Math.round(kos.hargaPerBulan * discountFactor);
+  const totalPrice = monthlyPrice * duration;
+
   useEffect(() => {
     if (!api) return;
     setCurrent(api.selectedScrollSnap());
@@ -115,10 +122,11 @@ function KosDetailPage() {
     (k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis),
   ).slice(0, 3);
 
+  const bookingDetails = `di "${kos.nama}" (${kos.alamat}) untuk durasi ${duration} Bulan${checkIn ? ` mulai tanggal ${checkIn}` : ""}. Estimasi biaya: ${formatRupiah(totalPrice)}`;
   const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
     (kos.tersedia ?? true)
-      ? `Halo, saya tertarik dengan kos "${kos.nama}" di ${kos.alamat}. Apakah masih tersedia?`
-      : `Halo, saya ingin bergabung dengan waiting list untuk kos "${kos.nama}" di ${kos.alamat}.`,
+      ? `Halo, saya tertarik memesan kos ${bookingDetails}. Apakah masih tersedia?`
+      : `Halo, saya ingin bergabung dengan waiting list untuk kos ${bookingDetails}.`,
   )}`;
 
   const reviews = [
@@ -240,23 +248,84 @@ function KosDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5 relative overflow-hidden">
+          <div className="rounded-2xl border border-border bg-card p-5 relative overflow-hidden space-y-4">
             <PatraCorner
               position="top-right"
               className="top-1 right-1 opacity-20 text-brand-accent scale-75"
             />
-            <div className="text-xs text-muted-foreground relative z-10">Harga sewa</div>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-serif text-3xl font-bold text-primary">
-                {formatRupiah(kos.hargaPerBulan)}
-              </span>
-              <span className="text-sm font-normal text-muted-foreground">/ bulan</span>
-              {!(kos.tersedia ?? true) && (
-                <span className="ml-auto rounded bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
-                  Penuh
+
+            <div>
+              <div className="text-xs text-muted-foreground relative z-10">Harga sewa</div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="font-serif text-3xl font-bold text-primary">
+                  {formatRupiah(monthlyPrice)}
                 </span>
-              )}
+                <span className="text-sm font-normal text-muted-foreground">/ bulan</span>
+                {duration > 1 && (
+                  <span className="ml-2 rounded-full bg-brand-accent/10 px-2 py-0.5 text-[9px] font-bold text-brand-accent uppercase tracking-wider">
+                    Hemat {duration === 3 ? "5%" : duration === 6 ? "10%" : "15%"}
+                  </span>
+                )}
+                {!(kos.tersedia ?? true) && (
+                  <span className="ml-auto rounded bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
+                    Penuh
+                  </span>
+                )}
+              </div>
             </div>
+
+            {/* Premium Duration Selector Buttons */}
+            <div className="space-y-2">
+              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                Pilih Durasi Sewa
+              </p>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[
+                  { val: 1, label: "1 Bln", desc: "Standar" },
+                  { val: 3, label: "3 Bln", desc: "Hemat 5%" },
+                  { val: 6, label: "6 Bln", desc: "Hemat 10%" },
+                  { val: 12, label: "12 Bln", desc: "Hemat 15%" },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setDuration(opt.val)}
+                    className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl border text-center transition-all ${
+                      duration === opt.val
+                        ? "bg-primary border-primary text-primary-foreground shadow-sm font-bold"
+                        : "bg-secondary/40 border-transparent text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
+                    }`}
+                  >
+                    <span className="text-xs font-semibold">{opt.label}</span>
+                    <span className="text-[8px] font-medium opacity-85 mt-0.5">{opt.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Check-in Date Selector */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest block">
+                Tanggal Check-in
+              </label>
+              <input
+                type="date"
+                value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+                className="w-full bg-secondary/40 border-transparent rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:ring-1 focus:ring-accent focus:border-accent cursor-pointer"
+              />
+            </div>
+
+            {/* Total Price summary */}
+            {duration > 1 && (
+              <div className="bg-secondary/30 rounded-xl p-3 border border-border/50 flex justify-between items-center text-xs">
+                <span className="text-muted-foreground font-medium">Total ({duration} Bulan)</span>
+                <span className="font-bold text-foreground text-sm">
+                  {formatRupiah(totalPrice)}
+                </span>
+              </div>
+            )}
+
             <a
               href={waLink}
               target="_blank"
@@ -267,18 +336,15 @@ function KosDetailPage() {
                   namaKos: kos.nama,
                   namaCalon: "Pengunjung Baru",
                   telepon: "628" + Math.floor(100000000 + Math.random() * 900000000),
-                  pesan:
-                    (kos.tersedia ?? true)
-                      ? "Halo, saya tertarik dengan kos ini. Apakah masih tersedia?"
-                      : "Halo, saya ingin bergabung dengan waiting list.",
+                  pesan: `Halo, saya tertarik memesan kos di "${kos.nama}" (${kos.alamat}) untuk durasi ${duration} Bulan${checkIn ? ` mulai tanggal ${checkIn}` : ""}. Estimasi biaya: ${formatRupiah(totalPrice)}`,
                 });
                 toast.success(
                   (kos.tersedia ?? true)
-                    ? "Lead chat terkirim ke Mitra!"
-                    : "Pendaftaran waiting list terkirim ke Mitra!",
+                    ? "Lead reservasi terkirim ke Pemilik!"
+                    : "Pendaftaran waiting list terkirim ke Pemilik!",
                 );
               }}
-              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all active:scale-95 ${
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-bold text-white shadow-sm transition-all active:scale-95 ${
                 (kos.tersedia ?? true)
                   ? "bg-[#25D366] hover:bg-[#1ebe5d]"
                   : "bg-amber-600 hover:bg-amber-700"
