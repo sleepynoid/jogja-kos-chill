@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, ArrowRight, Star } from "lucide-react";
-import { KOS_LIST } from "@/lib/kos-data";
+import { useKosStore } from "@/lib/kos-store";
 import { KosCard } from "@/components/site/KosCard";
 import { BatikPattern, Gunungan, PatraCorner } from "@/components/site/Ornaments";
 
@@ -23,7 +23,8 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const featured = KOS_LIST.slice(0, 3);
+  const kosList = useKosStore();
+  const featured = kosList.slice(0, 3);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

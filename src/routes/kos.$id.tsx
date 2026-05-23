@@ -15,6 +15,7 @@ import {
   Car,
   Tv,
   CheckCircle2,
+  Heart,
 } from "lucide-react";
 import { KosCard } from "@/components/site/KosCard";
 import {
@@ -50,18 +51,35 @@ const WA_NUMBER = "6281234567890";
 export const Route = createFileRoute("/kos/$id")({
   loader: ({ params }) => {
     const kos = KOS_LIST.find((k) => k.id === params.id);
-    if (!kos) throw notFound();
-    return { kos };
+    if (kos) return { kos };
+
+    // Return a client-side stub for custom listings added via dashboard
+    return {
+      kos: {
+        id: params.id,
+        nama: "Kos Baru",
+        gambar: "",
+        daerah: "sleman",
+        alamat: "",
+        hargaPerBulan: 0,
+        rating: 4.5,
+        jenis: "campur",
+        fasilitas: [],
+        kampusTerdekat: [],
+        deskripsi: "",
+        isStub: true,
+      } as unknown as Kos,
+    };
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.kos.nama ?? "Detail Kos"} — Keep n Sleep` },
+      { title: `${loaderData?.kos?.nama ?? "Detail Kos"} — Keep n Sleep` },
       {
         name: "description",
-        content: loaderData?.kos.deskripsi ?? "Detail kos di Yogyakarta.",
+        content: loaderData?.kos?.deskripsi ?? "Detail kos di Yogyakarta.",
       },
-      { property: "og:title", content: loaderData?.kos.nama ?? "Detail Kos" },
-      { property: "og:image", content: loaderData?.kos.gambar ?? "" },
+      { property: "og:title", content: loaderData?.kos?.nama ?? "Detail Kos" },
+      { property: "og:image", content: loaderData?.kos?.gambar ?? "" },
     ],
   }),
   notFoundComponent: () => (
@@ -89,9 +107,17 @@ export const Route = createFileRoute("/kos/$id")({
 });
 
 function KosDetailPage() {
-  const { kos: initialKos } = Route.useLoaderData() as { kos: Kos };
+  const { kos: initialKos } = Route.useLoaderData() as { kos: Kos & { isStub?: boolean } };
   const kosList = useKosStore();
-  const kos = kosList.find((k) => k.id === initialKos.id) ?? initialKos;
+
+  // Try to find the item in our custom localstorage store.
+  // Fallback to initialKos if it was a statically seeded item (not a stub).
+  const kos =
+    kosList.find((k) => k.id === initialKos.id) ?? (initialKos.isStub ? undefined : initialKos);
+
+  if (!kos) {
+    throw notFound();
+  }
   const jenisLabel = JENIS_KOS.find((j) => j.value === kos.jenis)?.label;
   const kampusLabels = kos.kampusTerdekat
     .map((k) => KAMPUS_LIST.find((c) => c.value === k)?.label)
@@ -103,6 +129,41 @@ function KosDetailPage() {
 
   const [duration, setDuration] = useState<number>(1);
   const [checkIn, setCheckIn] = useState<string>("");
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = localStorage.getItem("knsleep:wishlist:v1");
+      if (stored) {
+        const ids = JSON.parse(stored) as string[];
+        setIsWishlisted(ids.includes(kos.id));
+      }
+    } catch (e) {
+      console.error("Failed to load wishlist state", e);
+    }
+  }, [kos.id]);
+
+  const toggleWishlist = () => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = localStorage.getItem("knsleep:wishlist:v1") || "[]";
+      let ids = JSON.parse(stored) as string[];
+      if (ids.includes(kos.id)) {
+        ids = ids.filter((id) => id !== kos.id);
+        setIsWishlisted(false);
+        toast.success("Dihapus dari wishlist!");
+      } else {
+        ids.push(kos.id);
+        setIsWishlisted(true);
+        toast.success("Ditambahkan ke wishlist!");
+      }
+      localStorage.setItem("knsleep:wishlist:v1", JSON.stringify(ids));
+    } catch (e) {
+      console.error("Failed to update wishlist state", e);
+      toast.error("Gagal memperbarui wishlist");
+    }
+  };
 
   const discountFactor = duration === 3 ? 0.95 : duration === 6 ? 0.9 : duration === 12 ? 0.85 : 1;
   const monthlyPrice = Math.round(kos.hargaPerBulan * discountFactor);
@@ -118,9 +179,9 @@ function KosDetailPage() {
     };
   }, [api]);
 
-  const lainnya = KOS_LIST.filter(
-    (k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis),
-  ).slice(0, 3);
+  const lainnya = kosList
+    .filter((k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis))
+    .slice(0, 3);
 
   const bookingDetails = `di "${kos.nama}" (${kos.alamat}) untuk durasi ${duration} Bulan${checkIn ? ` mulai tanggal ${checkIn}` : ""}. Estimasi biaya: ${formatRupiah(totalPrice)}`;
   const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
@@ -237,7 +298,26 @@ function KosDetailPage() {
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
               <span className="inline-block h-1.5 w-8 rounded-full bg-accent" /> Kos Pilihan
             </div>
-            <h1 className="mt-2 font-serif text-3xl font-bold md:text-4xl">{kos.nama}</h1>
+            <div className="mt-2 flex items-start justify-between gap-4">
+              <h1 className="font-serif text-3xl font-bold md:text-4xl leading-tight">
+                {kos.nama}
+              </h1>
+              <button
+                onClick={toggleWishlist}
+                className={`group p-2.5 rounded-full border transition-all cursor-pointer ${
+                  isWishlisted
+                    ? "bg-red-50 border-red-200 text-red-500 shadow-sm"
+                    : "bg-background border-border text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
+                }`}
+                title={isWishlisted ? "Hapus dari Wishlist" : "Tambah ke Wishlist"}
+              >
+                <Heart
+                  className={`h-5 w-5 transition-transform duration-300 group-hover:scale-110 ${
+                    isWishlisted ? "fill-red-500" : ""
+                  }`}
+                />
+              </button>
+            </div>
             <div className="mt-2 flex items-center gap-3 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" /> {kos.alamat}
@@ -385,7 +465,10 @@ function KosDetailPage() {
           <h2 className="font-serif text-xl font-bold">Fasilitas Lengkap</h2>
           <ul className="mt-3 grid grid-cols-2 gap-2">
             {kos.fasilitas.map((f) => {
-              const Icon = ICONS[f] ?? CheckCircle2;
+              const matchKey = Object.keys(ICONS).find(
+                (key) => key.toLowerCase() === f.trim().toLowerCase(),
+              );
+              const Icon = (matchKey ? ICONS[matchKey] : undefined) ?? CheckCircle2;
               return (
                 <li
                   key={f}

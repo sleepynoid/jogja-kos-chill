@@ -78,19 +78,32 @@ function KatalogPage() {
     const activeFasilitas = search.fasilitas ? search.fasilitas.split(",").filter(Boolean) : [];
 
     const list = kosList.filter((k) => {
-      if (search.kampus && !k.kampusTerdekat.includes(search.kampus)) return false;
+      const kampusList = k.kampusTerdekat ?? [];
+      const fasList = k.fasilitas ?? [];
+      const nama = k.nama ?? "";
+      const alamat = k.alamat ?? "";
+      const deskripsi = k.deskripsi ?? "";
+
+      if (search.kampus && !kampusList.includes(search.kampus)) return false;
       if (search.daerah && k.daerah !== search.daerah) return false;
       if (search.jenis && k.jenis !== search.jenis) return false;
       if (search.minHarga && k.hargaPerBulan < search.minHarga) return false;
       if (search.maxHarga && k.hargaPerBulan > search.maxHarga) return false;
-      if (activeFasilitas.length > 0 && !activeFasilitas.every((f) => k.fasilitas.includes(f)))
+      if (
+        activeFasilitas.length > 0 &&
+        !activeFasilitas.every((filterFac) =>
+          fasList.some(
+            (userFac) => userFac.trim().toLowerCase() === filterFac.trim().toLowerCase(),
+          ),
+        )
+      )
         return false;
       if (
         q &&
         !(
-          k.nama.toLowerCase().includes(q) ||
-          k.alamat.toLowerCase().includes(q) ||
-          k.deskripsi.toLowerCase().includes(q)
+          nama.toLowerCase().includes(q) ||
+          alamat.toLowerCase().includes(q) ||
+          deskripsi.toLowerCase().includes(q)
         )
       )
         return false;

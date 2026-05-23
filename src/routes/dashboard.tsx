@@ -127,7 +127,7 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
       </div>
 
       {/* Stat cards */}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           icon={<Eye className="h-5 w-5" />}
           label="Total Pengunjung"
@@ -140,12 +140,12 @@ function Dashboard({ kosList }: { kosList: Kos[] }) {
           value={aggregate.minggu.toLocaleString("id-ID")}
           sub="+12% vs minggu lalu"
         />
-        <StatCard
+        {/* <StatCard
           icon={<MessageSquare className="h-5 w-5" />}
           label="Kontak Masuk"
           value={aggregate.kontak.toLocaleString("id-ID")}
           sub="Chat & telepon WA"
-        />
+        /> */}
         <StatCard
           icon={<Heart className="h-5 w-5" />}
           label="Favorit"

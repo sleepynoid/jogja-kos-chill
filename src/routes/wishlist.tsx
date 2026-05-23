@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, MapPin, Star, ArrowRight, Trash2, Search } from "lucide-react";
 import { BatikPattern } from "@/components/site/Ornaments";
-import { KOS_LIST } from "@/lib/kos-data";
+import { useKosStore } from "@/lib/kos-store";
 
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
@@ -23,6 +23,7 @@ const STORAGE_KEY = "knsleep:wishlist:v1";
 function Wishlist() {
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const kosList = useKosStore();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -51,7 +52,7 @@ function Wishlist() {
   };
 
   // Get matching real Kos objects from catalog
-  const wishlistItems = KOS_LIST.filter((item) => wishlistIds.includes(item.id));
+  const wishlistItems = kosList.filter((item) => wishlistIds.includes(item.id));
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID").format(price);
