@@ -577,7 +577,7 @@ function KosDetailPage() {
       </section>
 
       {lainnya.length > 0 && (
-        <section className="mt-12 relative overflow-hidden rounded-3xl bg-secondary/30 dark:bg-zinc-900/50 p-6 md:p-8 border border-border">
+        <section className="mt-12 relative overflow-hidden rounded-3xl bg-secondary/30 p-6 md:p-8 border border-border">
           <BatikPattern variant="nitik" className="opacity-[0.18]" />
           <div className="relative z-10">
             <h2 className="mb-5 font-serif text-2xl font-bold">Kos Serupa</h2>

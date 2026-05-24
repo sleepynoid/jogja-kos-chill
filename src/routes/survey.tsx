@@ -177,7 +177,7 @@ function Survey() {
       <BatikPattern variant="parang" className="opacity-[0.24]" />
 
       {/* Decorative Traditional Header */}
-      <div className="pt-32 pb-16 bg-gradient-to-b from-brand-primary/10 via-transparent to-transparent relative">
+      <div className="pt-32 pb-16 bg-gradient-to-b from-primary/10 via-transparent to-transparent relative">
         <div className="max-w-7xl mx-auto px-6 text-center space-y-4">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -192,69 +192,67 @@ function Survey() {
           <motion.h1
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-4xl md:text-6xl font-display font-bold text-brand-primary tracking-tight leading-none dark:text-white"
+            className="text-4xl md:text-6xl font-display font-bold text-foreground tracking-tight leading-none"
           >
             Jasa Survey Kost <span className="text-brand-accent italic font-light">Eksklusif.</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-gray-500 max-w-2xl mx-auto text-base md:text-lg font-light leading-relaxed dark:text-gray-400"
+            transition={{ delay: 0.2 }}
+            className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed px-4"
           >
-            Mager di luar kota tapi butuh nyari kost di Jogja? Biarkan surveyor profesional kami
-            yang datang langsung ke lokasi, memverifikasi kamar pilihan Anda secara objektif.
+            Mager di luar kota tapi butuh nyari kost di Jogja? Khawatir tertipu foto iklan? Biarkan
+            surveyor profesional kami yang datang langsung ke lokasi untuk verifikasi real-time
+            untuk Anda!
           </motion.p>
         </div>
-
-        <Gunungan className="absolute right-4 md:right-16 bottom-0 w-24 md:w-36 opacity-10 pointer-events-none text-brand-primary dark:text-white" />
-        <Gunungan className="absolute left-4 md:left-16 bottom-0 w-24 md:w-36 opacity-10 pointer-events-none text-brand-accent" />
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 pb-24 space-y-24">
-        {/* LAYANAN DETAIL: Premium vs Biasa Panel */}
-        <section className="space-y-12">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-display font-bold text-brand-primary dark:text-white">
-              Dua Opsi Kelas <span className="text-brand-accent italic font-light">Layanan</span>
+      <main className="max-w-7xl mx-auto px-6 pb-32 space-y-32 relative z-10">
+        {/* TIER PRICING SECTIONS */}
+        <section className="space-y-16">
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-display font-bold text-foreground">
+              Pilihan Paket{" "}
+              <span className="text-brand-accent italic font-light">Layanan Jasa</span>
             </h2>
-            <p className="text-gray-400 text-sm max-w-md mx-auto">
+            <p className="text-muted-foreground text-sm max-w-md mx-auto">
               Sesuaikan dengan kebutuhan verifikasi detail hunian idaman Anda.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 max-w-5xl mx-auto">
             {/* JASA SURVEY BIASA */}
             <motion.div
               whileHover={{ y: -8 }}
-              className={`bg-white dark:bg-zinc-900 rounded-[3rem] p-10 border transition-all relative flex flex-col justify-between ${selectedServiceTier === "biasa" ? "border-gray-300 dark:border-zinc-700 shadow-xl" : "border-gray-100 dark:border-zinc-800 shadow-sm opacity-90"}`}
+              className={`bg-card rounded-[3rem] p-6 sm:p-10 border transition-all relative flex flex-col justify-between ${selectedServiceTier === "biasa" ? "border-muted shadow-xl" : "border-border shadow-sm opacity-90"}`}
               id="layanan-biasa-card"
             >
               <div className="space-y-6">
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
-                    <span className="text-[9px] font-bold tracking-widest text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-zinc-800 px-3 py-1 rounded-full border border-gray-100 dark:border-zinc-700 uppercase">
+                    <span className="text-[9px] font-bold tracking-widest text-muted-foreground bg-secondary px-3 py-1 rounded-full border border-border uppercase">
                       Standar Paket
                     </span>
-                    <h3 className="text-2xl font-display font-bold text-brand-primary dark:text-white">
+                    <h3 className="text-2xl font-display font-bold text-foreground">
                       Surveyor Biasa
                     </h3>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
-                      Biaya Jasa
-                    </p>
-                    <p className="text-3xl font-display font-bold text-brand-primary dark:text-white">
+                    <p className="text-xs text-muted-foreground font-medium">Biaya Jasa</p>
+                    <p className="text-3xl font-display font-bold text-foreground">
                       Rp 35<span className="text-brand-accent">.000</span>
                     </p>
                   </div>
                 </div>
 
-                <p className="text-gray-400 dark:text-gray-500 text-sm leading-relaxed font-light">
+                <p className="text-muted-foreground text-sm leading-relaxed font-light">
                   Layanan inspeksi dasar yang andal untuk memastikan spesifikasi utama kost sesuai
                   dengan deskripsi yang dipasang pemilik.
                 </p>
 
-                <hr className="border-gray-100 dark:border-zinc-800" />
+                <hr className="border-border" />
 
                 <ul className="space-y-4">
                   {[
@@ -264,10 +262,7 @@ function Survey() {
                     "Estimasi kebenaran alamat lokasi",
                     "Laporan digital dikirim dalam 48 Jam via WA",
                   ].map((feat, i) => (
-                    <li
-                      key={i}
-                      className="flex gap-3 text-sm font-medium text-brand-primary/80 dark:text-white/80"
-                    >
+                    <li key={i} className="flex gap-3 text-sm font-medium text-foreground/80">
                       <div className="w-5 h-5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-emerald-100 dark:border-emerald-900/50">
                         <Check size={12} strokeWidth={3} />
                       </div>
@@ -280,11 +275,8 @@ function Survey() {
                     "Pengecekan mendalam (Air, Sinyal, Kasur)",
                     "Garansi Prioritas 24 jam",
                   ].map((feat, i) => (
-                    <li
-                      key={i}
-                      className="flex gap-3 text-sm font-medium text-gray-300 dark:text-zinc-700"
-                    >
-                      <div className="w-5 h-5 bg-gray-50 dark:bg-zinc-850 text-gray-300 dark:text-zinc-700 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-gray-100 dark:border-zinc-800">
+                    <li key={i} className="flex gap-3 text-sm font-medium text-muted-foreground/35">
+                      <div className="w-5 h-5 bg-secondary text-muted-foreground/30 rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-border">
                         <X size={10} strokeWidth={3} />
                       </div>
                       <span className="line-through">{feat}</span>
@@ -301,7 +293,7 @@ function Survey() {
                     setSelectedServiceTier("biasa");
                     handleOpenBookingModal(null, true);
                   }}
-                  className={`w-full py-4 rounded-[2rem] font-bold text-sm uppercase tracking-widest border transition-all ${selectedServiceTier === "biasa" ? "bg-brand-primary dark:bg-white text-white dark:text-zinc-900 border-brand-primary dark:border-white shadow-xl shadow-brand-primary/10" : "bg-white dark:bg-zinc-850 text-gray-500 border-gray-200 dark:border-zinc-800 hover:text-brand-primary dark:hover:text-white hover:border-brand-primary dark:hover:border-white"}`}
+                  className={`w-full py-4 rounded-[2rem] font-bold text-sm uppercase tracking-widest border transition-all ${selectedServiceTier === "biasa" ? "bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/10" : "bg-secondary text-muted-foreground border-border hover:text-foreground hover:border-foreground"}`}
                 >
                   Pilih Surveyor Biasa
                 </motion.button>
@@ -311,7 +303,7 @@ function Survey() {
             {/* JASA SURVEY PREMIUM */}
             <motion.div
               whileHover={{ y: -8 }}
-              className={`bg-white dark:bg-zinc-900 rounded-[3rem] p-10 border transition-all relative flex flex-col justify-between overflow-hidden ${selectedServiceTier === "premium" ? "border-brand-accent shadow-2xl shadow-brand-accent/5" : "border-gray-100 dark:border-zinc-800 shadow-sm opacity-90"}`}
+              className={`bg-card rounded-[3rem] p-6 sm:p-10 border transition-all relative flex flex-col justify-between overflow-hidden ${selectedServiceTier === "premium" ? "border-brand-accent shadow-2xl shadow-brand-accent/5" : "border-border shadow-sm opacity-90"}`}
               id="layanan-premium-card"
             >
               {/* Premium Badge Glow */}
@@ -325,7 +317,7 @@ function Survey() {
                     <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-widest text-brand-accent bg-brand-accent/10 px-3 py-1 rounded-full border border-brand-accent/20 uppercase">
                       <Sparkles size={10} className="fill-brand-accent" /> Premium Paket
                     </span>
-                    <h3 className="text-2xl font-display font-bold text-brand-primary dark:text-white flex items-center gap-2">
+                    <h3 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
                       Surveyor Premium
                     </h3>
                   </div>
@@ -333,18 +325,18 @@ function Survey() {
                     <p className="text-xs text-brand-accent font-bold uppercase tracking-widest">
                       Biaya Jasa
                     </p>
-                    <p className="text-3xl font-display font-bold text-brand-primary dark:text-white">
+                    <p className="text-3xl font-display font-bold text-foreground">
                       Rp 85<span className="text-brand-accent">.000</span>
                     </p>
                   </div>
                 </div>
 
-                <p className="text-gray-400 dark:text-gray-500 text-sm leading-relaxed font-light">
+                <p className="text-muted-foreground text-sm leading-relaxed font-light">
                   Layanan VIP terlengkap dengan verifikasi langsung multi-sensor luar dalam secara
                   detail, layaknya Anda sendiri yang pergi ke lokasi!
                 </p>
 
-                <hr className="border-gray-100 dark:border-zinc-800" />
+                <hr className="border-border" />
 
                 <ul className="space-y-4">
                   {[
@@ -356,10 +348,7 @@ function Survey() {
                     "Laporan digital PDF resmi + Bukti Video HD dalam 24 Jam!",
                     "Garansi refund 100% jika kamar telah tersewa sebelum dicek",
                   ].map((feat, i) => (
-                    <li
-                      key={i}
-                      className="flex gap-3 text-sm font-semibold text-brand-primary dark:text-white"
-                    >
+                    <li key={i} className="flex gap-3 text-sm font-semibold text-foreground">
                       <div className="w-5 h-5 bg-brand-accent/10 text-brand-accent rounded-full flex items-center justify-center shrink-0 mt-0.5 border border-brand-accent/25">
                         <Check size={12} strokeWidth={3.5} />
                       </div>
@@ -377,7 +366,7 @@ function Survey() {
                     setSelectedServiceTier("premium");
                     handleOpenBookingModal(null, true);
                   }}
-                  className={`w-full py-4 rounded-[2rem] font-bold text-sm uppercase tracking-widest border transition-all ${selectedServiceTier === "premium" ? "bg-brand-accent text-white border-brand-accent shadow-xl shadow-brand-accent/20" : "bg-white dark:bg-zinc-850 text-gray-500 border-gray-200 dark:border-zinc-800 hover:text-brand-accent"}`}
+                  className={`w-full py-4 rounded-[2rem] font-bold text-sm uppercase tracking-widest border transition-all ${selectedServiceTier === "premium" ? "bg-brand-accent text-white border-brand-accent shadow-xl shadow-brand-accent/20" : "bg-card text-muted-foreground border-border hover:text-brand-accent hover:border-brand-accent"}`}
                 >
                   Pilih Surveyor Premium
                 </motion.button>
@@ -389,11 +378,11 @@ function Survey() {
         {/* LOKASI KOST TERDEKAT (RADIUS SELECTOR SECTIONS) */}
         <section className="space-y-12">
           <div className="text-center space-y-3">
-            <h2 className="text-3xl font-display font-bold text-brand-primary dark:text-white">
+            <h2 className="text-3xl font-display font-bold text-foreground">
               Cakupan Lokasi &{" "}
               <span className="text-brand-accent italic font-light">Radius Jarak</span>
             </h2>
-            <p className="text-gray-400 text-sm max-w-xl mx-auto">
+            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
               Pilih universitas target Anda di Yogyakarta, lalu lihat pembagian zona jarak kami
               untuk mengestimasi biaya surveyor.
             </p>
@@ -407,24 +396,24 @@ function Survey() {
                 whileTap={{ scale: 0.95 }}
                 key={uni.id}
                 onClick={() => setSelectedUni(uni.id)}
-                className={`px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all border ${selectedUni === uni.id ? "bg-brand-primary dark:bg-white border-brand-primary dark:border-white text-white dark:text-zinc-900 shadow-lg" : "bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-850 text-gray-500 hover:border-brand-accent hover:text-brand-accent"}`}
+                className={`px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all border ${selectedUni === uni.id ? "bg-primary border-primary text-primary-foreground shadow-lg" : "bg-card border-border text-muted-foreground hover:border-brand-accent hover:text-brand-accent"}`}
               >
                 {uni.short}
               </motion.button>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-stretch">
             {/* Interactive Radius Visual / Map Simulator (Tailwind + SVG Beautiful Illustration) */}
-            <div className="lg:col-span-5 bg-white dark:bg-zinc-900 rounded-[3.5rem] border border-gray-100 dark:border-zinc-800 p-10 flex flex-col justify-between pointer-events-auto relative shadow-sm overflow-hidden min-h-[420px]">
+            <div className="lg:col-span-5 bg-card rounded-[3.5rem] border border-border p-6 sm:p-10 flex flex-col justify-between pointer-events-auto relative shadow-sm overflow-hidden min-h-[420px]">
               <div className="space-y-1 z-10">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-accent">
                   Interactive Visualizer
                 </span>
-                <h4 className="text-xl font-display font-bold text-brand-primary dark:text-white">
+                <h4 className="text-xl font-display font-bold text-foreground">
                   Peta Jarak Radius {currentUni.short}
                 </h4>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   Tekan tombol zona di bawah untuk memfilter daftar Kost di sebelah kanan.
                 </p>
               </div>
@@ -435,9 +424,9 @@ function Survey() {
                 <motion.div
                   animate={{ scale: activeDistanceTier === "jauh" ? [1, 1.04, 1] : 1 }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className={`absolute rounded-full border-2 border-dashed flex items-center justify-center transition-all ${activeDistanceTier === "jauh" ? "w-64 h-64 border-brand-accent/40 bg-brand-accent/5" : "w-56 h-56 border-gray-100 dark:border-zinc-800"}`}
+                  className={`absolute rounded-full border-2 border-dashed flex items-center justify-center transition-all ${activeDistanceTier === "jauh" ? "w-64 h-64 border-brand-accent/40 bg-brand-accent/5" : "w-56 h-56 border-border"}`}
                 >
-                  <span className="absolute bottom-1 right-2 text-[8px] font-mono font-bold text-gray-300 dark:text-zinc-700 uppercase tracking-widest">
+                  <span className="absolute bottom-1 right-2 text-[8px] font-mono font-bold text-muted-foreground/35 uppercase tracking-widest">
                     Zona 3: Jauh (&gt; 5 KM)
                   </span>
                 </motion.div>
@@ -446,9 +435,9 @@ function Survey() {
                 <motion.div
                   animate={{ scale: activeDistanceTier === "sedang" ? [1, 1.06, 1] : 1 }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className={`absolute rounded-full border flex items-center justify-center transition-all ${activeDistanceTier === "sedang" ? "w-44 h-44 border-brand-primary/30 bg-brand-primary/5" : "w-36 h-36 border-gray-100 dark:border-zinc-800"}`}
+                  className={`absolute rounded-full border flex items-center justify-center transition-all ${activeDistanceTier === "sedang" ? "w-44 h-44 border-primary/30 bg-primary/5" : "w-36 h-36 border-border"}`}
                 >
-                  <span className="absolute top-2 left-1 text-[8px] font-mono font-bold text-brand-primary/30 dark:text-white/20 uppercase tracking-widest">
+                  <span className="absolute top-2 left-1 text-[8px] font-mono font-bold text-foreground/30 uppercase tracking-widest">
                     Zona 2: Sedang (2-5 KM)
                   </span>
                 </motion.div>
@@ -457,7 +446,7 @@ function Survey() {
                 <motion.div
                   animate={{ scale: activeDistanceTier === "dekat" ? [1, 1.08, 1] : 1 }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className={`absolute rounded-full border flex items-center justify-center transition-all ${activeDistanceTier === "dekat" ? "w-24 h-24 border-brand-accent/50 bg-brand-accent/10 shadow-inner" : "w-20 h-20 border-gray-100 dark:border-zinc-800"}`}
+                  className={`absolute rounded-full border flex items-center justify-center transition-all ${activeDistanceTier === "dekat" ? "w-24 h-24 border-brand-accent/50 bg-brand-accent/10 shadow-inner" : "w-20 h-20 border-border"}`}
                 >
                   <span className="absolute text-[8px] font-mono font-bold text-brand-accent/60 uppercase tracking-widest mt-10">
                     Zona 1: Dekat (&lt; 2 KM)
@@ -467,7 +456,7 @@ function Survey() {
                 {/* Center Node: Selected University Landmark */}
                 <motion.div
                   whileHover={{ scale: 1.1 }}
-                  className="absolute w-12 h-12 bg-brand-primary dark:bg-white rounded-full flex items-center justify-center text-white dark:text-zinc-900 z-20 shadow-xl border-4 border-white dark:border-zinc-900"
+                  className="absolute w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground z-20 shadow-xl border-4 border-card"
                 >
                   <Navigation size={18} className="rotate-45 animate-pulse text-brand-accent" />
                 </motion.div>
@@ -476,35 +465,35 @@ function Survey() {
                 <div className="absolute w-12 h-12 rounded-full border border-brand-accent/40 animate-ping opacity-60 z-10" />
 
                 {/* Interactive labels pointer float cards */}
-                <div className="absolute top-6 right-6 flex items-center gap-1.5 bg-brand-primary dark:bg-white text-white dark:text-zinc-900 text-[9px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-lg shadow-md border border-white/5">
+                <div className="absolute top-6 right-6 flex items-center gap-1.5 bg-primary text-primary-foreground text-[9px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-lg shadow-md border border-border">
                   <MapPin size={10} className="text-brand-accent" />
                   <span>Kampus {currentUni.short}</span>
                 </div>
               </div>
 
               {/* Three Zones Category Toggles */}
-              <div className="grid grid-cols-4 gap-2 pt-4 border-t border-gray-100 dark:border-zinc-800 z-10">
+              <div className="grid grid-cols-4 gap-2 pt-4 border-t border-border z-10">
                 <button
                   onClick={() => setActiveDistanceTier("semua")}
-                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "semua" ? "bg-brand-primary dark:bg-white border-brand-primary dark:border-white text-white dark:text-zinc-900 shadow-md" : "bg-gray-50 dark:bg-zinc-850 border-gray-50 dark:border-zinc-850 text-gray-400 hover:border-gray-200 dark:hover:border-zinc-700"}`}
+                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "semua" ? "bg-primary border-primary text-primary-foreground shadow-md" : "bg-secondary border-border text-muted-foreground hover:border-foreground hover:text-foreground"}`}
                 >
                   Semua
                 </button>
                 <button
                   onClick={() => setActiveDistanceTier("dekat")}
-                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "dekat" ? "bg-brand-accent border-brand-accent text-white shadow-md" : "bg-gray-50 dark:bg-zinc-850 border-gray-50 dark:border-zinc-850 text-gray-400 hover:border-brand-accent/50 hover:text-brand-accent"}`}
+                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "dekat" ? "bg-brand-accent border-brand-accent text-white shadow-md" : "bg-secondary border-border text-muted-foreground hover:border-brand-accent hover:text-brand-accent"}`}
                 >
                   Terdekat
                 </button>
                 <button
                   onClick={() => setActiveDistanceTier("sedang")}
-                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "sedang" ? "bg-brand-accent border-brand-accent text-white shadow-md" : "bg-gray-50 dark:bg-zinc-850 border-gray-50 dark:border-zinc-850 text-gray-400 hover:border-brand-accent/50 hover:text-brand-accent"}`}
+                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "sedang" ? "bg-brand-accent border-brand-accent text-white shadow-md" : "bg-secondary border-border text-muted-foreground hover:border-brand-accent hover:text-brand-accent"}`}
                 >
                   Tengah²
                 </button>
                 <button
                   onClick={() => setActiveDistanceTier("jauh")}
-                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "jauh" ? "bg-brand-accent border-brand-accent text-white shadow-md" : "bg-gray-50 dark:bg-zinc-850 border-gray-50 dark:border-zinc-850 text-gray-400 hover:border-brand-accent/50 hover:text-brand-accent"}`}
+                  className={`py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all border ${activeDistanceTier === "jauh" ? "bg-brand-accent border-brand-accent text-white shadow-md" : "bg-secondary border-border text-muted-foreground hover:border-brand-accent hover:text-brand-accent"}`}
                 >
                   Jauh
                 </button>
@@ -514,10 +503,10 @@ function Survey() {
             {/* List Kost Terdekat Catalog */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
               <div className="flex justify-between items-center px-2">
-                <span className="font-bold text-sm text-brand-primary dark:text-white">
+                <span className="font-bold text-sm text-foreground">
                   Hasil Pencarian Untuk Radius {currentUni.short}:
                 </span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-zinc-850 border border-gray-100 dark:border-zinc-800 px-3 py-1 rounded-full">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-secondary border border-border px-3 py-1 rounded-full">
                   {filteredKost.length} Kost Cocok
                 </span>
               </div>
@@ -531,60 +520,58 @@ function Survey() {
                     tier === "dekat" ? "Terdekat" : tier === "sedang" ? "Tengah-tengah" : "Jauh";
                   const parsedTierColor =
                     tier === "dekat"
-                      ? "text-emerald-500 bg-emerald-50 border-emerald-100"
+                      ? "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30"
                       : tier === "sedang"
-                        ? "text-blue-500 bg-blue-50 border-blue-100"
-                        : "text-amber-500 bg-amber-50 border-amber-100";
+                        ? "text-blue-500 bg-blue-50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900/30"
+                        : "text-amber-500 bg-amber-50 dark:bg-amber-950/20 border-amber-100 dark:border-amber-900/30";
 
                   return (
                     <motion.div
                       layout
                       whileHover={{ y: -5 }}
                       key={kost.id}
-                      className="bg-white dark:bg-zinc-900 rounded-3xl p-5 border border-gray-100 dark:border-zinc-800 shadow-sm flex flex-col justify-between hover:shadow-xl hover:shadow-brand-accent/5 transition-all"
+                      className="bg-card rounded-3xl p-5 border border-border shadow-sm flex flex-col justify-between hover:shadow-xl hover:shadow-brand-accent/5 transition-all"
                     >
                       <div className="space-y-4">
-                        <div className="relative aspect-[16/10] bg-gray-50 dark:bg-zinc-850 rounded-2xl overflow-hidden">
+                        <div className="relative aspect-[16/10] bg-secondary rounded-2xl overflow-hidden">
                           <img
                             src={kost.image}
                             alt={kost.name}
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
-                            <span className="bg-brand-primary/95 dark:bg-zinc-900/95 text-white text-[8px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-lg">
+                            <span className="bg-primary/95 text-primary-foreground text-[8px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-lg">
                               {kost.type}
                             </span>
                           </div>
 
-                          <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10 dark:border-zinc-800/10">
+                          <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-card/90 backdrop-blur-md px-2 py-1 rounded-lg border border-border">
                             <Star size={10} className="fill-brand-accent text-brand-accent" />
-                            <span className="text-[10px] font-bold text-brand-primary dark:text-white">
+                            <span className="text-[10px] font-bold text-foreground">
                               {kost.rating}
                             </span>
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
-                          <h5 className="font-display font-bold text-lg text-brand-primary dark:text-white leading-snug line-clamp-1 group-hover:text-brand-accent transition-colors">
+                          <h5 className="font-display font-bold text-lg text-foreground leading-snug line-clamp-1 group-hover:text-brand-accent transition-colors">
                             {kost.name}
                           </h5>
-                          <p className="text-[11px] font-medium text-gray-400 flex items-center gap-1">
+                          <p className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
                             <MapPin size={11} className="text-brand-accent" />
                             <span className="truncate">{kost.address}</span>
                           </p>
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-gray-50 dark:border-zinc-850 flex items-center justify-between mt-4">
+                      <div className="pt-4 border-t border-border flex items-center justify-between mt-4">
                         {/* Status Jangkauan / Jarak */}
                         <div className="space-y-0.5">
-                          <p className="text-[8px] font-bold uppercase tracking-widest text-gray-400">
+                          <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground">
                             Jarak Dari Kampus
                           </p>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-brand-primary dark:text-white">
-                              {dist} KM
-                            </span>
+                            <span className="text-sm font-bold text-foreground">{dist} KM</span>
                             <span
                               className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${parsedTierColor}`}
                             >
@@ -597,7 +584,7 @@ function Survey() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleOpenBookingModal(kost, false)}
-                          className="px-4 py-2 bg-brand-primary dark:bg-white text-white dark:text-zinc-900 text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-brand-accent hover:text-white transition-all shadow-sm flex items-center gap-1.5"
+                          className="px-4 py-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-brand-accent hover:text-white transition-all shadow-sm flex items-center gap-1.5"
                         >
                           Pesan Survey <ArrowRight size={10} />
                         </motion.button>
@@ -608,14 +595,14 @@ function Survey() {
               </div>
 
               {/* Custom Order Box Option */}
-              <div className="bg-brand-primary/5 dark:bg-zinc-850/30 rounded-[2.5rem] border border-brand-accent/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+              <div className="bg-primary/5 rounded-[2.5rem] border border-brand-accent/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                 <BatikPattern variant="parang" className="opacity-[0.35]" />
                 <div className="space-y-1.5 z-10 text-center md:text-left">
-                  <h4 className="font-display font-bold text-lg text-brand-primary dark:text-white flex items-center justify-center md:justify-start gap-2">
+                  <h4 className="font-display font-bold text-lg text-foreground flex items-center justify-center md:justify-start gap-2">
                     <Compass size={18} className="text-brand-accent" /> Kost target tidak ada di
                     atas?
                   </h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 max-w-md">
+                  <p className="text-xs text-muted-foreground max-w-md">
                     Anda bisa memasukkan nama dan alamat kost pilihan sendiri untuk disurvey oleh
                     tim kami.
                   </p>
@@ -634,21 +621,21 @@ function Survey() {
         </section>
 
         {/* TRUST BADGES / HOW IT WORKS */}
-        <section className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[4rem] p-12 md:p-20 shadow-sm relative overflow-hidden">
+        <section className="bg-card border border-border rounded-[4rem] p-6 sm:p-12 md:p-20 shadow-sm relative overflow-hidden">
           <BatikPattern variant="kawung" className="opacity-[0.24]" />
           <div className="text-center space-y-2 mb-8 relative z-10 animate-fade-in">
-            <h3 className="text-3xl font-display font-semibold text-brand-primary dark:text-white">
+            <h3 className="text-3xl font-display font-semibold text-foreground">
               Bagaimana Cara{" "}
               <span className="text-brand-accent italic font-light">Kerja Jasa Survey?</span>
             </h3>
-            <p className="text-gray-400 text-sm max-w-sm mx-auto">
+            <p className="text-muted-foreground text-sm max-w-sm mx-auto">
               Hanya 3 langkah mudah sampai hasil laporan survey tiba di HP Anda.
             </p>
           </div>
 
           {/* Step-by-Step Progress Bar */}
           <div className="relative max-w-3xl mx-auto my-12 z-10 hidden md:block">
-            <div className="absolute top-1/2 left-0 right-0 h-3 bg-gray-100 dark:bg-zinc-800 rounded-full -translate-y-1/2 overflow-hidden border border-gray-200/50 dark:border-zinc-700/50">
+            <div className="absolute top-1/2 left-0 right-0 h-3 bg-secondary rounded-full -translate-y-1/2 overflow-hidden border border-border">
               <div className="absolute inset-0 bg-brand-accent/10" />
               <BatikPattern variant="parang" className="opacity-30" />
             </div>
@@ -670,12 +657,12 @@ function Survey() {
                   <div key={idx} className="flex flex-col items-center gap-3">
                     <motion.div
                       whileHover={{ scale: 1.1 }}
-                      className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all shadow-md relative z-10 ${isActive ? "bg-brand-accent text-white border-brand-accent" : "bg-white dark:bg-zinc-900 text-gray-400 border-gray-100 dark:border-zinc-800"}`}
+                      className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all shadow-md relative z-10 ${isActive ? "bg-brand-accent text-white border-brand-accent" : "bg-card text-muted-foreground border-border"}`}
                     >
                       <Icon size={18} />
                     </motion.div>
                     <span
-                      className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-white dark:bg-zinc-900 rounded-full border shadow-sm ${isActive ? "border-brand-accent/20 text-brand-primary dark:text-white" : "border-gray-100 dark:border-zinc-800 text-gray-400"}`}
+                      className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-card rounded-full border shadow-sm ${isActive ? "border-brand-accent/20 text-foreground" : "border-border text-muted-foreground"}`}
                     >
                       {step.label}
                     </span>
@@ -704,14 +691,12 @@ function Survey() {
               },
             ].map((st, i) => (
               <div key={i} className="space-y-6 text-center md:text-left relative group">
-                <span className="font-display font-extrabold text-7xl text-brand-primary/10 dark:text-white/10 opacity-50 block md:hidden lg:block select-none leading-none tracking-tight transform group-hover:translate-x-1 transition-transform">
+                <span className="font-display font-extrabold text-7xl text-foreground/10 opacity-50 block md:hidden lg:block select-none leading-none tracking-tight transform group-hover:translate-x-1 transition-transform">
                   {st.step}
                 </span>
                 <div className="space-y-3">
-                  <h4 className="text-xl font-display font-semibold text-brand-primary dark:text-white">
-                    {st.title}
-                  </h4>
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed max-w-xs">
+                  <h4 className="text-xl font-display font-semibold text-foreground">{st.title}</h4>
+                  <p className="text-sm font-medium text-muted-foreground leading-relaxed max-w-xs">
                     {st.desc}
                   </p>
                 </div>
@@ -739,37 +724,37 @@ function Survey() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-zinc-900 rounded-[3.5rem] shadow-2xl relative w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-zinc-800 z-10 p-10 md:p-14"
+              className="bg-card rounded-3xl md:rounded-[3.5rem] shadow-2xl relative w-full max-w-2xl overflow-hidden border border-border z-10 p-6 md:p-10"
             >
               <button
                 onClick={() => setIsBookingModalOpen(false)}
-                className="absolute top-8 right-8 text-gray-400 hover:text-brand-primary dark:hover:text-white transition-colors p-2 rounded-full hover:bg-gray-50 dark:hover:bg-zinc-800"
+                className="absolute top-6 right-6 md:top-8 md:right-8 text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-secondary"
               >
                 <X size={20} />
               </button>
 
               {bookingStep === 1 ? (
-                <form onSubmit={handleSubmitBooking} className="space-y-8">
+                <form onSubmit={handleSubmitBooking} className="space-y-6 md:space-y-8">
                   <div className="space-y-2">
                     <div className="inline-flex items-center gap-1.5 bg-brand-accent/10 px-3 py-1 rounded-full border border-brand-accent/25 text-brand-accent text-[9px] font-bold uppercase tracking-widest">
                       <Zap size={10} className="fill-brand-accent" /> Booking Jasa Survey
                     </div>
-                    <h3 className="text-3xl font-display font-semibold text-brand-primary dark:text-white">
+                    <h3 className="text-2xl md:text-3xl font-display font-semibold text-foreground">
                       Formulir Pemesanan
                     </h3>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       Tim verifikator profesional kami siap berangkat langsung ke lokasi tujuan di
                       Yogyakarta.
                     </p>
                   </div>
 
                   {/* Selected service metadata preview card */}
-                  <div className="bg-gray-50 dark:bg-zinc-850 rounded-3xl p-5 border border-gray-100 dark:border-zinc-800 flex items-center justify-between">
+                  <div className="bg-secondary rounded-3xl p-5 border border-border flex items-center justify-between">
                     <div className="space-y-1">
-                      <p className="text-[9px] font-bold uppercase text-gray-400 tracking-wider">
+                      <p className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
                         Layanan Paket Terpilih
                       </p>
-                      <h4 className="font-display font-bold text-lg text-brand-primary dark:text-white uppercase">
+                      <h4 className="font-display font-bold text-base md:text-lg text-foreground uppercase">
                         Surveyor {selectedServiceTier === "premium" ? "👑 Premium" : "⭐ Biasa"}
                       </h4>
                     </div>
@@ -777,7 +762,7 @@ function Survey() {
                       <p className="text-[9.5px] font-bold uppercase text-brand-accent tracking-widest">
                         Biaya Paket
                       </p>
-                      <p className="text-xl font-display font-bold text-brand-primary dark:text-white">
+                      <p className="text-lg md:text-xl font-display font-bold text-foreground">
                         {selectedServiceTier === "premium" ? "Rp 85.000" : "Rp 35.000"}
                       </p>
                     </div>
@@ -791,7 +776,7 @@ function Survey() {
                     {isCustomKost ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                             Nama Kost Pilihan
                           </label>
                           <input
@@ -800,11 +785,11 @@ function Survey() {
                             value={customKostName}
                             onChange={(e) => setCustomKostName(e.target.value)}
                             placeholder="Contoh: Kost Griya Putri Asri"
-                            className="bg-gray-50 dark:bg-zinc-800 border-none rounded-xl p-3 text-sm text-brand-primary dark:text-white font-bold focus:ring-1 focus:ring-brand-accent w-full"
+                            className="bg-secondary border-none rounded-xl p-3 text-sm text-foreground font-bold focus:ring-1 focus:ring-brand-accent w-full"
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                             Alamat Lengkap / Link Maps
                           </label>
                           <input
@@ -813,25 +798,25 @@ function Survey() {
                             value={customKostAddress}
                             onChange={(e) => setCustomKostAddress(e.target.value)}
                             placeholder="Contoh: Jl. Kaliurang KM 8, Gg. Damai No 5"
-                            className="bg-gray-50 dark:bg-zinc-800 border-none rounded-xl p-3 text-sm text-brand-primary dark:text-white font-bold focus:ring-1 focus:ring-brand-accent w-full"
+                            className="bg-secondary border-none rounded-xl p-3 text-sm text-foreground font-bold focus:ring-1 focus:ring-brand-accent w-full"
                           />
                         </div>
                       </div>
                     ) : selectedKost ? (
-                      <div className="flex items-center gap-4 bg-brand-primary/5 dark:bg-zinc-800/20 rounded-2xl p-4 border border-brand-primary/10 dark:border-zinc-800/10">
+                      <div className="flex items-center gap-4 bg-secondary rounded-2xl p-4 border border-border">
                         <img
                           src={selectedKost.image}
                           alt={selectedKost.name}
                           className="w-16 h-16 rounded-xl object-cover"
                         />
                         <div>
-                          <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wide">
+                          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
                             Target Kost
                           </p>
-                          <h5 className="font-bold text-brand-primary dark:text-white text-base leading-snug">
+                          <h5 className="font-bold text-foreground text-sm md:text-base leading-snug">
                             {selectedKost.name}
                           </h5>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                          <p className="text-xs text-muted-foreground font-medium">
                             {selectedKost.address}
                           </p>
                         </div>
@@ -850,7 +835,7 @@ function Survey() {
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                           Nama Lengkap Anda *
                         </label>
                         <input
@@ -859,11 +844,11 @@ function Survey() {
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
                           placeholder="Ketik nama lengkap..."
-                          className="bg-gray-50 dark:bg-zinc-800 border-none rounded-xl p-3 text-sm text-brand-primary dark:text-white font-bold focus:ring-1 focus:ring-brand-accent w-full"
+                          className="bg-secondary border-none rounded-xl p-3 text-sm text-foreground font-bold focus:ring-1 focus:ring-brand-accent w-full"
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                           No. WhatsApp Aktif *
                         </label>
                         <input
@@ -872,14 +857,14 @@ function Survey() {
                           value={whatsapp}
                           onChange={(e) => setWhatsapp(e.target.value)}
                           placeholder="Contoh: 08123456789"
-                          className="bg-gray-50 dark:bg-zinc-800 border-none rounded-xl p-3 text-sm text-brand-primary dark:text-white font-bold focus:ring-1 focus:ring-brand-accent w-full"
+                          className="bg-secondary border-none rounded-xl p-3 text-sm text-foreground font-bold focus:ring-1 focus:ring-brand-accent w-full"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                           Rencana Tanggal Survey *
                         </label>
                         <input
@@ -887,11 +872,11 @@ function Survey() {
                           type="date"
                           value={surveyDate}
                           onChange={(e) => setSurveyDate(e.target.value)}
-                          className="bg-gray-50 dark:bg-zinc-800 border-none rounded-xl p-3 text-sm text-brand-primary dark:text-white font-bold focus:ring-1 focus:ring-brand-accent w-full"
+                          className="bg-secondary border-none rounded-xl p-3 text-sm text-foreground font-bold focus:ring-1 focus:ring-brand-accent w-full"
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                           Catatan Tambahan untuk Surveyor
                         </label>
                         <input
@@ -899,7 +884,7 @@ function Survey() {
                           value={surveyNotes}
                           onChange={(e) => setSurveyNotes(e.target.value)}
                           placeholder="Contoh: Tolong cek meteran listrik & sinyal Tri"
-                          className="bg-gray-50 dark:bg-zinc-800 border-none rounded-xl p-3 text-sm text-brand-primary dark:text-white font-bold focus:ring-1 focus:ring-brand-accent w-full"
+                          className="bg-secondary border-none rounded-xl p-3 text-sm text-foreground font-bold focus:ring-1 focus:ring-brand-accent w-full"
                         />
                       </div>
                     </div>
@@ -909,7 +894,7 @@ function Survey() {
                     <button
                       type="button"
                       onClick={() => setIsBookingModalOpen(false)}
-                      className="bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-zinc-700 px-8 py-4 rounded-full font-bold text-xs uppercase tracking-widest transition-all text-center sm:w-1/3"
+                      className="bg-secondary text-muted-foreground hover:bg-secondary/85 px-8 py-4 rounded-full font-bold text-xs uppercase tracking-widest transition-all text-center sm:w-1/3"
                     >
                       Batal
                     </button>
@@ -926,39 +911,36 @@ function Survey() {
                 </form>
               ) : (
                 /* Success screen inside the Modal */
-                <div className="text-center py-10 space-y-8 flex flex-col items-center">
-                  <div className="w-20 h-20 bg-emerald-50 border border-emerald-100 text-emerald-500 rounded-full flex items-center justify-center animate-bounce shadow-md">
-                    <CheckCircle2 size={44} strokeWidth={2.5} />
+                <div className="text-center py-6 md:py-10 space-y-6 md:space-y-8 flex flex-col items-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center animate-bounce shadow-md">
+                    <CheckCircle2 className="w-9 h-9 md:w-11 md:h-11" strokeWidth={2.5} />
                   </div>
                   <div className="space-y-3">
-                    <h4 className="text-3xl font-display font-semibold text-brand-primary dark:text-white">
+                    <h4 className="text-2xl md:text-3xl font-display font-semibold text-foreground">
                       Pemesanan Berhasil Dikirim!
                     </h4>
-                    <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
-                      Terima kasih{" "}
-                      <span className="font-bold text-brand-primary dark:text-white">
-                        {fullName}
-                      </span>
-                      , pemesanan surveyor{" "}
-                      <span className="font-bold text-brand-primary dark:text-white">
+                    <p className="text-xs md:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed px-4">
+                      Terima kasih <span className="font-bold text-foreground">{fullName}</span>,
+                      pemesanan surveyor{" "}
+                      <span className="font-bold text-foreground">
                         {selectedServiceTier === "premium" ? "Premium 👑" : "Biasa ⭐"}
                       </span>{" "}
                       Anda telah tercatat dalam sistem kami.
                     </p>
                   </div>
 
-                  <div className="p-6 bg-brand-primary/5 dark:bg-zinc-800 border border-brand-primary/15 dark:border-zinc-700 rounded-3xl text-left text-xs text-brand-primary/85 dark:text-white/80 max-w-md space-y-2">
+                  <div className="p-5 md:p-6 bg-secondary border border-border rounded-3xl text-left text-xs text-muted-foreground max-w-md space-y-2 mx-4">
                     <p className="font-bold uppercase tracking-wider text-[10px] text-brand-accent">
                       Informasi Lanjutan:
                     </p>
                     <p>
                       ● Tim Admin akan menghubungi nomor WhatsApp{" "}
-                      <span className="font-bold">{whatsapp}</span> dalam 15-30 menit ke depan untuk
-                      instruksi pembayaran jasa.
+                      <span className="font-bold text-foreground">{whatsapp}</span> dalam 15-30
+                      menit ke depan untuk instruksi pembayaran jasa.
                     </p>
                     <p>
-                      ● Surveyor kami akan mengunduh tiket tugas untuk meluncur ke lokasi kost pada
-                      tanggal <span className="font-bold">{surveyDate}</span>.
+                      ● Surveyor kami akan mengunduh tiket tugas untuk meluncur to lokasi kost pada
+                      tanggal <span className="font-bold text-foreground">{surveyDate}</span>.
                     </p>
                   </div>
 
@@ -966,7 +948,7 @@ function Survey() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsBookingModalOpen(false)}
-                    className="bg-brand-primary dark:bg-white text-white dark:text-zinc-900 border border-brand-primary/10 dark:border-white px-10 py-4 rounded-full font-bold text-xs uppercase tracking-widest"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 border border-border px-10 py-4 rounded-full font-bold text-xs uppercase tracking-widest"
                   >
                     Tutup Halaman
                   </motion.button>

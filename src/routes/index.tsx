@@ -153,7 +153,7 @@ function Index() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-24 bg-secondary/30 dark:bg-zinc-900/50">
+      <section className="py-24 bg-secondary/30">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
           {[
             { label: "Kost Premium", value: "150+" },
@@ -216,7 +216,7 @@ function Index() {
       </section>
 
       {/* Mitra CTA Section */}
-      <section className="py-32 bg-secondary/50 dark:bg-zinc-900/30 overflow-hidden relative">
+      <section className="py-32 bg-secondary/50 overflow-hidden relative">
         <BatikPattern variant="nitik" className="opacity-[0.25]" />
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center relative z-10">
           <div className="space-y-10 relative z-10">

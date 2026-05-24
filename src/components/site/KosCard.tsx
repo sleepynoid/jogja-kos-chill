@@ -29,7 +29,7 @@ export function KosCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       whileHover={{ y: -10 }}
-      className="group bg-white dark:bg-zinc-850 rounded-[3.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-brand-accent/5 transition-all flex flex-col border border-border/50"
+      className="group bg-card rounded-3xl md:rounded-[3.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-brand-accent/5 transition-all flex flex-col border border-border/50"
     >
       {/* Media Area */}
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -42,10 +42,10 @@ export function KosCard({
 
         {/* Gender & Rating Badges */}
         <div className="absolute top-6 left-6 flex gap-2">
-          <span className="bg-brand-primary/90 dark:bg-zinc-900/90 backdrop-blur-md text-white px-5 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-white/10">
+          <span className="bg-brand-primary/90 dark:bg-primary/90 backdrop-blur-md text-white px-5 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-white/10">
             {jenisLabel.replace("Kos ", "")}
           </span>
-          <span className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md text-brand-primary dark:text-white px-3 py-2 rounded-2xl text-[10px] font-bold flex items-center gap-1 border border-border/10">
+          <span className="bg-white/90 dark:bg-card/90 backdrop-blur-md text-brand-primary dark:text-foreground px-3 py-2 rounded-2xl text-[10px] font-bold flex items-center gap-1 border border-border/10">
             <Star size={10} className="fill-brand-accent text-brand-accent" /> {kos.rating}
           </span>
           {!(kos.tersedia ?? true) && (
@@ -69,7 +69,7 @@ export function KosCard({
             className={`absolute top-6 right-6 w-12 h-12 rounded-full flex items-center justify-center border transition-all z-10 cursor-pointer shadow-md ${
               isCompared
                 ? "bg-brand-accent border-brand-accent text-white"
-                : "bg-white/20 dark:bg-zinc-800/20 backdrop-blur-md text-white border-white/20 hover:bg-white hover:text-brand-primary"
+                : "bg-white/20 dark:bg-card/20 backdrop-blur-md text-white border-white/20 hover:bg-white dark:hover:bg-foreground hover:text-brand-primary dark:hover:text-primary-foreground"
             }`}
             title="Bandingkan Kos"
           >
@@ -96,7 +96,7 @@ export function KosCard({
       <div className="p-8 space-y-8 flex-1 flex flex-col justify-between">
         <div className="space-y-4">
           <Link to="/kos/$id" params={{ id: kos.id }} className="block">
-            <h4 className="font-display font-bold text-2xl text-brand-primary dark:text-white leading-tight group-hover:text-brand-accent transition-colors">
+            <h4 className="font-display font-bold text-2xl text-foreground leading-tight group-hover:text-brand-accent transition-colors">
               {kos.nama}
             </h4>
           </Link>
@@ -104,13 +104,13 @@ export function KosCard({
             {kos.fasilitas.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground bg-secondary/50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-border/50"
+                className="text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground bg-secondary px-3 py-1.5 rounded-lg border border-border/50"
               >
                 {tag}
               </span>
             ))}
             {kos.fasilitas.length > 3 && (
-              <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground bg-secondary/30 dark:bg-zinc-800/50 px-2 py-1.5 rounded-lg border border-border/30">
+              <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground bg-secondary/60 px-2 py-1.5 rounded-lg border border-border/30">
                 +{kos.fasilitas.length - 3}
               </span>
             )}
@@ -123,7 +123,7 @@ export function KosCard({
             <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
               Mulai Harga
             </p>
-            <p className="text-2xl font-display font-bold text-brand-primary dark:text-white leading-none">
+            <p className="text-2xl font-display font-bold text-foreground leading-none">
               {priceMain}
               <span className="text-xs font-normal text-muted-foreground ml-1 italic">/ bln</span>
             </p>
@@ -132,7 +132,7 @@ export function KosCard({
             <Link
               to="/kos/$id"
               params={{ id: kos.id }}
-              className="w-14 h-14 bg-secondary/60 dark:bg-zinc-800 rounded-[1.75rem] flex items-center justify-center text-brand-primary dark:text-white hover:bg-brand-accent hover:text-white transition-all shadow-sm cursor-pointer"
+              className="w-14 h-14 bg-secondary rounded-[1.75rem] flex items-center justify-center text-foreground hover:bg-brand-accent hover:text-white transition-all shadow-sm cursor-pointer"
             >
               <ArrowRight size={24} />
             </Link>

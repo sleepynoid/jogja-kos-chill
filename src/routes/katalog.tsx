@@ -125,7 +125,7 @@ function KatalogPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <div className="mb-6 animate-fade-up relative overflow-hidden rounded-3xl bg-secondary/30 dark:bg-zinc-900/50 p-6 md:p-8 border border-border">
+      <div className="mb-6 animate-fade-up relative overflow-hidden rounded-3xl bg-secondary/30 p-6 md:p-8 border border-border">
         <BatikPattern variant="kawung" className="opacity-[0.18]" />
         <div className="relative z-10">
           <h1 className="font-serif text-3xl font-bold md:text-4xl text-gradient">
