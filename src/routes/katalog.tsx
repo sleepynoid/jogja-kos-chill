@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS, type Kos } from "@/lib/kos-data";
-import { useKosStore } from "@/lib/kos-store";
+import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
+import { getPublicKosListFn, type PublicKos } from "@/lib/kos.server";
 import { KosCard } from "@/components/site/KosCard";
 import { BatikPattern } from "@/components/site/Ornaments";
 import { CompareBar } from "@/components/site/CompareBar";
@@ -39,6 +39,10 @@ export const Route = createFileRoute("/katalog")({
     maxHarga: s.maxHarga ? Number(s.maxHarga) : undefined,
     fasilitas: typeof s.fasilitas === "string" ? s.fasilitas : undefined,
   }),
+  loader: async () => {
+    const kosList = await getPublicKosListFn();
+    return { kosList };
+  },
   head: () => ({
     meta: [
       { title: "Katalog Kos — Keep n Sleep" },
@@ -55,11 +59,11 @@ export const Route = createFileRoute("/katalog")({
 function KatalogPage() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/katalog" });
-  const kosList = useKosStore();
+  const { kosList } = Route.useLoaderData();
 
-  const [comparedItems, setComparedItems] = useState<Kos[]>([]);
+  const [comparedItems, setComparedItems] = useState<PublicKos[]>([]);
 
-  const handleCompareToggle = (kos: Kos) => {
+  const handleCompareToggle = (kos: PublicKos) => {
     setComparedItems((prev) => {
       const exists = prev.find((x) => x.id === kos.id);
       if (exists) {

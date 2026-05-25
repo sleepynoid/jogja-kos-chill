@@ -2,11 +2,15 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, ArrowRight, Star } from "lucide-react";
-import { useKosStore } from "@/lib/kos-store";
+import { getPublicKosListFn, type PublicKos } from "@/lib/kos.server";
 import { KosCard } from "@/components/site/KosCard";
 import { BatikPattern, Gunungan, PatraCorner } from "@/components/site/Ornaments";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const kosList = await getPublicKosListFn();
+    return { kosList };
+  },
   head: () => ({
     meta: [
       { title: "KeepKost & Next Sleep — Cari Kos Jogja Premium" },
@@ -23,7 +27,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const kosList = useKosStore();
+  const { kosList } = Route.useLoaderData();
   const featured = kosList.slice(0, 3);
 
   const handleSearch = (e: React.FormEvent) => {

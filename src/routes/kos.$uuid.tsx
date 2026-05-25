@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { KOS_LIST, KAMPUS_LIST, JENIS_KOS, formatRupiah, type Kos } from "@/lib/kos-data";
-import { useKosStore, addInquiry } from "@/lib/kos-store";
+import { KAMPUS_LIST, JENIS_KOS, formatRupiah } from "@/lib/kos-data";
+import { getKosByUuidFn, getPublicKosListFn, type PublicKos } from "@/lib/kos.server";
 import { InteractiveMap } from "@/components/site/InteractiveMap";
 import { toast } from "sonner";
 import { BatikPattern, TumpalDivider, PatraCorner } from "@/components/site/Ornaments";
@@ -46,30 +46,20 @@ function WhatsappIcon({ className }: { className?: string }) {
   );
 }
 
-const WA_NUMBER = "6281234567890";
+const WA_NUMBER_FALLBACK = "6281234567890";
 
-export const Route = createFileRoute("/kos/$id")({
-  loader: ({ params }) => {
-    const kos = KOS_LIST.find((k) => k.id === params.id);
-    if (kos) return { kos };
+export const Route = createFileRoute("/kos/$uuid")({
+  loader: async ({ params }) => {
+    const kos = await getKosByUuidFn({ data: { uuid: params.uuid } });
+    if (!kos) throw notFound();
 
-    // Return a client-side stub for custom listings added via dashboard
-    return {
-      kos: {
-        id: params.id,
-        nama: "Kos Baru",
-        gambar: "",
-        daerah: "sleman",
-        alamat: "",
-        hargaPerBulan: 0,
-        rating: 4.5,
-        jenis: "campur",
-        fasilitas: [],
-        kampusTerdekat: [],
-        deskripsi: "",
-        isStub: true,
-      } as unknown as Kos,
-    };
+    // Fetch similar kos for recommendations
+    const allKos = await getPublicKosListFn();
+    const similar = allKos
+      .filter((k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis))
+      .slice(0, 3);
+
+    return { kos, similar };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -107,23 +97,14 @@ export const Route = createFileRoute("/kos/$id")({
 });
 
 function KosDetailPage() {
-  const { kos: initialKos } = Route.useLoaderData() as { kos: Kos & { isStub?: boolean } };
-  const kosList = useKosStore();
+  const { kos, similar } = Route.useLoaderData();
 
-  // Try to find the item in our custom localstorage store.
-  // Fallback to initialKos if it was a statically seeded item (not a stub).
-  const kos =
-    kosList.find((k) => k.id === initialKos.id) ?? (initialKos.isStub ? undefined : initialKos);
-
-  if (!kos) {
-    throw notFound();
-  }
   const jenisLabel = JENIS_KOS.find((j) => j.value === kos.jenis)?.label;
   const kampusLabels = kos.kampusTerdekat
     .map((k) => KAMPUS_LIST.find((c) => c.value === k)?.label)
     .filter(Boolean) as string[];
 
-  const galeri = (kos.galeri && kos.galeri.length > 0 ? kos.galeri : [kos.gambar]).slice(0, 5);
+  const galeri = kos.galeri && kos.galeri.length > 0 ? kos.galeri : kos.gambar ? [kos.gambar] : [];
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
@@ -179,13 +160,12 @@ function KosDetailPage() {
     };
   }, [api]);
 
-  const lainnya = kosList
-    .filter((k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis))
-    .slice(0, 3);
+  const lainnya = similar;
 
+  const waNumber = kos.mitraTelepon || WA_NUMBER_FALLBACK;
   const bookingDetails = `di "${kos.nama}" (${kos.alamat}) untuk durasi ${duration} Bulan${checkIn ? ` mulai tanggal ${checkIn}` : ""}. Estimasi biaya: ${formatRupiah(totalPrice)}`;
-  const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
-    (kos.tersedia ?? true)
+  const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(
+    kos.tersedia
       ? `Halo, saya tertarik memesan kos ${bookingDetails}. Apakah masih tersedia?`
       : `Halo, saya ingin bergabung dengan waiting list untuk kos ${bookingDetails}.`,
   )}`;
@@ -249,7 +229,7 @@ function KosDetailPage() {
                         <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
                           {jenisLabel}
                         </span>
-                        {!(kos.tersedia ?? true) && (
+                        {!kos.tersedia && (
                           <span className="rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-destructive-foreground">
                             Penuh
                           </span>
@@ -346,7 +326,7 @@ function KosDetailPage() {
                     Hemat {duration === 3 ? "5%" : duration === 6 ? "10%" : "15%"}
                   </span>
                 )}
-                {!(kos.tersedia ?? true) && (
+                {!kos.tersedia && (
                   <span className="ml-auto rounded bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
                     Penuh
                   </span>
@@ -411,27 +391,20 @@ function KosDetailPage() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {
-                addInquiry({
-                  kosId: kos.id,
-                  namaKos: kos.nama,
-                  namaCalon: "Pengunjung Baru",
-                  telepon: "628" + Math.floor(100000000 + Math.random() * 900000000),
-                  pesan: `Halo, saya tertarik memesan kos di "${kos.nama}" (${kos.alamat}) untuk durasi ${duration} Bulan${checkIn ? ` mulai tanggal ${checkIn}` : ""}. Estimasi biaya: ${formatRupiah(totalPrice)}`,
-                });
                 toast.success(
-                  (kos.tersedia ?? true)
+                  kos.tersedia
                     ? "Lead reservasi terkirim ke Pemilik!"
                     : "Pendaftaran waiting list terkirim ke Pemilik!",
                 );
               }}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-bold text-white shadow-sm transition-all active:scale-95 ${
-                (kos.tersedia ?? true)
+                kos.tersedia
                   ? "bg-[#25D366] hover:bg-[#1ebe5d]"
                   : "bg-amber-600 hover:bg-amber-700"
               }`}
             >
               <WhatsappIcon className="h-5 w-5" />
-              {(kos.tersedia ?? true) ? "Hubungi Pemilik" : "Hubungi Waiting List"}
+              {kos.tersedia ? "Hubungi Pemilik" : "Hubungi Waiting List"}
             </a>
           </div>
 

@@ -1,8 +1,20 @@
 import { MapPin, Star, ArrowRight, GitCompare } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import type { Kos } from "@/lib/kos-data";
 import { formatRupiah, JENIS_KOS } from "@/lib/kos-data";
 import { motion } from "framer-motion";
+
+type KosCardData = {
+  id: string;
+  nama: string;
+  jenis: string;
+  daerah: string;
+  alamat: string;
+  hargaPerBulan: number;
+  rating: number;
+  gambar: string;
+  fasilitas: string[];
+  tersedia?: boolean;
+};
 
 export function KosCard({
   kos,
@@ -10,7 +22,7 @@ export function KosCard({
   onCompareToggle,
   showCompare = false,
 }: {
-  kos: Kos;
+  kos: KosCardData;
   isCompared?: boolean;
   onCompareToggle?: () => void;
   showCompare?: boolean;
@@ -95,7 +107,7 @@ export function KosCard({
       {/* Content Area */}
       <div className="p-8 space-y-8 flex-1 flex flex-col justify-between">
         <div className="space-y-4">
-          <Link to="/kos/$id" params={{ id: kos.id }} className="block">
+          <Link to="/kos/$uuid" params={{ uuid: kos.id }} className="block">
             <h4 className="font-display font-bold text-2xl text-foreground leading-tight group-hover:text-brand-accent transition-colors">
               {kos.nama}
             </h4>
@@ -130,8 +142,8 @@ export function KosCard({
           </div>
           <motion.div whileHover={{ scale: 1.1, rotate: -5 }} whileTap={{ scale: 0.9 }}>
             <Link
-              to="/kos/$id"
-              params={{ id: kos.id }}
+              to="/kos/$uuid"
+              params={{ uuid: kos.id }}
               className="w-14 h-14 bg-secondary rounded-[1.75rem] flex items-center justify-center text-foreground hover:bg-brand-accent hover:text-white transition-all shadow-sm cursor-pointer"
             >
               <ArrowRight size={24} />

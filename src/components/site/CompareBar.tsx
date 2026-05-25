@@ -1,10 +1,25 @@
 import { useState } from "react";
 import { X, Check, ArrowRight, GitCompare, Star } from "lucide-react";
-import { type Kos, formatRupiah, JENIS_KOS, KAMPUS_LIST, DAERAH_LIST } from "@/lib/kos-data";
+import { formatRupiah, JENIS_KOS, KAMPUS_LIST, DAERAH_LIST } from "@/lib/kos-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
+type CompareItem = {
+  id: string;
+  nama: string;
+  jenis: string;
+  daerah: string;
+  alamat: string;
+  hargaPerBulan: number;
+  rating: number;
+  gambar: string;
+  fasilitas: string[];
+  kampusTerdekat: string[];
+  deskripsi: string;
+  tersedia?: boolean;
+};
+
 type CompareBarProps = {
-  selectedItems: Kos[];
+  selectedItems: CompareItem[];
   onRemove: (id: string) => void;
   onClear: () => void;
 };

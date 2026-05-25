@@ -1,13 +1,17 @@
-import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Sun, Moon, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { Sun, Moon, Menu, X, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getCurrentUser, logoutFn, type SessionUser } from "@/lib/auth";
+import { toast } from "sonner";
 
 export function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<SessionUser | null>(null);
 
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
@@ -36,9 +40,36 @@ export function Header() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  // Fetch current user on mount and on route change
+  useEffect(() => {
+    getCurrentUser().then((u) => setUser(u));
+  }, [location.pathname]);
+
   const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
+  const handleLogout = async () => {
+    try {
+      await logoutFn();
+    } catch {
+      // redirect throws, which is expected
+    }
+    setUser(null);
+    toast.success("Berhasil keluar.");
+    navigate({ to: "/" });
+  };
+
   const transparent = isHome && !isScrolled;
+
+  // Build nav links based on auth state
+  const navLinks = [
+    { to: "/", label: "Beranda" },
+    { to: "/katalog", label: "Cari Kost" },
+    { to: "/survey", label: "Jasa Survey" },
+    { to: "/wishlist", label: "Wishlist" },
+    ...(user
+      ? [{ to: "/dashboard", label: "Dashboard" }]
+      : [{ to: "/mitra", label: "Mitra" }]),
+  ] as const;
 
   return (
     <nav
@@ -76,14 +107,7 @@ export function Header() {
         <div
           className={`hidden md:flex items-center gap-8 ${transparent ? "text-white/90" : "text-brand-primary/85 dark:text-white/90"}`}
         >
-          {[
-            { to: "/", label: "Beranda" },
-            { to: "/katalog", label: "Cari Kost" },
-            { to: "/survey", label: "Jasa Survey" },
-            { to: "/wishlist", label: "Wishlist" },
-            { to: "/mitra", label: "Mitra" },
-            { to: "/dashboard", label: "Dashboard" },
-          ].map((l) => (
+          {navLinks.map((l) => (
             <Link
               key={l.to}
               to={l.to}
@@ -96,6 +120,27 @@ export function Header() {
               {l.label}
             </Link>
           ))}
+
+          {!user && (
+            <Link
+              to="/login"
+              className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Masuk
+            </Link>
+          )}
+
+          {user && (
+            <button
+              onClick={handleLogout}
+              className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all active:scale-90 ${transparent ? "border-white/20 bg-white/10 hover:bg-white/25 text-white" : "border-border bg-background hover:bg-secondary text-foreground dark:text-white dark:hover:bg-zinc-800"}`}
+              aria-label="Logout"
+              title="Keluar"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          )}
+
           <div className="h-6 w-px bg-current/20 mx-2" />
 
           <button
@@ -139,14 +184,7 @@ export function Header() {
             exit={{ opacity: 0, y: -20 }}
             className="md:hidden bg-background border-b border-border p-6 flex flex-col gap-4 shadow-xl"
           >
-            {[
-              { to: "/", label: "Beranda" },
-              { to: "/katalog", label: "Cari Kost" },
-              { to: "/survey", label: "Jasa Survey" },
-              { to: "/wishlist", label: "Wishlist" },
-              { to: "/mitra", label: "Mitra" },
-              { to: "/dashboard", label: "Dashboard" },
-            ].map((l) => (
+            {navLinks.map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
@@ -158,6 +196,28 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
+
+            {!user && (
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="font-medium text-lg hover:text-brand-accent transition-colors"
+              >
+                Masuk
+              </Link>
+            )}
+
+            {user && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  handleLogout();
+                }}
+                className="font-medium text-lg text-left hover:text-brand-accent transition-colors text-destructive"
+              >
+                Keluar
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

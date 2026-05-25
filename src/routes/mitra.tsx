@@ -1,143 +1,72 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
-import { CheckCircle2, Building2, Users, TrendingUp, ImagePlus, X } from "lucide-react";
-import { setMitraSession } from "@/lib/kos-store";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
+import { useState } from "react";
+import { Building2, Users, TrendingUp, Eye, EyeOff, UserPlus } from "lucide-react";
+import { registerFn, getCurrentUser } from "@/lib/auth";
 import { BatikPattern, Gunungan } from "@/components/site/Ornaments";
-import {
-  Select as UiSelect,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/mitra")({
+  beforeLoad: async () => {
+    const user = await getCurrentUser();
+    if (user) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Daftar Mitra — Keep n Sleep" },
       {
         name: "description",
-        content: "Daftarkan kosmu di Keep n Sleep dan jangkau ribuan mahasiswa Yogyakarta.",
+        content: "Daftarkan diri sebagai mitra Keep n Sleep dan jangkau ribuan mahasiswa Yogyakarta.",
       },
     ],
   }),
   component: MitraPage,
 });
 
-const FASILITAS_OPTIONS = [
-  "WiFi",
-  "AC",
-  "Kipas Angin",
-  "Kamar Mandi Dalam",
-  "Air Panas",
-  "Laundry",
-  "Dapur Bersama",
-  "Parkir Motor",
-  "Parkir Mobil",
-  "CCTV",
-  "Cleaning Service",
-  "Smart TV",
-  "Kulkas",
-  "Mushola",
-];
-
 function MitraPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const [gambar, setGambar] = useState<{ file: File; url: string }[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imgError, setImgError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const MAX_FILES = 5;
-  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  const [nama, setNama] = useState("");
+  const [email, setEmail] = useState("");
+  const [telepon, setTelepon] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleFiles = (files: FileList | null) => {
-    if (!files) return;
-    setImgError(null);
-    const next: { file: File; url: string }[] = [];
-    for (const file of Array.from(files)) {
-      if (!file.type.startsWith("image/")) {
-        setImgError("Hanya file gambar yang diperbolehkan.");
-        continue;
-      }
-      if (file.size > MAX_SIZE) {
-        setImgError("Ukuran maksimum tiap gambar 5MB.");
-        continue;
-      }
-      next.push({ file, url: URL.createObjectURL(file) });
-    }
-    setGambar((prev) => [...prev, ...next].slice(0, MAX_FILES));
-  };
-
-  const removeGambar = (idx: number) => {
-    setGambar((prev) => {
-      const target = prev[idx];
-      if (target) URL.revokeObjectURL(target.url);
-      return prev.filter((_, i) => i !== idx);
-    });
-  };
-
-  const [form, setForm] = useState({
-    namaKos: "",
-    namaPemilik: "",
-    email: "",
-    telepon: "",
-    jenis: "",
-    kampus: "",
-    daerah: "",
-    alamat: "",
-    harga: "",
-    deskripsi: "",
-    fasilitas: [] as string[],
-  });
-
-  const toggleFasilitas = (f: string) => {
-    setForm((s) => ({
-      ...s,
-      fasilitas: s.fasilitas.includes(f) ? s.fasilitas.filter((x) => x !== f) : [...s.fasilitas, f],
-    }));
-  };
-
-  const submit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (gambar.length === 0) {
-      setImgError("Unggah minimal 1 foto kos.");
+
+    if (password.length < 6) {
+      toast.error("Password minimal 6 karakter.");
       return;
     }
-    if (form.namaPemilik && form.email) {
-      setMitraSession({ nama: form.namaPemilik, email: form.email });
-    }
-    setSubmitted(true);
-  };
 
-  if (submitted) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/20 text-accent">
-          <CheckCircle2 className="h-8 w-8" />
-        </div>
-        <h1 className="font-serif text-3xl font-bold">Pendaftaran Terkirim</h1>
-        <p className="mt-2 text-muted-foreground">
-          Terima kasih, <strong>{form.namaPemilik || "Mitra"}</strong>! Tim Keep n Sleep akan
-          menghubungi Anda dalam 1×24 jam untuk proses verifikasi {form.namaKos}.
-        </p>
-        <button
-          onClick={() => {
-            setSubmitted(false);
-            setForm({ ...form, namaKos: "" });
-          }}
-          className="mt-6 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-        >
-          Daftarkan kos lain
-        </button>
-        <div className="mt-3">
-          <Link to="/dashboard" className="text-sm font-medium text-primary hover:underline">
-            Buka Dashboard Mitra →
-          </Link>
-        </div>
-      </div>
-    );
-  }
+    if (password !== confirmPassword) {
+      toast.error("Konfirmasi password tidak cocok.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await registerFn({
+        data: { nama, email, password_raw: password, telepon: telepon || undefined },
+      });
+
+      if ("error" in result && result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Akun berhasil dibuat! Selamat datang.");
+        navigate({ to: "/dashboard" });
+      }
+    } catch {
+      toast.error("Gagal mendaftar. Coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -145,7 +74,6 @@ function MitraPage() {
       <section className="relative overflow-hidden bg-[#2F2F2F] pt-28 pb-16 md:py-24 text-white">
         <BatikPattern variant="parang" className="opacity-[0.18]" />
 
-        {/* Decorative Gunungan in background */}
         <div className="absolute right-10 bottom-0 opacity-10 pointer-events-none hidden lg:block">
           <Gunungan className="w-64 h-96 text-brand-accent" />
         </div>
@@ -155,7 +83,7 @@ function MitraPage() {
             Jadi Mitra Keep n Sleep
           </h1>
           <p className="mt-3 max-w-2xl text-white/80 text-lg font-light leading-relaxed">
-            Daftarkan kos Anda dan jangkau ribuan mahasiswa dari kampus-kampus terbaik di
+            Daftarkan diri Anda dan jangkau ribuan mahasiswa dari kampus-kampus terbaik di
             Yogyakarta.
           </p>
           <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
@@ -177,256 +105,140 @@ function MitraPage() {
         </div>
       </section>
 
-      {/* Form */}
-      <section className="mx-auto max-w-4xl px-4 py-12">
-        <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-6 md:p-8">
-          <h2 className="font-serif text-2xl font-bold">Daftarkan Kos Anda</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Lengkapi data di bawah ini. Tim kami akan menghubungi Anda.
-          </p>
+      {/* Register Form */}
+      <section className="mx-auto max-w-lg px-4 py-12">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 md:p-8 shadow-sm">
+          <BatikPattern variant="kawung" className="opacity-[0.08]" />
 
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <Input
-              label="Nama Kos"
-              required
-              value={form.namaKos}
-              onChange={(v) => setForm({ ...form, namaKos: v })}
-            />
-            <Input
-              label="Nama Pemilik"
-              required
-              value={form.namaPemilik}
-              onChange={(v) => setForm({ ...form, namaPemilik: v })}
-            />
-            <Input
-              label="Email"
-              type="email"
-              required
-              value={form.email}
-              onChange={(v) => setForm({ ...form, email: v })}
-            />
-            <Input
-              label="No. Telepon / WA"
-              required
-              value={form.telepon}
-              onChange={(v) => setForm({ ...form, telepon: v })}
-            />
-
-            <Select
-              label="Jenis Kos"
-              required
-              value={form.jenis}
-              onChange={(v) => setForm({ ...form, jenis: v })}
-              placeholder="Pilih jenis kos"
-              options={JENIS_KOS}
-            />
-            <Select
-              label="Kampus Terdekat"
-              value={form.kampus}
-              onChange={(v) => setForm({ ...form, kampus: v })}
-              placeholder="Pilih kampus"
-              options={KAMPUS_LIST}
-            />
-            <Select
-              label="Daerah"
-              value={form.daerah}
-              onChange={(v) => setForm({ ...form, daerah: v })}
-              placeholder="Pilih daerah"
-              options={DAERAH_LIST}
-            />
-            <Input
-              label="Harga / Bulan (Rp)"
-              type="number"
-              required
-              value={form.harga}
-              onChange={(v) => setForm({ ...form, harga: v })}
-            />
-
-            <div className="md:col-span-2">
-              <Input
-                label="Alamat Lengkap"
-                required
-                value={form.alamat}
-                onChange={(v) => setForm({ ...form, alamat: v })}
-              />
+          <div className="relative z-10">
+            <div className="mb-8 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                <UserPlus className="h-6 w-6 text-primary" />
+              </div>
+              <h2 className="font-serif text-2xl font-bold text-foreground">Daftar Akun Mitra</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Buat akun untuk mulai mendaftarkan dan mengelola kos Anda.
+              </p>
             </div>
-            <div className="md:col-span-2">
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-muted-foreground">Deskripsi Kos</span>
-                <textarea
-                  rows={4}
-                  value={form.deskripsi}
-                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Ceritakan keunggulan kos Anda..."
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="nama"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  Nama Lengkap <span className="text-destructive">*</span>
+                </label>
+                <input
+                  id="nama"
+                  type="text"
+                  required
+                  value={nama}
+                  onChange={(e) => setNama(e.target.value)}
+                  placeholder="Nama lengkap Anda"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
                 />
-              </label>
-            </div>
-
-            <div className="md:col-span-2">
-              <div className="mb-2 text-xs font-medium text-muted-foreground">
-                Fasilitas Tersedia
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {FASILITAS_OPTIONS.map((f) => {
-                  const active = form.fasilitas.includes(f);
-                  return (
-                    <button
-                      type="button"
-                      key={f}
-                      onClick={() => toggleFasilitas(f)}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                        active
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-foreground hover:bg-secondary"
-                      }`}
-                    >
-                      {active ? "✓ " : ""}
-                      {f}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="md:col-span-2">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Foto Kos <span className="text-destructive">*</span>{" "}
-                  <span className="text-muted-foreground/70">
-                    (maks {MAX_FILES} foto, 5MB / foto)
-                  </span>
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {gambar.length}/{MAX_FILES}
-                </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {gambar.map((g, i) => (
-                  <div
-                    key={g.url}
-                    className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted"
-                  >
-                    <img
-                      src={g.url}
-                      alt={`Foto kos ${i + 1}`}
-                      className="h-full w-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeGambar(i)}
-                      className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-all hover:bg-destructive hover:text-destructive-foreground"
-                      aria-label="Hapus foto"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  Email <span className="text-destructive">*</span>
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nama@email.com"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+                />
+              </div>
 
-                {gambar.length < MAX_FILES && (
+              <div>
+                <label
+                  htmlFor="telepon"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  No. Telepon / WA
+                </label>
+                <input
+                  id="telepon"
+                  type="tel"
+                  value={telepon}
+                  onChange={(e) => setTelepon(e.target.value)}
+                  placeholder="6281234567890"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  Password <span className="text-destructive">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Minimal 6 karakter"
+                    className="w-full rounded-xl border border-input bg-background px-4 py-2.5 pr-10 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+                  />
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-background text-muted-foreground transition-colors hover:border-primary hover:bg-secondary hover:text-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                   >
-                    <ImagePlus className="h-6 w-6" />
-                    <span className="text-xs font-medium">Tambah foto</span>
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
-                )}
+                </div>
               </div>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-                  handleFiles(e.target.files);
-                  e.target.value = "";
-                }}
-              />
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  Konfirmasi Password <span className="text-destructive">*</span>
+                </label>
+                <input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Ulangi password"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+                />
+              </div>
 
-              {imgError && <p className="mt-2 text-xs text-destructive">{imgError}</p>}
-            </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Memproses..." : "Daftar Sekarang"}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              Sudah punya akun?{" "}
+              <Link to="/login" className="font-medium text-primary hover:underline">
+                Masuk di sini
+              </Link>
+            </p>
           </div>
-
-          <button
-            type="submit"
-            className="mt-8 w-full rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Daftarkan Kos Saya
-          </button>
-        </form>
+        </div>
       </section>
     </div>
-  );
-}
-
-function Input({
-  label,
-  value,
-  onChange,
-  type = "text",
-  required,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
-  required?: boolean;
-}) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">
-        {label}
-        {required && <span className="text-destructive"> *</span>}
-      </span>
-      <input
-        type={type}
-        required={required}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-      />
-    </label>
-  );
-}
-
-function Select({
-  label,
-  value,
-  onChange,
-  options,
-  required,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: readonly { value: string; label: string }[];
-  required?: boolean;
-  placeholder?: string;
-}) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">
-        {label}
-        {required && <span className="text-destructive"> *</span>}
-      </span>
-      <UiSelect value={value || undefined} onValueChange={onChange} required={required}>
-        <SelectTrigger className="h-10">
-          <SelectValue placeholder={placeholder ?? "Pilih…"} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((o) => (
-            <SelectItem key={o.value} value={o.value}>
-              {o.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </UiSelect>
-    </label>
   );
 }
