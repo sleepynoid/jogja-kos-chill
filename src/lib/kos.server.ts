@@ -378,3 +378,21 @@ export const getKosByUuidFn = createServerFn({ method: "GET" })
 
     return result;
   });
+
+// ============================================================
+// GET ALL FASILITAS (for filter)
+// ============================================================
+
+export const getFasilitasListFn = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabase
+    .from("fasilitas")
+    .select("nama")
+    .order("nama");
+
+  if (error) {
+    console.error("Failed to fetch fasilitas:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((f) => f.nama);
+});

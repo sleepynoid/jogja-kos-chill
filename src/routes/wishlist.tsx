@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, MapPin, Star, ArrowRight, Trash2, Search } from "lucide-react";
 import { BatikPattern } from "@/components/site/Ornaments";
-import { useKosStore } from "@/lib/kos-store";
+import { getPublicKosListFn, type PublicKos } from "@/lib/kos.server";
 
 export const Route = createFileRoute("/wishlist")({
+  loader: async () => {
+    const allKos = await getPublicKosListFn();
+    return { allKos };
+  },
   head: () => ({
     meta: [
       { title: "Wishlist Kost Impian Anda — Keep Kost" },
@@ -21,9 +25,9 @@ export const Route = createFileRoute("/wishlist")({
 const STORAGE_KEY = "knsleep:wishlist:v1";
 
 function Wishlist() {
+  const { allKos } = Route.useLoaderData();
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const kosList = useKosStore();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -31,11 +35,6 @@ function Wishlist() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         setWishlistIds(JSON.parse(stored));
-      } else {
-        // Default seed wishlisted items (k1: Griya Sogan Bulaksumur, k3: Omah Malioboro Heritage)
-        const defaults = ["k1", "k3"];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
-        setWishlistIds(defaults);
       }
     } catch (e) {
       console.error("Failed to load wishlist", e);
@@ -51,8 +50,8 @@ function Wishlist() {
     }
   };
 
-  // Get matching real Kos objects from catalog
-  const wishlistItems = kosList.filter((item) => wishlistIds.includes(item.id));
+  // Filter kos that are in wishlist (by UUID)
+  const wishlistItems = allKos.filter((item) => wishlistIds.includes(item.id));
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID").format(price);
@@ -120,7 +119,7 @@ function Wishlist() {
                     <div className="p-10 space-y-8 flex-1 flex flex-col justify-between">
                       <div className="space-y-4 flex-1">
                         <div className="flex justify-between items-start gap-4">
-                          <Link to="/kos/$id" params={{ id: item.id }}>
+                          <Link to="/kos/$uuid" params={{ uuid: item.id }}>
                             <h3 className="font-display font-bold text-2xl text-foreground group-hover:text-brand-accent transition-colors leading-tight">
                               {item.nama}
                             </h3>
@@ -147,8 +146,8 @@ function Wishlist() {
                           </p>
                         </div>
                         <Link
-                          to="/kos/$id"
-                          params={{ id: item.id }}
+                          to="/kos/$uuid"
+                          params={{ uuid: item.id }}
                           className="w-14 h-14 bg-secondary rounded-[1.5rem] flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground transition-all shadow-sm cursor-pointer border border-border"
                         >
                           <ArrowRight size={24} />

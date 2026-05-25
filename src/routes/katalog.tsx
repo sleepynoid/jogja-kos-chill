@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
-import { getPublicKosListFn, type PublicKos } from "@/lib/kos.server";
+import { getPublicKosListFn, getFasilitasListFn, type PublicKos } from "@/lib/kos.server";
 import { KosCard } from "@/components/site/KosCard";
 import { BatikPattern } from "@/components/site/Ornaments";
 import { CompareBar } from "@/components/site/CompareBar";
@@ -40,8 +40,11 @@ export const Route = createFileRoute("/katalog")({
     fasilitas: typeof s.fasilitas === "string" ? s.fasilitas : undefined,
   }),
   loader: async () => {
-    const kosList = await getPublicKosListFn();
-    return { kosList };
+    const [kosList, fasilitasList] = await Promise.all([
+      getPublicKosListFn(),
+      getFasilitasListFn(),
+    ]);
+    return { kosList, fasilitasList };
   },
   head: () => ({
     meta: [
@@ -59,7 +62,7 @@ export const Route = createFileRoute("/katalog")({
 function KatalogPage() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/katalog" });
-  const { kosList } = Route.useLoaderData();
+  const { kosList, fasilitasList } = Route.useLoaderData();
 
   const [comparedItems, setComparedItems] = useState<PublicKos[]>([]);
 
@@ -241,7 +244,7 @@ function KatalogPage() {
           <div className="mb-4 border-t border-border pt-4">
             <div className="mb-2 text-xs font-semibold text-muted-foreground">Fasilitas</div>
             <div className="space-y-2">
-              {["WiFi", "AC", "Kamar Mandi Dalam", "Laundry", "Parkir Mobil", "Smart TV"].map(
+              {fasilitasList.map(
                 (f) => {
                   const activeFasilitas = search.fasilitas
                     ? search.fasilitas.split(",").filter(Boolean)
