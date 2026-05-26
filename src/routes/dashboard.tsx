@@ -7,6 +7,9 @@ export const Route = createFileRoute("/dashboard")({
     if (!user) {
       throw redirect({ to: "/login" });
     }
+    if (user.role !== "mitra") {
+      throw redirect({ to: "/" });
+    }
   },
   component: DashboardLayout,
 });

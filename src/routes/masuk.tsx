@@ -1,11 +1,11 @@
 import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useState } from "react";
-import { loginFn, getCurrentUser } from "@/lib/auth";
+import { userLoginFn, getCurrentUser } from "@/lib/auth";
 import { BatikPattern } from "@/components/site/Ornaments";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/masuk")({
   beforeLoad: async () => {
     const user = await getCurrentUser();
     if (user) {
@@ -14,17 +14,17 @@ export const Route = createFileRoute("/login")({
   },
   head: () => ({
     meta: [
-      { title: "Login Mitra — Keep n Sleep" },
+      { title: "Masuk — Keep n Sleep" },
       {
         name: "description",
-        content: "Masuk ke akun mitra Keep n Sleep untuk mengelola kos Anda.",
+        content: "Masuk ke akun Keep n Sleep untuk menyimpan wishlist dan menghubungi pemilik kos.",
       },
     ],
   }),
-  component: LoginPage,
+  component: MasukPage,
 });
 
-function LoginPage() {
+function MasukPage() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -37,13 +37,13 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await loginFn({ data: { email, password } });
+      const result = await userLoginFn({ data: { email, password } });
 
       if ("error" in result && result.error) {
         toast.error(result.error);
       } else {
         toast.success("Berhasil masuk!");
-        navigate({ to: "/dashboard" });
+        navigate({ to: "/" });
       }
     } catch {
       toast.error("Gagal masuk. Coba lagi.");
@@ -63,9 +63,9 @@ function LoginPage() {
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
                 <LogIn className="h-6 w-6 text-primary" />
               </div>
-              <h1 className="font-serif text-2xl font-bold text-foreground">Masuk Mitra</h1>
+              <h1 className="font-serif text-2xl font-bold text-foreground">Masuk</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Kelola kos dan pantau performa listing Anda.
+                Masuk untuk menyimpan wishlist dan menghubungi pemilik kos.
               </p>
             </div>
 
@@ -127,15 +127,15 @@ function LoginPage() {
 
             <div className="mt-6 space-y-3 text-center text-sm text-muted-foreground">
               <p>
-                Belum punya akun mitra?{" "}
-                <Link to="/mitra" className="font-medium text-primary hover:underline">
+                Belum punya akun?{" "}
+                <Link to="/daftar" className="font-medium text-primary hover:underline">
                   Daftar sekarang
                 </Link>
               </p>
               <p>
-                Bukan pemilik kos?{" "}
-                <Link to="/masuk" className="font-medium text-primary hover:underline">
-                  Masuk sebagai User
+                Pemilik kos?{" "}
+                <Link to="/login" className="font-medium text-primary hover:underline">
+                  Masuk sebagai Mitra
                 </Link>
               </p>
             </div>

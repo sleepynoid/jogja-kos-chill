@@ -16,7 +16,7 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
 );
 
 // ============================================================
-// LOGIN
+// MITRA LOGIN
 // ============================================================
 
 export const loginFn = createServerFn({ method: "POST" })
@@ -24,7 +24,6 @@ export const loginFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { email, password } = data;
 
-    // Fetch mitra by email from Supabase
     const { data: mitra, error } = await supabase
       .from("mitra")
       .select("uuid, nama, email, password, is_premium")
@@ -35,18 +34,17 @@ export const loginFn = createServerFn({ method: "POST" })
       return { error: "Email atau password salah." };
     }
 
-    // Verify password
     const isValid = await bcrypt.compare(password, mitra.password);
     if (!isValid) {
       return { error: "Email atau password salah." };
     }
 
-    // Create session
     const session = await useAppSession();
     const user: SessionUser = {
       uuid: mitra.uuid,
       nama: mitra.nama,
       email: mitra.email,
+      role: "mitra",
       is_premium: mitra.is_premium,
     };
 
@@ -56,7 +54,7 @@ export const loginFn = createServerFn({ method: "POST" })
   });
 
 // ============================================================
-// REGISTER (Sign Up)
+// MITRA REGISTER
 // ============================================================
 
 export const registerFn = createServerFn({ method: "POST" })
@@ -66,7 +64,6 @@ export const registerFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { nama, email, password_raw, telepon } = data;
 
-    // Check if email already exists
     const { data: existing } = await supabase
       .from("mitra")
       .select("uuid")
@@ -77,10 +74,8 @@ export const registerFn = createServerFn({ method: "POST" })
       return { error: "Email sudah terdaftar." };
     }
 
-    // Hash password
     const password = await bcrypt.hash(password_raw, 12);
 
-    // Insert new mitra
     const { data: newMitra, error } = await supabase
       .from("mitra")
       .insert({ nama, email, password, telepon: telepon || null })
@@ -91,12 +86,12 @@ export const registerFn = createServerFn({ method: "POST" })
       return { error: "Gagal mendaftar. Coba lagi." };
     }
 
-    // Create session
     const session = await useAppSession();
     const user: SessionUser = {
       uuid: newMitra.uuid,
       nama: newMitra.nama,
       email: newMitra.email,
+      role: "mitra",
       is_premium: newMitra.is_premium,
     };
 
@@ -106,7 +101,90 @@ export const registerFn = createServerFn({ method: "POST" })
   });
 
 // ============================================================
-// LOGOUT
+// USER LOGIN (pencari kos)
+// ============================================================
+
+export const userLoginFn = createServerFn({ method: "POST" })
+  .inputValidator((data: { email: string; password: string }) => data)
+  .handler(async ({ data }) => {
+    const { email, password } = data;
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("uuid, nama, email, password")
+      .eq("email", email)
+      .single();
+
+    if (error || !user) {
+      return { error: "Email atau password salah." };
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      return { error: "Email atau password salah." };
+    }
+
+    const session = await useAppSession();
+    const sessionUser: SessionUser = {
+      uuid: user.uuid,
+      nama: user.nama,
+      email: user.email,
+      role: "user",
+    };
+
+    await session.update({ user: sessionUser });
+
+    return { success: true, user: sessionUser };
+  });
+
+// ============================================================
+// USER REGISTER (pencari kos)
+// ============================================================
+
+export const userRegisterFn = createServerFn({ method: "POST" })
+  .inputValidator(
+    (data: { nama: string; email: string; password_raw: string; telepon?: string }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { nama, email, password_raw, telepon } = data;
+
+    const { data: existing } = await supabase
+      .from("users")
+      .select("uuid")
+      .eq("email", email)
+      .single();
+
+    if (existing) {
+      return { error: "Email sudah terdaftar." };
+    }
+
+    const password = await bcrypt.hash(password_raw, 12);
+
+    const { data: newUser, error } = await supabase
+      .from("users")
+      .insert({ nama, email, password, telepon: telepon || null })
+      .select("uuid, nama, email")
+      .single();
+
+    if (error || !newUser) {
+      return { error: "Gagal mendaftar. Coba lagi." };
+    }
+
+    const session = await useAppSession();
+    const sessionUser: SessionUser = {
+      uuid: newUser.uuid,
+      nama: newUser.nama,
+      email: newUser.email,
+      role: "user",
+    };
+
+    await session.update({ user: sessionUser });
+
+    return { success: true, user: sessionUser };
+  });
+
+// ============================================================
+// LOGOUT (shared for both mitra and user)
 // ============================================================
 
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {

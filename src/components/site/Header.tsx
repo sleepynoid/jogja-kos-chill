@@ -66,9 +66,11 @@ export function Header() {
     { to: "/katalog", label: "Cari Kost" },
     { to: "/survey", label: "Jasa Survey" },
     { to: "/wishlist", label: "Wishlist" },
-    ...(user
+    ...(user?.role === "mitra"
       ? [{ to: "/dashboard", label: "Dashboard" }]
-      : [{ to: "/mitra", label: "Mitra" }]),
+      : !user
+        ? [{ to: "/mitra", label: "Mitra" }]
+        : []),
   ] as const;
 
   return (
@@ -123,7 +125,7 @@ export function Header() {
 
           {!user && (
             <Link
-              to="/login"
+              to="/masuk"
               className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Masuk
@@ -199,7 +201,7 @@ export function Header() {
 
             {!user && (
               <Link
-                to="/login"
+                to="/masuk"
                 onClick={() => setIsOpen(false)}
                 className="font-medium text-lg hover:text-brand-accent transition-colors"
               >

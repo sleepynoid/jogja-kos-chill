@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SurveyRouteImport } from './routes/survey'
 import { Route as MitraRouteImport } from './routes/mitra'
+import { Route as MasukRouteImport } from './routes/masuk'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KatalogRouteImport } from './routes/katalog'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DaftarRouteImport } from './routes/daftar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as KosUuidRouteImport } from './routes/kos.$uuid'
@@ -35,6 +37,11 @@ const MitraRoute = MitraRouteImport.update({
   path: '/mitra',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MasukRoute = MasukRouteImport.update({
+  id: '/masuk',
+  path: '/masuk',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -48,6 +55,11 @@ const KatalogRoute = KatalogRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaftarRoute = DaftarRouteImport.update({
+  id: '/daftar',
+  path: '/daftar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -73,9 +85,11 @@ const DashboardTambahKosRoute = DashboardTambahKosRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/daftar': typeof DaftarRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/katalog': typeof KatalogRoute
   '/login': typeof LoginRoute
+  '/masuk': typeof MasukRoute
   '/mitra': typeof MitraRoute
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
@@ -85,8 +99,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/daftar': typeof DaftarRoute
   '/katalog': typeof KatalogRoute
   '/login': typeof LoginRoute
+  '/masuk': typeof MasukRoute
   '/mitra': typeof MitraRoute
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
@@ -97,9 +113,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/daftar': typeof DaftarRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/katalog': typeof KatalogRoute
   '/login': typeof LoginRoute
+  '/masuk': typeof MasukRoute
   '/mitra': typeof MitraRoute
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
@@ -111,9 +129,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/daftar'
     | '/dashboard'
     | '/katalog'
     | '/login'
+    | '/masuk'
     | '/mitra'
     | '/survey'
     | '/wishlist'
@@ -123,8 +143,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/daftar'
     | '/katalog'
     | '/login'
+    | '/masuk'
     | '/mitra'
     | '/survey'
     | '/wishlist'
@@ -134,9 +156,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/daftar'
     | '/dashboard'
     | '/katalog'
     | '/login'
+    | '/masuk'
     | '/mitra'
     | '/survey'
     | '/wishlist'
@@ -147,9 +171,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DaftarRoute: typeof DaftarRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   KatalogRoute: typeof KatalogRoute
   LoginRoute: typeof LoginRoute
+  MasukRoute: typeof MasukRoute
   MitraRoute: typeof MitraRoute
   SurveyRoute: typeof SurveyRoute
   WishlistRoute: typeof WishlistRoute
@@ -179,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MitraRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/masuk': {
+      id: '/masuk'
+      path: '/masuk'
+      fullPath: '/masuk'
+      preLoaderRoute: typeof MasukRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -198,6 +231,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daftar': {
+      id: '/daftar'
+      path: '/daftar'
+      fullPath: '/daftar'
+      preLoaderRoute: typeof DaftarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -247,9 +287,11 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DaftarRoute: DaftarRoute,
   DashboardRoute: DashboardRouteWithChildren,
   KatalogRoute: KatalogRoute,
   LoginRoute: LoginRoute,
+  MasukRoute: MasukRoute,
   MitraRoute: MitraRoute,
   SurveyRoute: SurveyRoute,
   WishlistRoute: WishlistRoute,

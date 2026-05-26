@@ -1,11 +1,11 @@
 import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useState } from "react";
-import { loginFn, getCurrentUser } from "@/lib/auth";
+import { userRegisterFn, getCurrentUser } from "@/lib/auth";
 import { BatikPattern } from "@/components/site/Ornaments";
-import { Eye, EyeOff, LogIn } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/daftar")({
   beforeLoad: async () => {
     const user = await getCurrentUser();
     if (user) {
@@ -14,39 +14,55 @@ export const Route = createFileRoute("/login")({
   },
   head: () => ({
     meta: [
-      { title: "Login Mitra — Keep n Sleep" },
+      { title: "Daftar — Keep n Sleep" },
       {
         name: "description",
-        content: "Masuk ke akun mitra Keep n Sleep untuk mengelola kos Anda.",
+        content: "Buat akun Keep n Sleep untuk menyimpan wishlist dan menghubungi pemilik kos.",
       },
     ],
   }),
-  component: LoginPage,
+  component: DaftarPage,
 });
 
-function LoginPage() {
+function DaftarPage() {
   const navigate = useNavigate();
 
+  const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
+  const [telepon, setTelepon] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password.length < 6) {
+      toast.error("Password minimal 6 karakter.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Konfirmasi password tidak cocok.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const result = await loginFn({ data: { email, password } });
+      const result = await userRegisterFn({
+        data: { nama, email, password_raw: password, telepon: telepon || undefined },
+      });
 
       if ("error" in result && result.error) {
         toast.error(result.error);
       } else {
-        toast.success("Berhasil masuk!");
-        navigate({ to: "/dashboard" });
+        toast.success("Akun berhasil dibuat!");
+        navigate({ to: "/" });
       }
     } catch {
-      toast.error("Gagal masuk. Coba lagi.");
+      toast.error("Gagal mendaftar. Coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -61,21 +77,39 @@ function LoginPage() {
           <div className="relative z-10">
             <div className="mb-8 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <LogIn className="h-6 w-6 text-primary" />
+                <UserPlus className="h-6 w-6 text-primary" />
               </div>
-              <h1 className="font-serif text-2xl font-bold text-foreground">Masuk Mitra</h1>
+              <h1 className="font-serif text-2xl font-bold text-foreground">Buat Akun</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Kelola kos dan pantau performa listing Anda.
+                Daftar untuk menyimpan kos favorit dan menghubungi pemilik.
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label
+                  htmlFor="nama"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  Nama Lengkap <span className="text-destructive">*</span>
+                </label>
+                <input
+                  id="nama"
+                  type="text"
+                  required
+                  value={nama}
+                  onChange={(e) => setNama(e.target.value)}
+                  placeholder="Nama lengkap"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              <div>
+                <label
                   htmlFor="email"
                   className="mb-1.5 block text-xs font-medium text-muted-foreground"
                 >
-                  Email
+                  Email <span className="text-destructive">*</span>
                 </label>
                 <input
                   id="email"
@@ -90,10 +124,27 @@ function LoginPage() {
 
               <div>
                 <label
+                  htmlFor="telepon"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  No. Telepon / WA
+                </label>
+                <input
+                  id="telepon"
+                  type="tel"
+                  value={telepon}
+                  onChange={(e) => setTelepon(e.target.value)}
+                  placeholder="6281234567890"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              <div>
+                <label
                   htmlFor="password"
                   className="mb-1.5 block text-xs font-medium text-muted-foreground"
                 >
-                  Password
+                  Password <span className="text-destructive">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -102,7 +153,7 @@ function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Minimal 6 karakter"
                     className="w-full rounded-xl border border-input bg-background px-4 py-2.5 pr-10 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
                   />
                   <button
@@ -116,26 +167,44 @@ function LoginPage() {
                 </div>
               </div>
 
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="mb-1.5 block text-xs font-medium text-muted-foreground"
+                >
+                  Konfirmasi Password <span className="text-destructive">*</span>
+                </label>
+                <input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Ulangi password"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Memproses..." : "Masuk"}
+                {loading ? "Memproses..." : "Daftar"}
               </button>
             </form>
 
             <div className="mt-6 space-y-3 text-center text-sm text-muted-foreground">
               <p>
-                Belum punya akun mitra?{" "}
-                <Link to="/mitra" className="font-medium text-primary hover:underline">
-                  Daftar sekarang
+                Sudah punya akun?{" "}
+                <Link to="/masuk" className="font-medium text-primary hover:underline">
+                  Masuk di sini
                 </Link>
               </p>
               <p>
-                Bukan pemilik kos?{" "}
-                <Link to="/masuk" className="font-medium text-primary hover:underline">
-                  Masuk sebagai User
+                Pemilik kos?{" "}
+                <Link to="/mitra" className="font-medium text-primary hover:underline">
+                  Daftar sebagai Mitra
                 </Link>
               </p>
             </div>

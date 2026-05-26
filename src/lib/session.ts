@@ -7,7 +7,8 @@ export type SessionUser = {
   uuid: string;
   nama: string;
   email: string;
-  is_premium: boolean;
+  role: "mitra" | "user";
+  is_premium?: boolean; // only for mitra
 };
 
 export type SessionData = {
