@@ -1,7 +1,6 @@
 import { useSession } from "@tanstack/react-start/server";
 
-const SESSION_SECRET =
-  process.env.SESSION_SECRET || "jogja-kos-chill-secret-key-min-32-chars!!";
+const SESSION_SECRET = process.env.SESSION_SECRET || "jogja-kos-chill-secret-key-min-32-chars!!";
 
 export type SessionUser = {
   uuid: string;
@@ -9,6 +8,7 @@ export type SessionUser = {
   email: string;
   role: "mitra" | "user";
   is_premium?: boolean; // only for mitra
+  is_admin?: boolean; // only for admin users
 };
 
 export type SessionData = {

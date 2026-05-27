@@ -12,13 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SurveyRouteImport } from './routes/survey'
 import { Route as MitraRouteImport } from './routes/mitra'
+import { Route as MasukAdminRouteImport } from './routes/masuk-admin'
 import { Route as MasukRouteImport } from './routes/masuk'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KatalogRouteImport } from './routes/katalog'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DaftarRouteImport } from './routes/daftar'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as KosUuidRouteImport } from './routes/kos.$uuid'
 import { Route as DashboardTambahKosRouteImport } from './routes/dashboard/tambah-kos'
 
@@ -35,6 +38,11 @@ const SurveyRoute = SurveyRouteImport.update({
 const MitraRoute = MitraRouteImport.update({
   id: '/mitra',
   path: '/mitra',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasukAdminRoute = MasukAdminRouteImport.update({
+  id: '/masuk-admin',
+  path: '/masuk-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MasukRoute = MasukRouteImport.update({
@@ -62,6 +70,11 @@ const DaftarRoute = DaftarRouteImport.update({
   path: '/daftar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -71,6 +84,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const KosUuidRoute = KosUuidRouteImport.update({
   id: '/kos/$uuid',
@@ -85,16 +103,19 @@ const DashboardTambahKosRoute = DashboardTambahKosRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/daftar': typeof DaftarRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/katalog': typeof KatalogRoute
   '/login': typeof LoginRoute
   '/masuk': typeof MasukRoute
+  '/masuk-admin': typeof MasukAdminRoute
   '/mitra': typeof MitraRoute
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
   '/dashboard/tambah-kos': typeof DashboardTambahKosRoute
   '/kos/$uuid': typeof KosUuidRoute
+  '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -103,42 +124,50 @@ export interface FileRoutesByTo {
   '/katalog': typeof KatalogRoute
   '/login': typeof LoginRoute
   '/masuk': typeof MasukRoute
+  '/masuk-admin': typeof MasukAdminRoute
   '/mitra': typeof MitraRoute
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
   '/dashboard/tambah-kos': typeof DashboardTambahKosRoute
   '/kos/$uuid': typeof KosUuidRoute
+  '/admin': typeof AdminIndexRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/daftar': typeof DaftarRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/katalog': typeof KatalogRoute
   '/login': typeof LoginRoute
   '/masuk': typeof MasukRoute
+  '/masuk-admin': typeof MasukAdminRoute
   '/mitra': typeof MitraRoute
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
   '/dashboard/tambah-kos': typeof DashboardTambahKosRoute
   '/kos/$uuid': typeof KosUuidRoute
+  '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/daftar'
     | '/dashboard'
     | '/katalog'
     | '/login'
     | '/masuk'
+    | '/masuk-admin'
     | '/mitra'
     | '/survey'
     | '/wishlist'
     | '/dashboard/tambah-kos'
     | '/kos/$uuid'
+    | '/admin/'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -147,35 +176,42 @@ export interface FileRouteTypes {
     | '/katalog'
     | '/login'
     | '/masuk'
+    | '/masuk-admin'
     | '/mitra'
     | '/survey'
     | '/wishlist'
     | '/dashboard/tambah-kos'
     | '/kos/$uuid'
+    | '/admin'
     | '/dashboard'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/daftar'
     | '/dashboard'
     | '/katalog'
     | '/login'
     | '/masuk'
+    | '/masuk-admin'
     | '/mitra'
     | '/survey'
     | '/wishlist'
     | '/dashboard/tambah-kos'
     | '/kos/$uuid'
+    | '/admin/'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   DaftarRoute: typeof DaftarRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   KatalogRoute: typeof KatalogRoute
   LoginRoute: typeof LoginRoute
   MasukRoute: typeof MasukRoute
+  MasukAdminRoute: typeof MasukAdminRoute
   MitraRoute: typeof MitraRoute
   SurveyRoute: typeof SurveyRoute
   WishlistRoute: typeof WishlistRoute
@@ -203,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/mitra'
       fullPath: '/mitra'
       preLoaderRoute: typeof MitraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/masuk-admin': {
+      id: '/masuk-admin'
+      path: '/masuk-admin'
+      fullPath: '/masuk-admin'
+      preLoaderRoute: typeof MasukAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/masuk': {
@@ -240,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DaftarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -253,6 +303,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/kos/$uuid': {
       id: '/kos/$uuid'
@@ -271,6 +328,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardTambahKosRoute: typeof DashboardTambahKosRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -287,11 +354,13 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   DaftarRoute: DaftarRoute,
   DashboardRoute: DashboardRouteWithChildren,
   KatalogRoute: KatalogRoute,
   LoginRoute: LoginRoute,
   MasukRoute: MasukRoute,
+  MasukAdminRoute: MasukAdminRoute,
   MitraRoute: MitraRoute,
   SurveyRoute: SurveyRoute,
   WishlistRoute: WishlistRoute,

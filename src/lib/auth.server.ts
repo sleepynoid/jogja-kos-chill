@@ -8,12 +8,10 @@ import { supabase } from "./supabase";
 // GET CURRENT USER (from session)
 // ============================================================
 
-export const getCurrentUser = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const session = await useAppSession();
-    return session.data.user ?? null;
-  },
-);
+export const getCurrentUser = createServerFn({ method: "GET" }).handler(async () => {
+  const session = await useAppSession();
+  return session.data.user ?? null;
+});
 
 // ============================================================
 // MITRA LOGIN
@@ -111,7 +109,7 @@ export const userLoginFn = createServerFn({ method: "POST" })
 
     const { data: user, error } = await supabase
       .from("users")
-      .select("uuid, nama, email, password")
+      .select("uuid, nama, email, password, is_admin")
       .eq("email", email)
       .single();
 
@@ -130,6 +128,7 @@ export const userLoginFn = createServerFn({ method: "POST" })
       nama: user.nama,
       email: user.email,
       role: "user",
+      is_admin: user.is_admin ?? false,
     };
 
     await session.update({ user: sessionUser });
@@ -192,3 +191,42 @@ export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
   await session.clear();
   throw redirect({ to: "/" });
 });
+
+// ============================================================
+// ADMIN LOGIN
+// ============================================================
+
+export const adminLoginFn = createServerFn({ method: "POST" })
+  .inputValidator((data: { email: string; password: string }) => data)
+  .handler(async ({ data }) => {
+    const { email, password } = data;
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("uuid, nama, email, password, is_admin")
+      .eq("email", email)
+      .eq("is_admin", true)
+      .single();
+
+    if (error || !user) {
+      return { error: "Akun admin tidak ditemukan." };
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      return { error: "Akun admin tidak ditemukan." };
+    }
+
+    const session = await useAppSession();
+    const sessionUser: SessionUser = {
+      uuid: user.uuid,
+      nama: user.nama,
+      email: user.email,
+      role: "user",
+      is_admin: true,
+    };
+
+    await session.update({ user: sessionUser });
+
+    return { success: true, user: sessionUser };
+  });

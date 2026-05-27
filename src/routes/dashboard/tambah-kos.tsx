@@ -112,9 +112,7 @@ function TambahKosPage() {
   const toggleFasilitas = (f: string) => {
     setForm((s) => ({
       ...s,
-      fasilitas: s.fasilitas.includes(f)
-        ? s.fasilitas.filter((x) => x !== f)
-        : [...s.fasilitas, f],
+      fasilitas: s.fasilitas.includes(f) ? s.fasilitas.filter((x) => x !== f) : [...s.fasilitas, f],
     }));
   };
 
@@ -228,13 +226,18 @@ function TambahKosPage() {
               <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
                 Jenis Kos <span className="text-destructive">*</span>
               </label>
-              <UiSelect value={form.jenis || undefined} onValueChange={(v) => setForm({ ...form, jenis: v })}>
+              <UiSelect
+                value={form.jenis || undefined}
+                onValueChange={(v) => setForm({ ...form, jenis: v })}
+              >
                 <SelectTrigger className="h-10 rounded-xl">
                   <SelectValue placeholder="Pilih jenis kos" />
                 </SelectTrigger>
                 <SelectContent>
                   {JENIS_KOS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </UiSelect>
@@ -244,13 +247,18 @@ function TambahKosPage() {
               <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
                 Daerah <span className="text-destructive">*</span>
               </label>
-              <UiSelect value={form.daerah || undefined} onValueChange={(v) => setForm({ ...form, daerah: v })}>
+              <UiSelect
+                value={form.daerah || undefined}
+                onValueChange={(v) => setForm({ ...form, daerah: v })}
+              >
                 <SelectTrigger className="h-10 rounded-xl">
                   <SelectValue placeholder="Pilih daerah" />
                 </SelectTrigger>
                 <SelectContent>
                   {DAERAH_LIST.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </UiSelect>
@@ -320,7 +328,8 @@ function TambahKosPage() {
                       : "border-border bg-background text-foreground hover:bg-secondary"
                   }`}
                 >
-                  {active ? "✓ " : ""}{k.label}
+                  {active ? "✓ " : ""}
+                  {k.label}
                 </button>
               );
             })}
@@ -347,7 +356,8 @@ function TambahKosPage() {
                       : "border-border bg-background text-foreground hover:bg-secondary"
                   }`}
                 >
-                  {active ? "✓ " : ""}{f}
+                  {active ? "✓ " : ""}
+                  {f}
                 </button>
               );
             })}
@@ -365,7 +375,10 @@ function TambahKosPage() {
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {gambar.map((g, i) => (
-              <div key={g.url} className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted">
+              <div
+                key={g.url}
+                className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted"
+              >
                 <img src={g.url} alt={`Foto kos ${i + 1}`} className="h-full w-full object-cover" />
                 {i === 0 && (
                   <span className="absolute left-1.5 top-1.5 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">

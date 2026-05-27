@@ -36,7 +36,7 @@ export const createKosFn = createServerFn({ method: "POST" })
       return { error: "Daerah tidak ditemukan." };
     }
 
-    // 2. Insert kos
+    // 2. Insert kos (is_approved = null → pending review by admin)
     const { data: kos, error: kosErr } = await supabase
       .from("kos")
       .insert({
@@ -49,6 +49,7 @@ export const createKosFn = createServerFn({ method: "POST" })
         deskripsi: data.deskripsi || null,
         gambar: data.gambar_urls[0] || null,
         tersedia: true,
+        is_approved: null,
       })
       .select("uuid")
       .single();
@@ -121,8 +122,12 @@ export type MitraKos = {
   gambar: string | null;
   deskripsi: string | null;
   tersedia: boolean;
+  is_approved: boolean | null;
+  created_at: string;
   daerah: { slug: string; nama: string } | { slug: string; nama: string }[] | null;
-  kos_kampus_terdekat: { kampus: { slug: string; nama: string } | { slug: string; nama: string }[] | null }[];
+  kos_kampus_terdekat: {
+    kampus: { slug: string; nama: string } | { slug: string; nama: string }[] | null;
+  }[];
   kos_fasilitas: { fasilitas: { nama: string } | { nama: string }[] | null }[];
   kos_galeri: { url: string; urutan: number }[];
 };
@@ -137,7 +142,8 @@ export const getMitraKosFn = createServerFn({ method: "GET" }).handler(async () 
 
   const { data, error } = await supabase
     .from("kos")
-    .select(`
+    .select(
+      `
       uuid,
       nama,
       jenis,
@@ -147,11 +153,14 @@ export const getMitraKosFn = createServerFn({ method: "GET" }).handler(async () 
       gambar,
       deskripsi,
       tersedia,
+      is_approved,
+      created_at,
       daerah ( slug, nama ),
       kos_kampus_terdekat ( kampus ( slug, nama ) ),
       kos_fasilitas ( fasilitas ( nama ) ),
       kos_galeri ( url, urutan )
-    `)
+    `,
+    )
     .eq("mitra_uuid", user.uuid)
     .order("created_at", { ascending: false });
 
@@ -256,10 +265,60 @@ export type PublicKos = {
   mitraTelepon?: string; // nomor WA mitra (only on detail)
 };
 
+type RawGaleri = { url: string; urutan: number };
+type RawNamable = { nama: string } | { nama: string }[] | null;
+type RawSlugNamable = { slug: string; nama: string } | { slug: string; nama: string }[] | null;
+type RawKosRow = {
+  uuid: string;
+  nama: string;
+  jenis: string;
+  alamat: string;
+  harga_per_bulan: number;
+  rating: number | string;
+  gambar: string | null;
+  deskripsi: string | null;
+  tersedia: boolean;
+  daerah: RawSlugNamable;
+  kos_kampus_terdekat: { kampus: RawSlugNamable }[];
+  kos_fasilitas: { fasilitas: RawNamable }[];
+  kos_galeri: RawGaleri[];
+};
+
+function mapRawKosToPublic(k: RawKosRow): PublicKos {
+  const daerahObj = Array.isArray(k.daerah) ? k.daerah[0] : k.daerah;
+  const galeriSorted = (k.kos_galeri ?? []).sort((a, b) => a.urutan - b.urutan).map((g) => g.url);
+  return {
+    id: k.uuid,
+    nama: k.nama,
+    jenis: k.jenis,
+    daerah: daerahObj?.slug ?? "",
+    alamat: k.alamat,
+    hargaPerBulan: k.harga_per_bulan,
+    rating: Number(k.rating),
+    gambar: k.gambar ?? galeriSorted[0] ?? "",
+    galeri: galeriSorted,
+    deskripsi: k.deskripsi ?? "",
+    tersedia: k.tersedia,
+    fasilitas: (k.kos_fasilitas ?? [])
+      .map((f) => {
+        const fas = Array.isArray(f.fasilitas) ? f.fasilitas[0] : f.fasilitas;
+        return fas?.nama ?? "";
+      })
+      .filter(Boolean),
+    kampusTerdekat: (k.kos_kampus_terdekat ?? [])
+      .map((kt) => {
+        const kmp = Array.isArray(kt.kampus) ? kt.kampus[0] : kt.kampus;
+        return kmp?.slug ?? "";
+      })
+      .filter(Boolean),
+  };
+}
+
 export const getPublicKosListFn = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabase
     .from("kos")
-    .select(`
+    .select(
+      `
       uuid,
       nama,
       jenis,
@@ -273,8 +332,10 @@ export const getPublicKosListFn = createServerFn({ method: "GET" }).handler(asyn
       kos_kampus_terdekat ( kampus ( slug, nama ) ),
       kos_fasilitas ( fasilitas ( nama ) ),
       kos_galeri ( url, urutan )
-    `)
+    `,
+    )
     .eq("tersedia", true)
+    .eq("is_approved", true)
     .order("rating", { ascending: false });
 
   if (error) {
@@ -282,37 +343,7 @@ export const getPublicKosListFn = createServerFn({ method: "GET" }).handler(asyn
     return [];
   }
 
-  // Map to PublicKos shape (compatible with existing KosCard component)
-  const mapped: PublicKos[] = (data ?? []).map((k: any) => {
-    const daerahObj = Array.isArray(k.daerah) ? k.daerah[0] : k.daerah;
-    const galeriSorted = (k.kos_galeri ?? [])
-      .sort((a: any, b: any) => a.urutan - b.urutan)
-      .map((g: any) => g.url);
-
-    return {
-      id: k.uuid,
-      nama: k.nama,
-      jenis: k.jenis,
-      daerah: daerahObj?.slug ?? "",
-      alamat: k.alamat,
-      hargaPerBulan: k.harga_per_bulan,
-      rating: Number(k.rating),
-      gambar: k.gambar ?? galeriSorted[0] ?? "",
-      galeri: galeriSorted,
-      deskripsi: k.deskripsi ?? "",
-      tersedia: k.tersedia,
-      fasilitas: (k.kos_fasilitas ?? []).map((f: any) => {
-        const fas = Array.isArray(f.fasilitas) ? f.fasilitas[0] : f.fasilitas;
-        return fas?.nama ?? "";
-      }).filter(Boolean),
-      kampusTerdekat: (k.kos_kampus_terdekat ?? []).map((kt: any) => {
-        const kmp = Array.isArray(kt.kampus) ? kt.kampus[0] : kt.kampus;
-        return kmp?.slug ?? "";
-      }).filter(Boolean),
-    };
-  });
-
-  return mapped;
+  return (data ?? []).map((k) => mapRawKosToPublic(k as unknown as RawKosRow));
 });
 
 // ============================================================
@@ -324,7 +355,8 @@ export const getKosByUuidFn = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: k, error } = await supabase
       .from("kos")
-      .select(`
+      .select(
+        `
         uuid,
         nama,
         jenis,
@@ -339,41 +371,25 @@ export const getKosByUuidFn = createServerFn({ method: "GET" })
         kos_kampus_terdekat ( kampus ( slug, nama ) ),
         kos_fasilitas ( fasilitas ( nama ) ),
         kos_galeri ( url, urutan )
-      `)
+      `,
+      )
       .eq("uuid", data.uuid)
+      .eq("is_approved", true)
       .single();
 
     if (error || !k) {
       return null;
     }
 
-    const daerahObj = Array.isArray(k.daerah) ? k.daerah[0] : k.daerah;
-    const mitraObj = Array.isArray((k as any).mitra) ? (k as any).mitra[0] : (k as any).mitra;
-    const galeriSorted = (k.kos_galeri ?? [])
-      .sort((a: any, b: any) => a.urutan - b.urutan)
-      .map((g: any) => g.url);
+    type RawWithMitra = RawKosRow & {
+      mitra: { telepon: string | null } | { telepon: string | null }[] | null;
+    };
+    const raw = k as unknown as RawWithMitra;
+    const mitraObj = Array.isArray(raw.mitra) ? raw.mitra[0] : raw.mitra;
 
     const result: PublicKos = {
-      id: k.uuid,
-      nama: k.nama,
-      jenis: k.jenis,
-      daerah: daerahObj?.slug ?? "",
-      alamat: k.alamat,
-      hargaPerBulan: k.harga_per_bulan,
-      rating: Number(k.rating),
-      gambar: k.gambar ?? galeriSorted[0] ?? "",
-      galeri: galeriSorted,
-      deskripsi: k.deskripsi ?? "",
-      tersedia: k.tersedia,
+      ...mapRawKosToPublic(raw),
       mitraTelepon: mitraObj?.telepon ?? undefined,
-      fasilitas: (k.kos_fasilitas ?? []).map((f: any) => {
-        const fas = Array.isArray(f.fasilitas) ? f.fasilitas[0] : f.fasilitas;
-        return fas?.nama ?? "";
-      }).filter(Boolean),
-      kampusTerdekat: (k.kos_kampus_terdekat ?? []).map((kt: any) => {
-        const kmp = Array.isArray(kt.kampus) ? kt.kampus[0] : kt.kampus;
-        return kmp?.slug ?? "";
-      }).filter(Boolean),
     };
 
     return result;
@@ -384,10 +400,7 @@ export const getKosByUuidFn = createServerFn({ method: "GET" })
 // ============================================================
 
 export const getFasilitasListFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabase
-    .from("fasilitas")
-    .select("nama")
-    .order("nama");
+  const { data, error } = await supabase.from("fasilitas").select("nama").order("nama");
 
   if (error) {
     console.error("Failed to fetch fasilitas:", error.message);
@@ -396,3 +409,66 @@ export const getFasilitasListFn = createServerFn({ method: "GET" }).handler(asyn
 
   return (data ?? []).map((f) => f.nama);
 });
+
+// ============================================================
+// ADMIN: GET ALL KOS (pending + approved + rejected)
+// ============================================================
+
+export type AdminKos = {
+  uuid: string;
+  nama: string;
+  jenis: string;
+  alamat: string;
+  harga_per_bulan: number;
+  is_approved: boolean | null;
+  created_at: string;
+  gambar: string | null;
+  daerah: { slug: string; nama: string } | { slug: string; nama: string }[] | null;
+  mitra: { nama: string; email: string } | { nama: string; email: string }[] | null;
+};
+
+export const adminGetAllKosFn = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabase
+    .from("kos")
+    .select(
+      `
+      uuid,
+      nama,
+      jenis,
+      alamat,
+      harga_per_bulan,
+      is_approved,
+      created_at,
+      gambar,
+      daerah ( slug, nama ),
+      mitra ( nama, email )
+    `,
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch admin kos:", error.message);
+    return { error: error.message, data: [] as AdminKos[] };
+  }
+
+  return { data: (data ?? []) as unknown as AdminKos[] };
+});
+
+// ============================================================
+// ADMIN: APPROVE / REJECT KOS
+// ============================================================
+
+export const adminApproveKosFn = createServerFn({ method: "POST" })
+  .inputValidator((data: { kos_uuid: string; approved: boolean }) => data)
+  .handler(async ({ data }) => {
+    const { error } = await supabase
+      .from("kos")
+      .update({ is_approved: data.approved })
+      .eq("uuid", data.kos_uuid);
+
+    if (error) {
+      return { error: `Gagal mengubah status: ${error.message}` };
+    }
+
+    return { success: true };
+  });

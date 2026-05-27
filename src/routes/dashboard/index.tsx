@@ -145,6 +145,7 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
                 <TableHead className="text-right">Harga / bln</TableHead>
                 <TableHead className="text-right">Rating</TableHead>
                 <TableHead className="text-right">Fasilitas</TableHead>
+                <TableHead className="text-right">Status</TableHead>
                 <TableHead className="text-right">Ketersediaan</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
@@ -168,7 +169,9 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
                     </div>
                   </TableCell>
                   <TableCell className="capitalize">{k.jenis}</TableCell>
-                  <TableCell>{Array.isArray(k.daerah) ? k.daerah[0]?.nama : k.daerah?.nama ?? "-"}</TableCell>
+                  <TableCell>
+                    {Array.isArray(k.daerah) ? k.daerah[0]?.nama : (k.daerah?.nama ?? "-")}
+                  </TableCell>
                   <TableCell className="text-right font-medium">
                     {formatRupiah(k.harga_per_bulan)}
                   </TableCell>
@@ -180,6 +183,11 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
                     {k.kos_fasilitas?.length ?? 0}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <ApprovalBadge
+                      status={(k as unknown as { is_approved: boolean | null }).is_approved}
+                    />
                   </TableCell>
                   <TableCell className="text-right">
                     <button
@@ -215,7 +223,10 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
               ))}
               {kosList.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="py-10 text-center text-sm text-muted-foreground">
+                  <TableCell
+                    colSpan={9}
+                    className="py-10 text-center text-sm text-muted-foreground"
+                  >
                     Belum ada kos. Klik "Tambah Kos" untuk mulai.
                   </TableCell>
                 </TableRow>
@@ -258,15 +269,53 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
 
 /* ---------------- Stat card ---------------- */
 
-function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub: string }) {
+function StatCard({
+  icon,
+  label,
+  value,
+  sub,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  sub: string;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</div>
-        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          {icon}
+        </div>
+        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {label}
+        </div>
       </div>
       <div className="mt-3 font-serif text-3xl font-bold">{value}</div>
       <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
     </div>
+  );
+}
+
+/* ---------------- Approval Badge ---------------- */
+
+function ApprovalBadge({ status }: { status: boolean | null | undefined }) {
+  if (status === null || status === undefined) {
+    return (
+      <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-semibold text-amber-600">
+        Menunggu
+      </span>
+    );
+  }
+  if (status === true) {
+    return (
+      <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-600">
+        Disetujui
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center rounded-full bg-rose-500/15 px-2.5 py-0.5 text-xs font-semibold text-rose-600">
+      Ditolak
+    </span>
   );
 }

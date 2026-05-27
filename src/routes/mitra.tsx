@@ -17,7 +17,8 @@ export const Route = createFileRoute("/mitra")({
       { title: "Daftar Mitra — Keep n Sleep" },
       {
         name: "description",
-        content: "Daftarkan diri sebagai mitra Keep n Sleep dan jangkau ribuan mahasiswa Yogyakarta.",
+        content:
+          "Daftarkan diri sebagai mitra Keep n Sleep dan jangkau ribuan mahasiswa Yogyakarta.",
       },
     ],
   }),

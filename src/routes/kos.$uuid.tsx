@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { KAMPUS_LIST, JENIS_KOS, formatRupiah } from "@/lib/kos-data";
-import { getKosByUuidFn, getPublicKosListFn, type PublicKos } from "@/lib/kos.server";
+import { getKosByUuidFn, getPublicKosListFn } from "@/lib/kos.server";
 import { InteractiveMap } from "@/components/site/InteractiveMap";
 import { toast } from "sonner";
 import { BatikPattern, TumpalDivider, PatraCorner } from "@/components/site/Ornaments";
@@ -16,6 +16,7 @@ import {
   Tv,
   CheckCircle2,
   Heart,
+  Share2,
 } from "lucide-react";
 import { KosCard } from "@/components/site/KosCard";
 import {
@@ -27,6 +28,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   WiFi: Wifi,
@@ -52,33 +54,27 @@ export const Route = createFileRoute("/kos/$uuid")({
   loader: async ({ params }) => {
     const kos = await getKosByUuidFn({ data: { uuid: params.uuid } });
     if (!kos) throw notFound();
-
-    // Fetch similar kos for recommendations
     const allKos = await getPublicKosListFn();
     const similar = allKos
       .filter((k) => k.id !== kos.id && (k.daerah === kos.daerah || k.jenis === kos.jenis))
       .slice(0, 3);
-
     return { kos, similar };
   },
   head: ({ loaderData }) => ({
     meta: [
       { title: `${loaderData?.kos?.nama ?? "Detail Kos"} — Keep n Sleep` },
-      {
-        name: "description",
-        content: loaderData?.kos?.deskripsi ?? "Detail kos di Yogyakarta.",
-      },
+      { name: "description", content: loaderData?.kos?.deskripsi ?? "Detail kos di Yogyakarta." },
       { property: "og:title", content: loaderData?.kos?.nama ?? "Detail Kos" },
       { property: "og:image", content: loaderData?.kos?.gambar ?? "" },
     ],
   }),
   notFoundComponent: () => (
     <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-      <h1 className="font-serif text-3xl font-bold">Kos tidak ditemukan</h1>
+      <h1 className="font-display text-3xl font-bold">Kos tidak ditemukan</h1>
       <p className="mt-2 text-muted-foreground">Mungkin sudah dihapus atau ID-nya salah.</p>
       <Link
         to="/katalog"
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+        className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-accent px-5 py-2.5 text-sm font-bold text-white hover:bg-accent/90"
       >
         <ArrowLeft className="h-4 w-4" /> Kembali ke katalog
       </Link>
@@ -86,9 +82,9 @@ export const Route = createFileRoute("/kos/$uuid")({
   ),
   errorComponent: ({ error, reset }) => (
     <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-      <h1 className="font-serif text-2xl font-bold">Terjadi kesalahan</h1>
+      <h1 className="font-display text-2xl font-bold">Terjadi kesalahan</h1>
       <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
-      <button onClick={reset} className="mt-4 rounded-lg border px-4 py-2 text-sm">
+      <button onClick={reset} className="mt-4 rounded-2xl border px-4 py-2 text-sm font-bold">
         Coba lagi
       </button>
     </div>
@@ -107,7 +103,7 @@ function KosDetailPage() {
   const galeri = kos.galeri && kos.galeri.length > 0 ? kos.galeri : kos.gambar ? [kos.gambar] : [];
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-
+  const [activeTab, setActiveTab] = useState("deskripsi");
   const [duration, setDuration] = useState<number>(1);
   const [checkIn, setCheckIn] = useState<string>("");
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -160,8 +156,6 @@ function KosDetailPage() {
     };
   }, [api]);
 
-  const lainnya = similar;
-
   const waNumber = kos.mitraTelepon || WA_NUMBER_FALLBACK;
   const bookingDetails = `di "${kos.nama}" (${kos.alamat}) untuk durasi ${duration} Bulan${checkIn ? ` mulai tanggal ${checkIn}` : ""}. Estimasi biaya: ${formatRupiah(totalPrice)}`;
   const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(
@@ -203,182 +197,382 @@ function KosDetailPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <Link
-        to="/katalog"
-        className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" /> Kembali ke katalog
-      </Link>
+    <div className="min-h-screen bg-background">
+      {/* Gallery Hero Premium */}
+      <section className="max-w-7xl mx-auto px-6 pt-8 pb-12">
+        <Link
+          to="/katalog"
+          className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" /> Kembali ke katalog
+        </Link>
 
-      <div className="grid gap-8 md:grid-cols-[1.4fr_1fr]">
-        {/* Galeri Foto */}
-        <div className="animate-fade-up space-y-3">
-          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
-            <Carousel setApi={setApi} opts={{ loop: galeri.length > 1 }} className="relative">
-              <CarouselContent>
-                {galeri.map((src, i) => (
-                  <CarouselItem key={src + i}>
-                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                      <img
-                        src={src}
-                        alt={`${kos.nama} foto ${i + 1}`}
-                        className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-                      />
-                      <span className="absolute left-4 top-4 flex gap-1.5">
-                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                          {jenisLabel}
-                        </span>
-                        {!kos.tersedia && (
-                          <span className="rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-destructive-foreground">
-                            Penuh
-                          </span>
-                        )}
-                      </span>
-                      <span className="absolute right-4 top-4 rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur">
-                        {i + 1} / {galeri.length}
-                      </span>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              {galeri.length > 1 && (
-                <>
-                  <CarouselPrevious className="left-3 h-9 w-9 border-border bg-background/90 text-foreground shadow-md hover:bg-background" />
-                  <CarouselNext className="right-3 h-9 w-9 border-border bg-background/90 text-foreground shadow-md hover:bg-background" />
-                </>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 aspect-video lg:aspect-[21/9] rounded-[2.5rem] overflow-hidden shadow-2xl border border-border">
+          <div className="md:col-span-2 relative group cursor-pointer overflow-hidden">
+            <img
+              src={galeri[0] || ""}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+              alt={kos.nama}
+            />
+            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all" />
+            <span className="absolute left-4 top-4 flex gap-1.5">
+              <span className="rounded-full bg-accent px-3 py-1 text-xs font-bold text-white">
+                {jenisLabel}
+              </span>
+              {!kos.tersedia && (
+                <span className="rounded-full bg-destructive px-3 py-1 text-xs font-bold text-white">
+                  Penuh
+                </span>
               )}
-            </Carousel>
+            </span>
+          </div>
+          <div className="hidden md:grid gap-4 col-span-1">
+            <div className="relative group cursor-pointer overflow-hidden rounded-[1.5rem]">
+              <img
+                src={galeri[1] || galeri[0] || ""}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                alt="Detail 1"
+              />
+            </div>
+            <div className="relative group cursor-pointer overflow-hidden rounded-[1.5rem]">
+              <img
+                src={galeri[2] || galeri[0] || ""}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                alt="Detail 2"
+              />
+            </div>
+          </div>
+          <div className="hidden md:block relative group cursor-pointer overflow-hidden">
+            <img
+              src={galeri[3] || galeri[0] || ""}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+              alt="More"
+            />
+            {galeri.length > 4 && (
+              <div className="absolute inset-0 bg-foreground/40 flex items-center justify-center text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest text-xs">
+                +{galeri.length - 4} Foto Lagi
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Grid */}
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 pb-20">
+        {/* Left Column — Main Info */}
+        <div className="lg:col-span-8 space-y-12">
+          {/* Header with badges */}
+          <header className="space-y-6">
+            <div className="flex flex-wrap gap-2">
+              <span className="bg-accent/10 text-accent px-4 py-1.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-accent/20">
+                Kos Pilihan
+              </span>
+              <span className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-blue-100">
+                {jenisLabel}
+              </span>
+              {kos.tersedia && (
+                <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-green-100">
+                  Tersedia
+                </span>
+              )}
+              <span className="bg-yellow-50 text-yellow-700 px-4 py-1.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-yellow-200 flex items-center gap-1.5">
+                <Star size={12} className="fill-yellow-500 stroke-yellow-500" />
+                {kos.rating} ({totalUlasan} Review)
+              </span>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-8 border-b border-border">
+              <div className="space-y-3">
+                <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter text-foreground leading-tight">
+                  {kos.nama}
+                </h1>
+                <p className="flex items-center gap-2 text-muted-foreground text-base font-light italic">
+                  <MapPin size={20} className="text-accent shrink-0" /> {kos.alamat}
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleWishlist}
+                  className={`w-14 h-14 rounded-2xl border flex items-center justify-center transition-all shadow-sm ${
+                    isWishlisted
+                      ? "bg-red-50 border-red-200 text-red-500"
+                      : "bg-card border-border text-muted-foreground hover:text-accent hover:border-accent"
+                  }`}
+                >
+                  <Heart size={22} className={isWishlisted ? "fill-red-500" : ""} />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-14 h-14 rounded-2xl bg-card border border-border flex items-center justify-center transition-all shadow-sm text-muted-foreground hover:text-accent hover:border-accent"
+                >
+                  <Share2 size={22} />
+                </motion.button>
+              </div>
+            </div>
+          </header>
+
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 bg-card rounded-[2.5rem] border border-border shadow-sm">
+            {[
+              { label: "Rating", val: `${kos.rating}/5`, sub: `${totalUlasan} Review` },
+              { label: "Harga", val: formatRupiah(kos.hargaPerBulan), sub: "Per Bulan" },
+              { label: "Jenis", val: jenisLabel || "-", sub: "Tipe Kos" },
+              {
+                label: "Status",
+                val: kos.tersedia ? "Ready" : "Penuh",
+                sub: kos.tersedia ? "Tersedia" : "Waiting List",
+              },
+            ].map((item, i) => (
+              <div key={i} className="space-y-1.5">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground font-accent">
+                  {item.label}
+                </p>
+                <p className="text-xl font-display font-bold text-foreground tracking-tight">
+                  {item.val}
+                </p>
+                <p className="text-xs text-muted-foreground font-light">{item.sub}</p>
+              </div>
+            ))}
           </div>
 
-          {galeri.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {galeri.map((src, i) => (
+          {/* Tabs Section */}
+          <div className="space-y-8">
+            <div className="flex gap-8 border-b border-border overflow-x-auto">
+              {["Deskripsi", "Fasilitas", "Ulasan", "Lokasi"].map((tab) => (
                 <button
-                  key={src + i}
-                  type="button"
-                  onClick={() => api?.scrollTo(i)}
-                  className={`relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
-                    current === i
-                      ? "border-primary shadow-sm"
-                      : "border-transparent opacity-70 hover:opacity-100"
+                  key={tab}
+                  onClick={() => setActiveTab(tab.toLowerCase())}
+                  className={`relative pb-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all whitespace-nowrap ${
+                    activeTab === tab.toLowerCase()
+                      ? "text-foreground"
+                      : "text-muted-foreground/60 hover:text-accent"
                   }`}
-                  aria-label={`Lihat foto ${i + 1}`}
                 >
-                  <img src={src} alt="" className="h-full w-full object-cover" />
+                  {tab}
+                  {activeTab === tab.toLowerCase() && (
+                    <motion.div
+                      layoutId="detail-tab-underline"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full"
+                    />
+                  )}
                 </button>
               ))}
             </div>
-          )}
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                {activeTab === "deskripsi" && (
+                  <div className="space-y-5 text-muted-foreground leading-relaxed text-base font-light">
+                    <p>{kos.deskripsi}</p>
+                    {kampusLabels.length > 0 && (
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {kampusLabels.map((k) => (
+                          <li
+                            key={k}
+                            className="flex items-center gap-2 text-sm font-medium text-foreground/80"
+                          >
+                            <CheckCircle2 size={16} className="text-accent" /> Dekat {k}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "fasilitas" && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {kos.fasilitas.map((f, i) => {
+                      const matchKey = Object.keys(ICONS).find(
+                        (key) => key.toLowerCase() === f.trim().toLowerCase(),
+                      );
+                      const Icon = (matchKey ? ICONS[matchKey] : undefined) ?? CheckCircle2;
+                      return (
+                        <motion.div
+                          whileHover={{ y: -3, borderColor: "var(--accent)" }}
+                          key={i}
+                          className="group flex items-center gap-4 bg-card p-5 rounded-[2rem] border border-border shadow-sm transition-all cursor-default"
+                        >
+                          <div className="w-11 h-11 bg-secondary/60 rounded-xl flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all">
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          <span className="font-bold text-foreground text-sm tracking-tight group-hover:text-accent transition-colors">
+                            {f}
+                          </span>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {activeTab === "ulasan" && (
+                  <div className="space-y-8">
+                    {/* Rating Summary */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-secondary/30 p-6 rounded-[2rem] border border-border">
+                      <div className="md:col-span-4 text-center md:border-r border-border space-y-2">
+                        <p className="text-5xl font-display font-bold text-foreground">
+                          {kos.rating.toFixed(1)}
+                        </p>
+                        <div className="flex justify-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={14}
+                              className={`fill-accent text-accent ${s <= Math.round(kos.rating) ? "opacity-100" : "opacity-20"}`}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium">
+                          Berdasarkan {totalUlasan} Ulasan
+                        </p>
+                      </div>
+                      <div className="md:col-span-8 space-y-2">
+                        {ratingBars.map((b) => (
+                          <div key={b.star} className="flex items-center gap-2 text-xs">
+                            <span className="w-3 text-muted-foreground">{b.star}</span>
+                            <Star className="h-3 w-3 fill-accent text-accent" />
+                            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                              <div
+                                className="h-full rounded-full bg-accent"
+                                style={{ width: `${b.pct}%` }}
+                              />
+                            </div>
+                            <span className="w-8 text-right text-muted-foreground">{b.pct}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* User Reviews */}
+                    <div className="space-y-4">
+                      {reviews.map((r, i) => (
+                        <div
+                          key={i}
+                          className="p-5 bg-card rounded-2xl border border-border space-y-2"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center font-display font-bold text-accent">
+                                {r.nama.charAt(0)}
+                              </div>
+                              <div>
+                                <h5 className="font-bold text-foreground text-sm">{r.nama}</h5>
+                                <p className="text-xs text-muted-foreground">{r.kampus}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-0.5 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-200/50">
+                              <Star size={12} className="fill-yellow-500 text-yellow-500" />
+                              <span className="text-xs font-bold text-yellow-700">{r.rating}</span>
+                            </div>
+                          </div>
+                          <p className="text-muted-foreground text-sm leading-relaxed italic">
+                            "{r.komentar}"
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "lokasi" && (
+                  <div className="space-y-6">
+                    <InteractiveMap
+                      kosName={kos.nama}
+                      lat={-7.77 - (kos.id.charCodeAt(1) % 5) * 0.008}
+                      lng={110.37 + (kos.id.charCodeAt(1) % 5) * 0.008}
+                      kampusList={kos.kampusTerdekat}
+                    />
+                    {kampusLabels.length > 0 && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {kampusLabels.map((k, i) => (
+                          <div
+                            key={i}
+                            className="p-5 bg-secondary/30 rounded-2xl border border-border space-y-1.5"
+                          >
+                            <h5 className="font-bold text-accent text-sm">{k}</h5>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Kampus Terdekat
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Info */}
-        <div className="animate-fade-up space-y-5" style={{ animationDelay: "100ms" }}>
-          <div>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
-              <span className="inline-block h-1.5 w-8 rounded-full bg-accent" /> Kos Pilihan
-            </div>
-            <div className="mt-2 flex items-start justify-between gap-4">
-              <h1 className="font-serif text-3xl font-bold md:text-4xl leading-tight">
-                {kos.nama}
-              </h1>
-              <button
-                onClick={toggleWishlist}
-                className={`group p-2.5 rounded-full border transition-all cursor-pointer ${
-                  isWishlisted
-                    ? "bg-red-50 border-red-200 text-red-500 shadow-sm"
-                    : "bg-background border-border text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
-                }`}
-                title={isWishlisted ? "Hapus dari Wishlist" : "Tambah ke Wishlist"}
-              >
-                <Heart
-                  className={`h-5 w-5 transition-transform duration-300 group-hover:scale-110 ${
-                    isWishlisted ? "fill-red-500" : ""
-                  }`}
-                />
-              </button>
-            </div>
-            <div className="mt-2 flex items-center gap-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <MapPin className="h-4 w-4" /> {kos.alamat}
-              </span>
-              <span className="flex items-center gap-1 font-semibold text-foreground">
-                <Star className="h-4 w-4 fill-accent text-accent" /> {kos.rating}
-              </span>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-5 relative overflow-hidden space-y-4">
+        {/* Booking Sidebar */}
+        <div className="lg:col-span-4 sticky top-8 h-fit">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-card p-8 rounded-[2.5rem] text-foreground shadow-2xl shadow-foreground/5 border border-border relative overflow-hidden"
+          >
             <PatraCorner
               position="top-right"
-              className="top-1 right-1 opacity-20 text-brand-accent scale-75"
+              className="top-1 right-1 opacity-15 text-accent scale-75"
             />
 
-            <div>
-              <div className="text-xs text-muted-foreground relative z-10">Harga sewa</div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="font-serif text-3xl font-bold text-primary">
+            <div className="space-y-1.5 mb-8">
+              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground font-accent">
+                Investasi Kenyamanan
+              </p>
+              <div className="flex items-end gap-2">
+                <span className="text-3xl font-display font-bold tracking-tighter">
                   {formatRupiah(monthlyPrice)}
                 </span>
-                <span className="text-sm font-normal text-muted-foreground">/ bulan</span>
-                {duration > 1 && (
-                  <span className="ml-2 rounded-full bg-brand-accent/10 px-2 py-0.5 text-[9px] font-bold text-brand-accent uppercase tracking-wider">
-                    Hemat {duration === 3 ? "5%" : duration === 6 ? "10%" : "15%"}
-                  </span>
-                )}
-                {!kos.tersedia && (
-                  <span className="ml-auto rounded bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
-                    Penuh
-                  </span>
-                )}
+                <span className="text-muted-foreground mb-1 font-light text-sm">/ bln</span>
+              </div>
+              {duration > 1 && (
+                <span className="inline-block rounded-full bg-accent/10 px-2.5 py-0.5 text-[9px] font-bold text-accent uppercase tracking-wider">
+                  Hemat {duration === 3 ? "5%" : duration === 6 ? "10%" : "15%"}
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <div className="bg-secondary/40 p-4 rounded-[1.5rem] border border-border flex flex-col gap-1.5 focus-within:ring-2 focus-within:ring-accent/20 transition-all">
+                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                  Pilih Plan Sewa
+                </p>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className="bg-transparent border-none focus:ring-0 text-foreground font-bold w-full p-0 cursor-pointer text-sm"
+                >
+                  <option value={1}>1 Bulan (Standar)</option>
+                  <option value={3}>3 Bulan (Hemat 5%)</option>
+                  <option value={6}>6 Bulan (Hemat 10%)</option>
+                  <option value={12}>12 Bulan (Eksklusif -15%)</option>
+                </select>
+              </div>
+              <div className="bg-secondary/40 p-4 rounded-[1.5rem] border border-border flex flex-col gap-1.5 focus-within:ring-2 focus-within:ring-accent/20 transition-all">
+                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                  Tanggal Check-in
+                </p>
+                <input
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 text-foreground font-bold w-full p-0 cursor-pointer text-sm"
+                />
               </div>
             </div>
 
-            {/* Premium Duration Selector Buttons */}
-            <div className="space-y-2">
-              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-                Pilih Durasi Sewa
-              </p>
-              <div className="grid grid-cols-4 gap-1.5">
-                {[
-                  { val: 1, label: "1 Bln", desc: "Standar" },
-                  { val: 3, label: "3 Bln", desc: "Hemat 5%" },
-                  { val: 6, label: "6 Bln", desc: "Hemat 10%" },
-                  { val: 12, label: "12 Bln", desc: "Hemat 15%" },
-                ].map((opt) => (
-                  <button
-                    key={opt.val}
-                    type="button"
-                    onClick={() => setDuration(opt.val)}
-                    className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl border text-center transition-all ${
-                      duration === opt.val
-                        ? "bg-primary border-primary text-primary-foreground shadow-sm font-bold"
-                        : "bg-secondary/40 border-transparent text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
-                    }`}
-                  >
-                    <span className="text-xs font-semibold">{opt.label}</span>
-                    <span className="text-[8px] font-medium opacity-85 mt-0.5">{opt.desc}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Check-in Date Selector */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest block">
-                Tanggal Check-in
-              </label>
-              <input
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className="w-full bg-secondary/40 border-transparent rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:ring-1 focus:ring-accent focus:border-accent cursor-pointer"
-              />
-            </div>
-
-            {/* Total Price summary */}
+            {/* Total */}
             {duration > 1 && (
-              <div className="bg-secondary/30 rounded-xl p-3 border border-border/50 flex justify-between items-center text-xs">
+              <div className="bg-secondary/30 rounded-xl p-3 border border-border/50 flex justify-between items-center text-xs mb-6">
                 <span className="text-muted-foreground font-medium">Total ({duration} Bulan)</span>
                 <span className="font-bold text-foreground text-sm">
                   {formatRupiah(totalPrice)}
@@ -386,176 +580,46 @@ function KosDetailPage() {
               </div>
             )}
 
-            <a
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                toast.success(
+            <div className="space-y-3">
+              <motion.a
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  toast.success(
+                    kos.tersedia
+                      ? "Lead reservasi terkirim ke Pemilik!"
+                      : "Pendaftaran waiting list terkirim ke Pemilik!",
+                  );
+                }}
+                className={`flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-4 text-sm font-bold text-white shadow-lg transition-all ${
                   kos.tersedia
-                    ? "Lead reservasi terkirim ke Pemilik!"
-                    : "Pendaftaran waiting list terkirim ke Pemilik!",
-                );
-              }}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-bold text-white shadow-sm transition-all active:scale-95 ${
-                kos.tersedia
-                  ? "bg-[#25D366] hover:bg-[#1ebe5d]"
-                  : "bg-amber-600 hover:bg-amber-700"
-              }`}
-            >
-              <WhatsappIcon className="h-5 w-5" />
-              {kos.tersedia ? "Hubungi Pemilik" : "Hubungi Waiting List"}
-            </a>
-          </div>
-
-          {kampusLabels.length > 0 && (
-            <div className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-sm font-semibold">Kampus Terdekat</div>
-              <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
-                {kampusLabels.map((k) => (
-                  <li key={k} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-accent" /> {k}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <TumpalDivider className="mt-8 opacity-45" />
-
-      {/* Deskripsi & Fasilitas */}
-      <div className="mt-8 grid gap-8 md:grid-cols-2">
-        <section className="animate-fade-up rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-serif text-xl font-bold">Tentang Kos Ini</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{kos.deskripsi}</p>
-        </section>
-        <section
-          className="animate-fade-up rounded-2xl border border-border bg-card p-6"
-          style={{ animationDelay: "80ms" }}
-        >
-          <h2 className="font-serif text-xl font-bold">Fasilitas Lengkap</h2>
-          <ul className="mt-3 grid grid-cols-2 gap-2">
-            {kos.fasilitas.map((f) => {
-              const matchKey = Object.keys(ICONS).find(
-                (key) => key.toLowerCase() === f.trim().toLowerCase(),
-              );
-              const Icon = (matchKey ? ICONS[matchKey] : undefined) ?? CheckCircle2;
-              return (
-                <li
-                  key={f}
-                  className="flex items-center gap-2 rounded-lg bg-secondary/60 px-3 py-2 text-xs font-medium text-secondary-foreground transition-colors hover:bg-secondary"
-                >
-                  <Icon className="h-4 w-4 text-accent" /> {f}
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      </div>
-
-      {/* Interactive Map */}
-      <div className="mt-8 animate-fade-up" style={{ animationDelay: "150ms" }}>
-        <InteractiveMap
-          kosName={kos.nama}
-          lat={-7.77 - (kos.id.charCodeAt(1) % 5) * 0.008}
-          lng={110.37 + (kos.id.charCodeAt(1) % 5) * 0.008}
-          kampusList={kos.kampusTerdekat}
-        />
-      </div>
-
-      {/* Lainnya */}
-      {/* Rating & Ulasan */}
-      <section className="animate-fade-up mt-12 rounded-2xl border border-border bg-card p-6 md:p-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 className="font-serif text-2xl font-bold">Rating & Ulasan</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Berdasarkan {totalUlasan} ulasan dari penghuni.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-8 md:grid-cols-[260px_1fr]">
-          {/* Summary */}
-          <div className="flex flex-col items-center justify-center rounded-2xl bg-secondary/40 p-6 text-center">
-            <div className="font-serif text-5xl font-bold text-primary">
-              {kos.rating.toFixed(1)}
-            </div>
-            <div className="mt-1 flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${
-                    i < Math.round(kos.rating)
-                      ? "fill-accent text-accent"
-                      : "text-muted-foreground/40"
-                  }`}
-                />
-              ))}
-            </div>
-            <div className="mt-2 text-xs text-muted-foreground">dari {totalUlasan} ulasan</div>
-
-            <div className="mt-5 w-full space-y-1.5">
-              {ratingBars.map((b) => (
-                <div key={b.star} className="flex items-center gap-2 text-xs">
-                  <span className="w-3 text-muted-foreground">{b.star}</span>
-                  <Star className="h-3 w-3 fill-accent text-accent" />
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-accent transition-all"
-                      style={{ width: `${b.pct}%` }}
-                    />
-                  </div>
-                  <span className="w-8 text-right text-muted-foreground">{b.pct}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Reviews */}
-          <ul className="space-y-4">
-            {reviews.map((r, i) => (
-              <li
-                key={i}
-                className="rounded-xl border border-border bg-background/60 p-4 transition-colors hover:bg-background"
+                    ? "bg-[#25D366] hover:bg-[#1ebe5d]"
+                    : "bg-amber-600 hover:bg-amber-700"
+                }`}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-serif font-bold text-primary">
-                      {r.nama.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold">{r.nama}</div>
-                      <div className="text-xs text-muted-foreground">{r.kampus}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <Star
-                        key={j}
-                        className={`h-3.5 w-3.5 ${
-                          j < r.rating ? "fill-accent text-accent" : "text-muted-foreground/40"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.komentar}</p>
-              </li>
-            ))}
-          </ul>
+                <WhatsappIcon className="h-5 w-5" />
+                {kos.tersedia ? "Hubungi Pemilik" : "Hubungi Waiting List"}
+              </motion.a>
+            </div>
+          </motion.div>
         </div>
-      </section>
+      </div>
 
-      {lainnya.length > 0 && (
-        <section className="mt-12 relative overflow-hidden rounded-3xl bg-secondary/30 p-6 md:p-8 border border-border">
-          <BatikPattern variant="nitik" className="opacity-[0.18]" />
+      <TumpalDivider className="opacity-45 max-w-7xl mx-auto px-6" />
+
+      {/* Kos Serupa */}
+      {similar.length > 0 && (
+        <section className="max-w-7xl mx-auto px-6 py-16 relative overflow-hidden">
+          <BatikPattern variant="nitik" className="opacity-[0.12]" />
           <div className="relative z-10">
-            <h2 className="mb-5 font-serif text-2xl font-bold">Kos Serupa</h2>
+            <h2 className="font-display text-3xl font-bold mb-8">
+              Kos <span className="italic font-light text-accent">Serupa.</span>
+            </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {lainnya.map((k) => (
+              {similar.map((k) => (
                 <KosCard key={k.id} kos={k} />
               ))}
             </div>

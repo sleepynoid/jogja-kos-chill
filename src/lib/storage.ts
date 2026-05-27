@@ -11,11 +11,7 @@ const BUCKET_NAME = "kosjewish";
  * @param maxWidth - Max width in px, will resize proportionally. Default 1600.
  * @returns WebP Blob
  */
-export async function convertToWebp(
-  file: File,
-  quality = 0.8,
-  maxWidth = 1600,
-): Promise<Blob> {
+export async function convertToWebp(file: File, quality = 0.8, maxWidth = 1600): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
@@ -76,13 +72,11 @@ export async function uploadKosImage(file: File, mitraUuid: string): Promise<str
   const fileName = `${mitraUuid}/${timestamp}-${random}.webp`;
 
   // Upload to Supabase Storage
-  const { error } = await supabase.storage
-    .from(BUCKET_NAME)
-    .upload(fileName, webpBlob, {
-      contentType: "image/webp",
-      cacheControl: "31536000", // 1 year cache (immutable filename)
-      upsert: false,
-    });
+  const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, webpBlob, {
+    contentType: "image/webp",
+    cacheControl: "31536000", // 1 year cache (immutable filename)
+    upsert: false,
+  });
 
   if (error) {
     throw new Error(`Upload gagal: ${error.message}`);
@@ -99,9 +93,7 @@ export async function uploadKosImage(file: File, mitraUuid: string): Promise<str
  * Returns array of public URLs in the same order.
  */
 export async function uploadKosImages(files: File[], mitraUuid: string): Promise<string[]> {
-  const results = await Promise.all(
-    files.map((file) => uploadKosImage(file, mitraUuid)),
-  );
+  const results = await Promise.all(files.map((file) => uploadKosImage(file, mitraUuid)));
   return results;
 }
 

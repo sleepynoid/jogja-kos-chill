@@ -1,23 +1,21 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "jogja-kos-chill",
-	"compatibility_date": "2025-09-24",
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
-	"main": "src/server.ts",
-	"routes": [
-		{
-			"pattern": "keepnsleep.site",
-			"zone_name": "keepnsleep.site",
-			"custom_domain": true
-		}
-	],
-	"vars": {
-		"SESSION_SECRET": "jogja-kos-chill-session-secret-key-2024-very-secure",
-		"VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplZ3dlYW1vamZ6YXN5Y3Z6b21yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NjY2NDAsImV4cCI6MjA5NTI0MjY0MH0.v8F6GmYF_M5wdEP6sOuuQqw8nTyFIn6MirEnB1ewnPM",
-		"VITE_SUPABASE_URL": "https://zegweamojfzasycvzomr.supabase.co"
-	},
-	"workers_dev": true,
-	"preview_urls": true,
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jogja-kos-chill",
+  "compatibility_date": "2025-09-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/server.ts",
+  "routes": [
+    {
+      "pattern": "keepnsleep.site",
+      "zone_name": "keepnsleep.site",
+      "custom_domain": true,
+    },
+  ],
+  "vars": {
+    "SESSION_SECRET": "jogja-kos-chill-session-secret-key-2024-very-secure",
+    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplZ3dlYW1vamZ6YXN5Y3Z6b21yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NjY2NDAsImV4cCI6MjA5NTI0MjY0MH0.v8F6GmYF_M5wdEP6sOuuQqw8nTyFIn6MirEnB1ewnPM",
+    "VITE_SUPABASE_URL": "https://zegweamojfzasycvzomr.supabase.co",
+  },
+  "workers_dev": true,
+  "preview_urls": true,
 }

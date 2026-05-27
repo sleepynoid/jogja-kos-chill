@@ -244,33 +244,31 @@ function KatalogPage() {
           <div className="mb-4 border-t border-border pt-4">
             <div className="mb-2 text-xs font-semibold text-muted-foreground">Fasilitas</div>
             <div className="space-y-2">
-              {fasilitasList.map(
-                (f) => {
-                  const activeFasilitas = search.fasilitas
-                    ? search.fasilitas.split(",").filter(Boolean)
-                    : [];
-                  const checked = activeFasilitas.includes(f);
-                  return (
-                    <label
-                      key={f}
-                      className="flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => {
-                          const next = checked
-                            ? activeFasilitas.filter((x) => x !== f)
-                            : [...activeFasilitas, f];
-                          update("fasilitas", next.join(","));
-                        }}
-                        className="rounded border-input text-primary focus:ring-ring h-3.5 w-3.5"
-                      />
-                      {f}
-                    </label>
-                  );
-                },
-              )}
+              {fasilitasList.map((f) => {
+                const activeFasilitas = search.fasilitas
+                  ? search.fasilitas.split(",").filter(Boolean)
+                  : [];
+                const checked = activeFasilitas.includes(f);
+                return (
+                  <label
+                    key={f}
+                    className="flex items-center gap-2 text-xs font-medium text-foreground cursor-pointer select-none"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => {
+                        const next = checked
+                          ? activeFasilitas.filter((x) => x !== f)
+                          : [...activeFasilitas, f];
+                        update("fasilitas", next.join(","));
+                      }}
+                      className="rounded border-input text-primary focus:ring-ring h-3.5 w-3.5"
+                    />
+                    {f}
+                  </label>
+                );
+              })}
             </div>
           </div>
 

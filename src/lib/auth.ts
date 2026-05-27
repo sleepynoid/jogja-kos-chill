@@ -6,5 +6,6 @@ export {
   userLoginFn,
   userRegisterFn,
   logoutFn,
+  adminLoginFn,
 } from "./auth.server";
 export type { SessionUser } from "./session";
