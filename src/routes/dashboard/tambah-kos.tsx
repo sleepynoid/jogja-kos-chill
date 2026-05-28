@@ -70,6 +70,8 @@ function TambahKosPage() {
     alamat: "",
     hargaPerBulan: "",
     deskripsi: "",
+    ktpPemilik: "",
+    nib: "",
     kampusTerdekat: [] as string[],
     fasilitas: [] as string[],
   });
@@ -155,6 +157,8 @@ function TambahKosPage() {
           alamat: form.alamat,
           harga_per_bulan: Number(form.hargaPerBulan),
           deskripsi: form.deskripsi || undefined,
+          ktp_pemilik: form.ktpPemilik,
+          nib: form.nib,
           kampus_slugs: form.kampusTerdekat,
           fasilitas_names: form.fasilitas,
           gambar_urls: urls,
@@ -283,12 +287,15 @@ function TambahKosPage() {
                 Harga per Bulan (Rp) <span className="text-destructive">*</span>
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 required
-                min={1}
-                value={form.hargaPerBulan}
-                onChange={(e) => setForm({ ...form, hargaPerBulan: e.target.value })}
-                placeholder="1250000"
+                value={form.hargaPerBulan ? Number(form.hargaPerBulan).toLocaleString("id-ID") : ""}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+                  setForm({ ...form, hargaPerBulan: raw });
+                }}
+                placeholder="1.250.000"
                 className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
               />
             </div>
@@ -303,6 +310,39 @@ function TambahKosPage() {
                 onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
                 placeholder="Ceritakan keunggulan kos Anda..."
                 className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                No. KTP Pemilik <span className="text-destructive">*</span>
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                required
+                value={form.ktpPemilik}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "").slice(0, 16);
+                  setForm({ ...form, ktpPemilik: raw });
+                }}
+                placeholder="3404XXXXXXXXXXXX"
+                maxLength={16}
+                className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                NIB (Nomor Izin Bangunan) <span className="text-destructive">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={form.nib}
+                onChange={(e) => setForm({ ...form, nib: e.target.value })}
+                placeholder="Nomor NIB"
+                className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>
@@ -427,7 +467,7 @@ function TambahKosPage() {
         <div className="flex items-center gap-3 pt-4 border-t border-border">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !form.nama || !form.jenis || !form.daerah || !form.alamat || !form.hargaPerBulan || !form.ktpPemilik || !form.nib || gambar.length === 0}
             className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Menyimpan..." : "Simpan Kos"}

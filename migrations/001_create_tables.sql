@@ -66,6 +66,8 @@ CREATE TABLE kos (
     rating          NUMERIC(2, 1) NOT NULL DEFAULT 0.0 CHECK (rating >= 0 AND rating <= 5),
     gambar          TEXT,                       -- URL foto utama
     deskripsi       TEXT,
+    ktp_pemilik     TEXT NOT NULL,       -- No. KTP pemilik
+    nib             TEXT NOT NULL,       -- Nomor Induk Berusaha
     tersedia        BOOLEAN NOT NULL DEFAULT TRUE,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()

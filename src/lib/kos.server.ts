@@ -9,6 +9,8 @@ export type CreateKosInput = {
   alamat: string;
   harga_per_bulan: number;
   deskripsi?: string;
+  ktp_pemilik: string;
+  nib: string;
   kampus_slugs: string[];
   fasilitas_names: string[];
   gambar_urls: string[]; // URLs from storage upload (already uploaded client-side)
@@ -47,6 +49,8 @@ export const createKosFn = createServerFn({ method: "POST" })
         alamat: data.alamat,
         harga_per_bulan: data.harga_per_bulan,
         deskripsi: data.deskripsi || null,
+        ktp_pemilik: data.ktp_pemilik,
+        nib: data.nib,
         gambar: data.gambar_urls[0] || null,
         tersedia: true,
         is_approved: null,
