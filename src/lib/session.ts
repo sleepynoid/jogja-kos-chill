@@ -6,9 +6,8 @@ export type SessionUser = {
   uuid: string;
   nama: string;
   email: string;
-  role: "mitra" | "user";
+  role: "mitra" | "user" | "admin";
   is_premium?: boolean; // only for mitra
-  is_admin?: boolean; // only for admin users
 };
 
 export type SessionData = {

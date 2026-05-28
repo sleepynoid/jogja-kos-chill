@@ -99,7 +99,7 @@ export const registerFn = createServerFn({ method: "POST" })
   });
 
 // ============================================================
-// USER LOGIN (pencari kos)
+// USER LOGIN (pencari kos & admin — role ditentukan dari is_admin)
 // ============================================================
 
 export const userLoginFn = createServerFn({ method: "POST" })
@@ -127,8 +127,7 @@ export const userLoginFn = createServerFn({ method: "POST" })
       uuid: user.uuid,
       nama: user.nama,
       email: user.email,
-      role: "user",
-      is_admin: user.is_admin ?? false,
+      role: user.is_admin ? "admin" : "user",
     };
 
     await session.update({ user: sessionUser });
@@ -183,7 +182,7 @@ export const userRegisterFn = createServerFn({ method: "POST" })
   });
 
 // ============================================================
-// LOGOUT (shared for both mitra and user)
+// LOGOUT (shared for all roles)
 // ============================================================
 
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
@@ -191,42 +190,3 @@ export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
   await session.clear();
   throw redirect({ to: "/" });
 });
-
-// ============================================================
-// ADMIN LOGIN
-// ============================================================
-
-export const adminLoginFn = createServerFn({ method: "POST" })
-  .inputValidator((data: { email: string; password: string }) => data)
-  .handler(async ({ data }) => {
-    const { email, password } = data;
-
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("uuid, nama, email, password, is_admin")
-      .eq("email", email)
-      .eq("is_admin", true)
-      .single();
-
-    if (error || !user) {
-      return { error: "Akun admin tidak ditemukan." };
-    }
-
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return { error: "Akun admin tidak ditemukan." };
-    }
-
-    const session = await useAppSession();
-    const sessionUser: SessionUser = {
-      uuid: user.uuid,
-      nama: user.nama,
-      email: user.email,
-      role: "user",
-      is_admin: true,
-    };
-
-    await session.update({ user: sessionUser });
-
-    return { success: true, user: sessionUser };
-  });

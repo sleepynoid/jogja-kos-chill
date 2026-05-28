@@ -9,7 +9,8 @@ export const Route = createFileRoute("/masuk")({
   beforeLoad: async () => {
     const user = await getCurrentUser();
     if (user) {
-      throw redirect({ to: user.role === "mitra" ? "/dashboard" : "/" });
+      const to = user.role === "admin" ? "/admin" : user.role === "mitra" ? "/dashboard" : "/";
+      throw redirect({ to });
     }
   },
   head: () => ({
@@ -43,7 +44,8 @@ function MasukPage() {
         toast.error(result.error);
       } else {
         toast.success("Berhasil masuk!");
-        navigate({ to: "/" });
+        const redirectTo = result.user?.role === "admin" ? "/admin" : "/";
+        navigate({ to: redirectTo });
       }
     } catch {
       toast.error("Gagal masuk. Coba lagi.");

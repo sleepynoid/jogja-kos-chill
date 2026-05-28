@@ -60,18 +60,42 @@ export function Header() {
 
   const transparent = isHome && !isScrolled;
 
-  // Build nav links based on auth state
-  const navLinks = [
-    { to: "/", label: "Beranda" },
-    { to: "/katalog", label: "Cari Kost" },
-    { to: "/survey", label: "Jasa Survey" },
-    { to: "/wishlist", label: "Wishlist" },
-    ...(user?.role === "mitra"
-      ? [{ to: "/dashboard", label: "Dashboard" }]
-      : !user
-        ? [{ to: "/mitra", label: "Mitra" }]
-        : []),
-  ] as const;
+  // Build nav links based on auth state and role
+  const navLinks = (() => {
+    if (user?.role === "admin") {
+      return [
+        { to: "/", label: "Beranda" },
+        { to: "/katalog", label: "Cari Kost" },
+        { to: "/admin", label: "Admin" },
+      ];
+    }
+    if (user?.role === "mitra") {
+      return [
+        { to: "/", label: "Beranda" },
+        { to: "/katalog", label: "Cari Kost" },
+        { to: "/survey", label: "Jasa Survey" },
+        { to: "/wishlist", label: "Wishlist" },
+        { to: "/dashboard", label: "Dashboard" },
+      ];
+    }
+    if (user) {
+      // user biasa
+      return [
+        { to: "/", label: "Beranda" },
+        { to: "/katalog", label: "Cari Kost" },
+        { to: "/survey", label: "Jasa Survey" },
+        { to: "/wishlist", label: "Wishlist" },
+      ];
+    }
+    // not logged in
+    return [
+      { to: "/", label: "Beranda" },
+      { to: "/katalog", label: "Cari Kost" },
+      { to: "/survey", label: "Jasa Survey" },
+      { to: "/wishlist", label: "Wishlist" },
+      { to: "/mitra", label: "Mitra" },
+    ];
+  })() as readonly { to: string; label: string }[];
 
   return (
     <nav

@@ -191,7 +191,7 @@ function Index() {
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div className="space-y-4 max-w-2xl">
               <h2 className="font-display font-bold text-5xl tracking-tight text-foreground">
-                Koleksi Kost Pilihan.
+                Koleksi Rekomendasi Kost.
               </h2>
               <p className="text-muted-foreground text-lg">
                 Kost dengan desain modern dan fasilitas terlengkap untuk gaya hidup aktif Anda.

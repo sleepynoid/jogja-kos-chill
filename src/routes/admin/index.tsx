@@ -46,10 +46,15 @@ function AdminDashboard({ kosList }: { kosList: AdminKos[] }) {
     approved: boolean;
   } | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   const pending = kosList.filter((k) => k.is_approved === null);
   const approved = kosList.filter((k) => k.is_approved === true);
   const rejected = kosList.filter((k) => k.is_approved === false);
+
+  const totalPages = Math.ceil(kosList.length / perPage);
+  const paginatedList = kosList.slice((page - 1) * perPage, page * perPage);
 
   const handleApprove = async (kos: AdminKos, approved: boolean) => {
     setConfirmAction({ kos, approved });
@@ -132,12 +137,14 @@ function AdminDashboard({ kosList }: { kosList: AdminKos[] }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Kos</TableHead>
-                <TableHead>Mitra</TableHead>
-                <TableHead>Daerah</TableHead>
-                <TableHead className="text-right">Harga / bln</TableHead>
-                <TableHead className="text-right">Tanggal Submit</TableHead>
-                <TableHead className="text-right">Aksi</TableHead>
+                <TableHead className="text-left">Kos</TableHead>
+                <TableHead className="text-left">Mitra</TableHead>
+                <TableHead className="text-left">Daerah</TableHead>
+                <TableHead className="text-center">KTP Pemilik</TableHead>
+                <TableHead className="text-center">NIB</TableHead>
+                <TableHead className="text-center">Harga / bln</TableHead>
+                <TableHead className="text-center">Tanggal Submit</TableHead>
+                <TableHead className="text-center">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -147,7 +154,7 @@ function AdminDashboard({ kosList }: { kosList: AdminKos[] }) {
               {pending.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={8}
                     className="py-10 text-center text-sm text-muted-foreground"
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -187,23 +194,25 @@ function AdminDashboard({ kosList }: { kosList: AdminKos[] }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Kos</TableHead>
-                <TableHead>Mitra</TableHead>
-                <TableHead>Daerah</TableHead>
-                <TableHead className="text-right">Harga / bln</TableHead>
-                <TableHead className="text-right">Tanggal Submit</TableHead>
-                <TableHead className="text-right">Status</TableHead>
-                <TableHead className="text-right">Aksi</TableHead>
+                <TableHead className="text-left">Kos</TableHead>
+                <TableHead className="text-left">Mitra</TableHead>
+                <TableHead className="text-left">Daerah</TableHead>
+                <TableHead className="text-center">KTP Pemilik</TableHead>
+                <TableHead className="text-center">NIB</TableHead>
+                <TableHead className="text-center">Harga / bln</TableHead>
+                <TableHead className="text-center">Tanggal Submit</TableHead>
+                <TableHead className="text-center">Status</TableHead>
+                <TableHead className="text-center">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {kosList.map((k) => (
+              {paginatedList.map((k) => (
                 <KosRow key={k.uuid} kos={k} onApprove={handleApprove} showStatus />
               ))}
               {kosList.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={9}
                     className="py-10 text-center text-sm text-muted-foreground"
                   >
                     Belum ada kos terdaftar.
@@ -214,9 +223,47 @@ function AdminDashboard({ kosList }: { kosList: AdminKos[] }) {
           </Table>
         </div>
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-border px-5 py-3">
+            <p className="text-xs text-muted-foreground">
+              Halaman {page} dari {totalPages}
+            </p>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Sebelumnya
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                    p === page
+                      ? "bg-primary text-primary-foreground"
+                      : "border border-border hover:bg-secondary"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Selanjutnya
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Mobile View */}
         <div className="grid gap-4 p-5 md:hidden">
-          {kosList.map((k) => (
+          {paginatedList.map((k) => (
             <KosMobileCard key={k.uuid} kos={k} onApprove={handleApprove} showStatus />
           ))}
           {kosList.length === 0 && (
@@ -285,13 +332,13 @@ function KosRow({
   return (
     <TableRow>
       <TableCell>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-w-[220px]">
           {kos.gambar && (
-            <img src={kos.gambar} alt={kos.nama} className="h-10 w-14 rounded-md object-cover" />
+            <img src={kos.gambar} alt={kos.nama} className="h-10 w-14 shrink-0 rounded-md object-cover" />
           )}
-          <div className="leading-tight">
-            <div className="font-medium">{kos.nama}</div>
-            <div className="text-xs text-muted-foreground">{kos.alamat}</div>
+          <div className="leading-tight min-w-0">
+            <div className="font-medium break-words">{kos.nama}</div>
+            <div className="text-xs text-muted-foreground break-words">{kos.alamat}</div>
           </div>
         </div>
       </TableCell>
@@ -300,14 +347,16 @@ function KosRow({
         <div className="text-xs text-muted-foreground">{mitraObj?.email ?? ""}</div>
       </TableCell>
       <TableCell>{daerahObj?.nama ?? "-"}</TableCell>
-      <TableCell className="text-right font-medium">{formatRupiah(kos.harga_per_bulan)}</TableCell>
-      <TableCell className="text-right text-sm text-muted-foreground">{tanggal}</TableCell>
+      <TableCell className="text-center font-mono text-xs">{kos.ktp_pemilik ?? "-"}</TableCell>
+      <TableCell className="text-center font-mono text-xs">{kos.nib ?? "-"}</TableCell>
+      <TableCell className="text-center font-medium">{formatRupiah(kos.harga_per_bulan)}</TableCell>
+      <TableCell className="text-center text-sm text-muted-foreground">{tanggal}</TableCell>
       {showStatus && (
-        <TableCell className="text-right">
+        <TableCell className="text-center">
           <ApprovalBadge status={kos.is_approved} />
         </TableCell>
       )}
-      <TableCell className="text-right">
+      <TableCell className="text-center">
         <div className="inline-flex items-center gap-2">
           {kos.is_approved !== true && (
             <button

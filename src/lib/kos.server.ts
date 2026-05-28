@@ -424,6 +424,8 @@ export type AdminKos = {
   jenis: string;
   alamat: string;
   harga_per_bulan: number;
+  ktp_pemilik: string | null;
+  nib: string | null;
   is_approved: boolean | null;
   created_at: string;
   gambar: string | null;
@@ -441,6 +443,8 @@ export const adminGetAllKosFn = createServerFn({ method: "GET" }).handler(async 
       jenis,
       alamat,
       harga_per_bulan,
+      ktp_pemilik,
+      nib,
       is_approved,
       created_at,
       gambar,
@@ -472,6 +476,208 @@ export const adminApproveKosFn = createServerFn({ method: "POST" })
 
     if (error) {
       return { error: `Gagal mengubah status: ${error.message}` };
+    }
+
+    return { success: true };
+  });
+
+// ============================================================
+// GET KOS FOR EDIT (fetch full data for mitra's own kos)
+// ============================================================
+
+export type KosEditData = {
+  uuid: string;
+  nama: string;
+  jenis: string;
+  daerah_slug: string;
+  alamat: string;
+  harga_per_bulan: number;
+  deskripsi: string;
+  ktp_pemilik: string;
+  nib: string;
+  gambar: string | null;
+  kampus_slugs: string[];
+  fasilitas_names: string[];
+  galeri_urls: string[];
+};
+
+export const getKosForEditFn = createServerFn({ method: "GET" })
+  .inputValidator((data: { uuid: string }) => data)
+  .handler(async ({ data }) => {
+    const session = await useAppSession();
+    const user = session.data.user;
+
+    if (!user) {
+      return { error: "Tidak terautentikasi.", data: null };
+    }
+
+    const { data: k, error } = await supabase
+      .from("kos")
+      .select(`
+        uuid,
+        mitra_uuid,
+        nama,
+        jenis,
+        alamat,
+        harga_per_bulan,
+        deskripsi,
+        ktp_pemilik,
+        nib,
+        gambar,
+        daerah ( slug ),
+        kos_kampus_terdekat ( kampus ( slug ) ),
+        kos_fasilitas ( fasilitas ( nama ) ),
+        kos_galeri ( url, urutan )
+      `)
+      .eq("uuid", data.uuid)
+      .single();
+
+    if (error || !k) {
+      return { error: "Kos tidak ditemukan.", data: null };
+    }
+
+    // Verify ownership
+    if (k.mitra_uuid !== user.uuid) {
+      return { error: "Kos ini bukan milik Anda.", data: null };
+    }
+
+    const daerahObj: any = Array.isArray(k.daerah) ? k.daerah[0] : k.daerah;
+    const galeriSorted = ((k.kos_galeri as any[]) ?? [])
+      .sort((a, b) => a.urutan - b.urutan)
+      .map((g) => g.url);
+
+    const result: KosEditData = {
+      uuid: k.uuid,
+      nama: k.nama,
+      jenis: k.jenis,
+      daerah_slug: daerahObj?.slug ?? "",
+      alamat: k.alamat,
+      harga_per_bulan: k.harga_per_bulan,
+      deskripsi: k.deskripsi ?? "",
+      ktp_pemilik: k.ktp_pemilik ?? "",
+      nib: k.nib ?? "",
+      gambar: k.gambar,
+      kampus_slugs: ((k.kos_kampus_terdekat as any[]) ?? []).map((kt) => {
+        const kmp = Array.isArray(kt.kampus) ? kt.kampus[0] : kt.kampus;
+        return kmp?.slug ?? "";
+      }).filter(Boolean),
+      fasilitas_names: ((k.kos_fasilitas as any[]) ?? []).map((f) => {
+        const fas = Array.isArray(f.fasilitas) ? f.fasilitas[0] : f.fasilitas;
+        return fas?.nama ?? "";
+      }).filter(Boolean),
+      galeri_urls: galeriSorted,
+    };
+
+    return { data: result };
+  });
+
+// ============================================================
+// UPDATE KOS
+// ============================================================
+
+export type UpdateKosInput = {
+  uuid: string;
+  nama: string;
+  jenis: string;
+  daerah_slug: string;
+  alamat: string;
+  harga_per_bulan: number;
+  deskripsi?: string;
+  ktp_pemilik: string;
+  nib: string;
+  kampus_slugs: string[];
+  fasilitas_names: string[];
+  gambar_urls: string[]; // all gallery URLs (existing + new)
+};
+
+export const updateKosFn = createServerFn({ method: "POST" })
+  .inputValidator((data: UpdateKosInput) => data)
+  .handler(async ({ data }) => {
+    const session = await useAppSession();
+    const user = session.data.user;
+
+    if (!user) {
+      return { error: "Tidak terautentikasi." };
+    }
+
+    // Verify ownership
+    const { data: existing } = await supabase
+      .from("kos")
+      .select("uuid, mitra_uuid")
+      .eq("uuid", data.uuid)
+      .single();
+
+    if (!existing || existing.mitra_uuid !== user.uuid) {
+      return { error: "Kos tidak ditemukan atau bukan milik Anda." };
+    }
+
+    // 1. Resolve daerah_uuid
+    const { data: daerah } = await supabase
+      .from("daerah")
+      .select("uuid")
+      .eq("slug", data.daerah_slug)
+      .single();
+
+    if (!daerah) {
+      return { error: "Daerah tidak ditemukan." };
+    }
+
+    // 2. Update kos
+    const { error: updateErr } = await supabase
+      .from("kos")
+      .update({
+        nama: data.nama,
+        jenis: data.jenis,
+        daerah_uuid: daerah.uuid,
+        alamat: data.alamat,
+        harga_per_bulan: data.harga_per_bulan,
+        deskripsi: data.deskripsi || null,
+        ktp_pemilik: data.ktp_pemilik,
+        nib: data.nib,
+        gambar: data.gambar_urls[0] || null,
+      })
+      .eq("uuid", data.uuid);
+
+    if (updateErr) {
+      return { error: `Gagal mengupdate: ${updateErr.message}` };
+    }
+
+    // 3. Replace kampus links
+    await supabase.from("kos_kampus_terdekat").delete().eq("kos_uuid", data.uuid);
+    if (data.kampus_slugs.length > 0) {
+      const { data: kampusList } = await supabase
+        .from("kampus")
+        .select("uuid, slug")
+        .in("slug", data.kampus_slugs);
+
+      if (kampusList && kampusList.length > 0) {
+        await supabase.from("kos_kampus_terdekat").insert(
+          kampusList.map((k) => ({ kos_uuid: data.uuid, kampus_uuid: k.uuid })),
+        );
+      }
+    }
+
+    // 4. Replace fasilitas links
+    await supabase.from("kos_fasilitas").delete().eq("kos_uuid", data.uuid);
+    if (data.fasilitas_names.length > 0) {
+      const { data: fasilitasList } = await supabase
+        .from("fasilitas")
+        .select("uuid, nama")
+        .in("nama", data.fasilitas_names);
+
+      if (fasilitasList && fasilitasList.length > 0) {
+        await supabase.from("kos_fasilitas").insert(
+          fasilitasList.map((f) => ({ kos_uuid: data.uuid, fasilitas_uuid: f.uuid })),
+        );
+      }
+    }
+
+    // 5. Replace galeri
+    await supabase.from("kos_galeri").delete().eq("kos_uuid", data.uuid);
+    if (data.gambar_urls.length > 0) {
+      await supabase.from("kos_galeri").insert(
+        data.gambar_urls.map((url, i) => ({ kos_uuid: data.uuid, url, urutan: i })),
+      );
     }
 
     return { success: true };

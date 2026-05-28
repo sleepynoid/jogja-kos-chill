@@ -79,7 +79,7 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
         toast.success(`Status ${kos.nama} berhasil diubah!`);
         router.invalidate();
       }
-    } catch {
+    } catch {"@/lib/auth"
       toast.error("Gagal mengubah status.");
     }
   };
@@ -204,7 +204,8 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
                   <TableCell className="text-right">
                     <div className="inline-flex items-center gap-1">
                       <Link
-                        to="/dashboard/tambah-kos"
+                        to="/dashboard/edit/$uuid"
+                        params={{ uuid: k.uuid }}
                         className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border hover:bg-secondary"
                         aria-label="Edit"
                       >
