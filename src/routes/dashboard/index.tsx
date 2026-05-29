@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, Heart, Pencil, Plus, Star, Trash2, TrendingUp } from "lucide-react";
+import { Eye, Heart, Pencil, Plus, Star, Trash2, TrendingUp, ShieldCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,12 +19,26 @@ import {
 } from "@/components/ui/table";
 import { formatRupiah } from "@/lib/kos-data";
 import { getMitraKosFn, deleteKosFn, toggleKosTersediaFn, type MitraKos } from "@/lib/kos.server";
+import { getMitraProfileFn } from "@/lib/mitra.server";
 import { toast } from "sonner";
+
+export interface MitraProfile {
+  uuid: string;
+  nama: string;
+  email: string;
+  is_verified: boolean;
+  ktp_pemilik: string | null;
+  nib: string | null;
+  is_premium: boolean;
+}
 
 export const Route = createFileRoute("/dashboard/")({
   loader: async () => {
-    const result = await getMitraKosFn();
-    return { kosList: result.data ?? [] };
+    const [kosResult, profileResult] = await Promise.all([getMitraKosFn(), getMitraProfileFn()]);
+    return {
+      kosList: kosResult.data ?? [],
+      profile: profileResult as unknown as MitraProfile,
+    };
   },
   head: () => ({
     meta: [
@@ -40,13 +54,13 @@ export const Route = createFileRoute("/dashboard/")({
 });
 
 function DashboardIndexPage() {
-  const { kosList } = Route.useLoaderData();
-  return <Dashboard kosList={kosList} />;
+  const { kosList, profile } = Route.useLoaderData();
+  return <Dashboard kosList={kosList} profile={profile} />;
 }
 
 /* ---------------- Dashboard ---------------- */
 
-function Dashboard({ kosList }: { kosList: MitraKos[] }) {
+function Dashboard({ kosList, profile }: { kosList: MitraKos[]; profile: MitraProfile }) {
   const router = useRouter();
   const [confirmDelete, setConfirmDelete] = useState<MitraKos | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -79,7 +93,7 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
         toast.success(`Status ${kos.nama} berhasil diubah!`);
         router.invalidate();
       }
-    } catch {"@/lib/auth"
+    } catch {
       toast.error("Gagal mengubah status.");
     }
   };
@@ -89,21 +103,85 @@ function Dashboard({ kosList }: { kosList: MitraKos[] }) {
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Dashboard Mitra</p>
-          <h1 className="font-serif text-3xl font-bold">Dashboard Mitra 👋</h1>
+          <div className="flex items-center gap-3">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              Dashboard Mitra
+            </p>
+            {profile.is_verified ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                <ShieldCheck className="h-3 w-3" /> Terverifikasi
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                🔒 Belum Verifikasi
+              </span>
+            )}
+          </div>
+          <h1 className="font-serif text-3xl font-bold flex items-center gap-2 mt-1">
+            Dashboard Mitra 👋
+          </h1>
           <p className="text-sm text-muted-foreground">
             Pantau performa dan kelola kos Anda di sini.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            to="/dashboard/tambah-kos"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4" /> Tambah Kos
-          </Link>
+          {profile.is_verified ? (
+            <Link
+              to="/dashboard/tambah-kos"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all active:scale-95 shadow-sm"
+            >
+              <Plus className="h-4 w-4" /> Tambah Kos
+            </Link>
+          ) : (
+            <button
+              disabled
+              title="Akun harus terverifikasi untuk menambah kos."
+              className="inline-flex items-center gap-1.5 rounded-lg bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground cursor-not-allowed opacity-60"
+            >
+              <Plus className="h-4 w-4" /> Tambah Kos
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Verification conditional banners */}
+      {!profile.is_verified && (!profile.ktp_pemilik || !profile.nib) && (
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50/50 p-5 dark:border-amber-900/30 dark:bg-amber-950/15">
+          <div className="flex gap-3">
+            <span className="text-2xl mt-0.5">🔒</span>
+            <div>
+              <h3 className="font-serif text-base font-bold text-amber-900 dark:text-amber-300">
+                Lengkapi Verifikasi Akun
+              </h3>
+              <p className="text-xs text-amber-800/85 dark:text-amber-400/80 mt-0.5">
+                Anda belum melengkapi KTP & NIB. Verifikasi akun diperlukan sebelum Anda dapat
+                menambah listing kos baru untuk mencegah penyalahgunaan sistem.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/dashboard/verifikasi"
+            className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white hover:bg-amber-700 transition-colors shadow-sm active:scale-95"
+          >
+            Ajukan Verifikasi Sekarang →
+          </Link>
+        </div>
+      )}
+
+      {!profile.is_verified && profile.ktp_pemilik && profile.nib && (
+        <div className="mt-6 flex gap-3 rounded-2xl border border-indigo-200 bg-indigo-50/40 p-5 dark:border-indigo-900/30 dark:bg-indigo-950/15">
+          <span className="text-2xl mt-0.5">⏳</span>
+          <div>
+            <h3 className="font-serif text-base font-bold text-indigo-950 dark:text-indigo-300">
+              Verifikasi Sedang Diproses
+            </h3>
+            <p className="text-xs text-indigo-900/80 dark:text-indigo-400/80 mt-0.5">
+              Data KTP & NIB Anda sudah dikirim dan sedang dalam proses peninjauan oleh tim admin.
+              Kami akan segera memperbarui status akun Anda.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

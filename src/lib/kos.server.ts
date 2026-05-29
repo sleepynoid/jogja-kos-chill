@@ -513,7 +513,8 @@ export const getKosForEditFn = createServerFn({ method: "GET" })
 
     const { data: k, error } = await supabase
       .from("kos")
-      .select(`
+      .select(
+        `
         uuid,
         mitra_uuid,
         nama,
@@ -528,7 +529,8 @@ export const getKosForEditFn = createServerFn({ method: "GET" })
         kos_kampus_terdekat ( kampus ( slug ) ),
         kos_fasilitas ( fasilitas ( nama ) ),
         kos_galeri ( url, urutan )
-      `)
+      `,
+      )
       .eq("uuid", data.uuid)
       .single();
 
@@ -557,14 +559,18 @@ export const getKosForEditFn = createServerFn({ method: "GET" })
       ktp_pemilik: k.ktp_pemilik ?? "",
       nib: k.nib ?? "",
       gambar: k.gambar,
-      kampus_slugs: ((k.kos_kampus_terdekat as any[]) ?? []).map((kt) => {
-        const kmp = Array.isArray(kt.kampus) ? kt.kampus[0] : kt.kampus;
-        return kmp?.slug ?? "";
-      }).filter(Boolean),
-      fasilitas_names: ((k.kos_fasilitas as any[]) ?? []).map((f) => {
-        const fas = Array.isArray(f.fasilitas) ? f.fasilitas[0] : f.fasilitas;
-        return fas?.nama ?? "";
-      }).filter(Boolean),
+      kampus_slugs: ((k.kos_kampus_terdekat as any[]) ?? [])
+        .map((kt) => {
+          const kmp = Array.isArray(kt.kampus) ? kt.kampus[0] : kt.kampus;
+          return kmp?.slug ?? "";
+        })
+        .filter(Boolean),
+      fasilitas_names: ((k.kos_fasilitas as any[]) ?? [])
+        .map((f) => {
+          const fas = Array.isArray(f.fasilitas) ? f.fasilitas[0] : f.fasilitas;
+          return fas?.nama ?? "";
+        })
+        .filter(Boolean),
       galeri_urls: galeriSorted,
     };
 
@@ -651,9 +657,9 @@ export const updateKosFn = createServerFn({ method: "POST" })
         .in("slug", data.kampus_slugs);
 
       if (kampusList && kampusList.length > 0) {
-        await supabase.from("kos_kampus_terdekat").insert(
-          kampusList.map((k) => ({ kos_uuid: data.uuid, kampus_uuid: k.uuid })),
-        );
+        await supabase
+          .from("kos_kampus_terdekat")
+          .insert(kampusList.map((k) => ({ kos_uuid: data.uuid, kampus_uuid: k.uuid })));
       }
     }
 
@@ -666,18 +672,18 @@ export const updateKosFn = createServerFn({ method: "POST" })
         .in("nama", data.fasilitas_names);
 
       if (fasilitasList && fasilitasList.length > 0) {
-        await supabase.from("kos_fasilitas").insert(
-          fasilitasList.map((f) => ({ kos_uuid: data.uuid, fasilitas_uuid: f.uuid })),
-        );
+        await supabase
+          .from("kos_fasilitas")
+          .insert(fasilitasList.map((f) => ({ kos_uuid: data.uuid, fasilitas_uuid: f.uuid })));
       }
     }
 
     // 5. Replace galeri
     await supabase.from("kos_galeri").delete().eq("kos_uuid", data.uuid);
     if (data.gambar_urls.length > 0) {
-      await supabase.from("kos_galeri").insert(
-        data.gambar_urls.map((url, i) => ({ kos_uuid: data.uuid, url, urutan: i })),
-      );
+      await supabase
+        .from("kos_galeri")
+        .insert(data.gambar_urls.map((url, i) => ({ kos_uuid: data.uuid, url, urutan: i })));
     }
 
     return { success: true };

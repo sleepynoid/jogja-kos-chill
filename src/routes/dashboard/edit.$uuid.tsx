@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { ArrowLeft, ImagePlus, X } from "lucide-react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
@@ -6,6 +6,7 @@ import { BatikPattern } from "@/components/site/Ornaments";
 import { uploadKosImages, deleteKosImage } from "@/lib/storage";
 import { getKosForEditFn, updateKosFn } from "@/lib/kos.server";
 import { getCurrentUser } from "@/lib/auth";
+import { getMitraProfileFn } from "@/lib/mitra.server";
 import { toast } from "sonner";
 import {
   Select as UiSelect,
@@ -16,6 +17,16 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/dashboard/edit/$uuid")({
+  beforeLoad: async () => {
+    try {
+      const profile = await getMitraProfileFn();
+      if (!profile.is_verified) {
+        throw redirect({ to: "/dashboard" });
+      }
+    } catch {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   loader: async ({ params }) => {
     const result = await getKosForEditFn({ data: { uuid: params.uuid } });
     if (result.error || !result.data) {
@@ -24,10 +35,7 @@ export const Route = createFileRoute("/dashboard/edit/$uuid")({
     return { kos: result.data };
   },
   head: () => ({
-    meta: [
-      { title: "Edit Kos — Keep n Sleep" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Edit Kos — Keep n Sleep" }, { name: "robots", content: "noindex" }],
   }),
   component: EditKosPage,
 });
@@ -132,9 +140,7 @@ function EditKosPage() {
   const toggleFasilitas = (f: string) => {
     setForm((s) => ({
       ...s,
-      fasilitas: s.fasilitas.includes(f)
-        ? s.fasilitas.filter((x) => x !== f)
-        : [...s.fasilitas, f],
+      fasilitas: s.fasilitas.includes(f) ? s.fasilitas.filter((x) => x !== f) : [...s.fasilitas, f],
     }));
   };
 
@@ -205,7 +211,14 @@ function EditKosPage() {
   };
 
   const isFormValid =
-    form.nama && form.jenis && form.daerah && form.alamat && form.hargaPerBulan && form.ktpPemilik && form.nib && totalImages > 0;
+    form.nama &&
+    form.jenis &&
+    form.daerah &&
+    form.alamat &&
+    form.hargaPerBulan &&
+    form.ktpPemilik &&
+    form.nib &&
+    totalImages > 0;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -221,9 +234,7 @@ function EditKosPage() {
         <div className="relative overflow-hidden rounded-2xl bg-secondary/30 p-6 border border-border">
           <BatikPattern variant="kawung" className="opacity-[0.12]" />
           <div className="relative z-10">
-            <h1 className="font-serif text-2xl font-bold md:text-3xl text-foreground">
-              Edit Kos
-            </h1>
+            <h1 className="font-serif text-2xl font-bold md:text-3xl text-foreground">Edit Kos</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Perbarui informasi kos "{kos.nama}".
             </p>
@@ -257,13 +268,18 @@ function EditKosPage() {
               <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
                 Jenis Kos <span className="text-destructive">*</span>
               </label>
-              <UiSelect value={form.jenis || undefined} onValueChange={(v) => setForm({ ...form, jenis: v })}>
+              <UiSelect
+                value={form.jenis || undefined}
+                onValueChange={(v) => setForm({ ...form, jenis: v })}
+              >
                 <SelectTrigger className="h-10 rounded-xl">
                   <SelectValue placeholder="Pilih jenis kos" />
                 </SelectTrigger>
                 <SelectContent>
                   {JENIS_KOS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </UiSelect>
@@ -273,13 +289,18 @@ function EditKosPage() {
               <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
                 Daerah <span className="text-destructive">*</span>
               </label>
-              <UiSelect value={form.daerah || undefined} onValueChange={(v) => setForm({ ...form, daerah: v })}>
+              <UiSelect
+                value={form.daerah || undefined}
+                onValueChange={(v) => setForm({ ...form, daerah: v })}
+              >
                 <SelectTrigger className="h-10 rounded-xl">
                   <SelectValue placeholder="Pilih daerah" />
                 </SelectTrigger>
                 <SelectContent>
                   {DAERAH_LIST.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </UiSelect>
@@ -378,7 +399,8 @@ function EditKosPage() {
                       : "border-border bg-background text-foreground hover:bg-secondary"
                   }`}
                 >
-                  {active ? "✓ " : ""}{k.label}
+                  {active ? "✓ " : ""}
+                  {k.label}
                 </button>
               );
             })}
@@ -402,7 +424,8 @@ function EditKosPage() {
                       : "border-border bg-background text-foreground hover:bg-secondary"
                   }`}
                 >
-                  {active ? "✓ " : ""}{f}
+                  {active ? "✓ " : ""}
+                  {f}
                 </button>
               );
             })}
@@ -421,7 +444,10 @@ function EditKosPage() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {/* Existing images */}
             {existingImages.map((url, i) => (
-              <div key={url} className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted">
+              <div
+                key={url}
+                className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted"
+              >
                 <img src={url} alt={`Foto ${i + 1}`} className="h-full w-full object-cover" />
                 {i === 0 && existingImages.length > 0 && newImages.length === 0 && (
                   <span className="absolute left-1.5 top-1.5 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
@@ -441,8 +467,15 @@ function EditKosPage() {
 
             {/* New images */}
             {newImages.map((g, i) => (
-              <div key={g.url} className="group relative aspect-square overflow-hidden rounded-xl border-2 border-dashed border-primary/40 bg-muted">
-                <img src={g.url} alt={`Foto baru ${i + 1}`} className="h-full w-full object-cover" />
+              <div
+                key={g.url}
+                className="group relative aspect-square overflow-hidden rounded-xl border-2 border-dashed border-primary/40 bg-muted"
+              >
+                <img
+                  src={g.url}
+                  alt={`Foto baru ${i + 1}`}
+                  className="h-full w-full object-cover"
+                />
                 <span className="absolute left-1.5 top-1.5 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-accent-foreground">
                   Baru
                 </span>

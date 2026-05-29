@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { ArrowLeft, ImagePlus, X } from "lucide-react";
 import { KAMPUS_LIST, DAERAH_LIST, JENIS_KOS } from "@/lib/kos-data";
@@ -6,6 +6,7 @@ import { BatikPattern } from "@/components/site/Ornaments";
 import { uploadKosImages } from "@/lib/storage";
 import { createKosFn } from "@/lib/kos.server";
 import { getCurrentUser } from "@/lib/auth";
+import { getMitraProfileFn } from "@/lib/mitra.server";
 import { toast } from "sonner";
 import {
   Select as UiSelect,
@@ -16,6 +17,16 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/dashboard/tambah-kos")({
+  beforeLoad: async () => {
+    try {
+      const profile = await getMitraProfileFn();
+      if (!profile.is_verified) {
+        throw redirect({ to: "/dashboard" });
+      }
+    } catch {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Tambah Kos — Keep n Sleep" },
@@ -467,7 +478,17 @@ function TambahKosPage() {
         <div className="flex items-center gap-3 pt-4 border-t border-border">
           <button
             type="submit"
-            disabled={loading || !form.nama || !form.jenis || !form.daerah || !form.alamat || !form.hargaPerBulan || !form.ktpPemilik || !form.nib || gambar.length === 0}
+            disabled={
+              loading ||
+              !form.nama ||
+              !form.jenis ||
+              !form.daerah ||
+              !form.alamat ||
+              !form.hargaPerBulan ||
+              !form.ktpPemilik ||
+              !form.nib ||
+              gambar.length === 0
+            }
             className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Menyimpan..." : "Simpan Kos"}

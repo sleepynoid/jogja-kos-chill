@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as KosUuidRouteImport } from './routes/kos.$uuid'
+import { Route as DashboardVerifikasiRouteImport } from './routes/dashboard/verifikasi'
 import { Route as DashboardTambahKosRouteImport } from './routes/dashboard/tambah-kos'
 import { Route as DashboardEditUuidRouteImport } from './routes/dashboard/edit.$uuid'
 
@@ -90,6 +91,11 @@ const KosUuidRoute = KosUuidRouteImport.update({
   path: '/kos/$uuid',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardVerifikasiRoute = DashboardVerifikasiRouteImport.update({
+  id: '/verifikasi',
+  path: '/verifikasi',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardTambahKosRoute = DashboardTambahKosRouteImport.update({
   id: '/tambah-kos',
   path: '/tambah-kos',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
   '/dashboard/tambah-kos': typeof DashboardTambahKosRoute
+  '/dashboard/verifikasi': typeof DashboardVerifikasiRoute
   '/kos/$uuid': typeof KosUuidRoute
   '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
   '/dashboard/tambah-kos': typeof DashboardTambahKosRoute
+  '/dashboard/verifikasi': typeof DashboardVerifikasiRoute
   '/kos/$uuid': typeof KosUuidRoute
   '/admin': typeof AdminIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/survey': typeof SurveyRoute
   '/wishlist': typeof WishlistRoute
   '/dashboard/tambah-kos': typeof DashboardTambahKosRoute
+  '/dashboard/verifikasi': typeof DashboardVerifikasiRoute
   '/kos/$uuid': typeof KosUuidRoute
   '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/survey'
     | '/wishlist'
     | '/dashboard/tambah-kos'
+    | '/dashboard/verifikasi'
     | '/kos/$uuid'
     | '/admin/'
     | '/dashboard/'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/survey'
     | '/wishlist'
     | '/dashboard/tambah-kos'
+    | '/dashboard/verifikasi'
     | '/kos/$uuid'
     | '/admin'
     | '/dashboard'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/survey'
     | '/wishlist'
     | '/dashboard/tambah-kos'
+    | '/dashboard/verifikasi'
     | '/kos/$uuid'
     | '/admin/'
     | '/dashboard/'
@@ -310,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KosUuidRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/verifikasi': {
+      id: '/dashboard/verifikasi'
+      path: '/verifikasi'
+      fullPath: '/dashboard/verifikasi'
+      preLoaderRoute: typeof DashboardVerifikasiRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/tambah-kos': {
       id: '/dashboard/tambah-kos'
       path: '/tambah-kos'
@@ -339,12 +358,14 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface DashboardRouteChildren {
   DashboardTambahKosRoute: typeof DashboardTambahKosRoute
+  DashboardVerifikasiRoute: typeof DashboardVerifikasiRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardEditUuidRoute: typeof DashboardEditUuidRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardTambahKosRoute: DashboardTambahKosRoute,
+  DashboardVerifikasiRoute: DashboardVerifikasiRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardEditUuidRoute: DashboardEditUuidRoute,
 }

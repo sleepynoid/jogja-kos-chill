@@ -41,12 +41,18 @@ export function Footer() {
             nyaman berkarakter dengan sentuhan budaya Jawa yang hangat.
           </p>
           <div className="flex gap-4">
-            {[Instagram, Twitter, Facebook].map((Icon, i) => (
+            {[
+              { Icon: Instagram, href: "https://www.instagram.com/keepnsleep?igsh=MWRyZWo4aDN5eWE4eQ==" },
+              { Icon: Twitter, href: "#" },
+              { Icon: Facebook, href: "#" },
+            ].map(({ Icon, href }, i) => (
               <motion.a
                 key={i}
                 whileHover={{ scale: 1.1, backgroundColor: "#E76F51", borderColor: "#E76F51" }}
                 whileTap={{ scale: 0.9 }}
-                href="#"
+                href={href}
+                target={href !== "#" ? "_blank" : undefined}
+                rel={href !== "#" ? "noopener noreferrer" : undefined}
                 className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center transition-all bg-white/5 text-white"
               >
                 <Icon size={20} />
