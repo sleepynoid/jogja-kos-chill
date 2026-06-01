@@ -122,11 +122,11 @@ export function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <Mail size={18} className="text-brand-accent" />
-              <span>hello@keepnsleep.id</span>
+              <span>kosjogja@keepnsleep.site</span>
             </li>
             <li className="flex items-center gap-3">
               <MapPin size={18} className="text-brand-accent" />
-              <span>Malioboro No. 1, DI Yogyakarta</span>
+              <span>Jalan Kaliurang KM 5,6, Pandega Duksina No. 2</span>
             </li>
           </ul>
         </div>
